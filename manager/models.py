@@ -9,6 +9,8 @@ class Event(models.Model):
 
 
 class EventContract(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.SET_NULL, null=True)
+    entity = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     file = models.FileField()
 
 
@@ -23,14 +25,14 @@ class Stand(models.Model):
 
 
 class StandContract(models.Model):
-    entity = models.ForeignKey(User, on_delete=models.SET_NULL)
-    stand = models.ForeignKey(Stand, on_delete=models.SET_NULL)
+    entity = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    stand = models.ForeignKey(Stand, on_delete=models.SET_NULL, null=True)
     file = models.FileField()
 
 
 class AdditionalService(models.Model):
     name = models.CharField(max_length=100)
-    price = models.DecimalField(decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
 
 
 class EventRequest(models.Model):
@@ -53,5 +55,3 @@ class ServiceRequest(models.Model):
     stand = models.ForeignKey(Stand, on_delete=models.CASCADE)
     service = models.ForeignKey(AdditionalService, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-
-# TODO: user groups and permissions
