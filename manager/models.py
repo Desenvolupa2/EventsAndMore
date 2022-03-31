@@ -35,11 +35,18 @@ class AdditionalService(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
 
+class EventRequestStatus(models.IntegerChoices):
+    PENDING = 1
+    ACCEPTED = 2
+    DENIED = 3
+
+
 class EventRequest(models.Model):
+    entity = models.ForeignKey(User, on_delete=models.CASCADE)
     event_name = models.CharField(max_length=100)
     initial_date = models.DateField()
     final_date = models.DateField()
-    status = models.BooleanField()
+    status = models.IntegerField(choices=EventRequestStatus.choices)
 
 
 class StandRequest(models.Model):
