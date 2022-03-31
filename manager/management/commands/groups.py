@@ -17,17 +17,15 @@ from manager.models import (
 
 
 def get_permissions(model: Type['Model']):
-    return list(chain.from_iterable(
-        Permission.objects.filter(content_type=ContentType.objects.get_for_model(model))
-    ))
+    return Permission.objects.filter(content_type=ContentType.objects.get_for_model(model))
 
 
 GROUPS_PERMISSIONS = {
-    "additional_services": list(chain(
+    "Additional services": list(chain(
         get_permissions(ServiceRequest),
         get_permissions(AdditionalService),
     )),
-    "request_management": list(chain(
+    "Request management": list(chain(
         get_permissions(StandRequest),
         get_permissions(Stand),
         get_permissions(EventRequest),
@@ -36,9 +34,10 @@ GROUPS_PERMISSIONS = {
 }
 
 
-class CreateGroupsPermissions(BaseCommand):
+class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for group_name, permissions in GROUPS_PERMISSIONS.items():
-            group = Group.objects.create(name=group_name, permissions=permissions)
+            group, _ = Group.objects.get_or_create(name=group_name)
+            group.permissions.add(*permissions)
             group.save()
