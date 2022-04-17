@@ -48,6 +48,10 @@ class EventRequest(models.Model):
     final_date = models.DateField()
     status = models.IntegerField(choices=EventRequestStatus.choices)
 
+    @property
+    def status_name(self):
+        return EventRequestStatus(self.status).name
+
 
 class StandRequest(models.Model):
     entity = models.ForeignKey(User, on_delete=models.CASCADE)
