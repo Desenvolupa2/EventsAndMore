@@ -21,16 +21,16 @@ def get_permissions(model: Type['Model']):
 
 
 GROUPS_PERMISSIONS = {
-    "Additional services": list(chain(
+    "Additional services": chain(
         get_permissions(ServiceRequest),
         get_permissions(AdditionalService),
-    )),
-    "Request management": list(chain(
+    ),
+    "Request management": chain(
         get_permissions(StandRequest),
         get_permissions(Stand),
         get_permissions(EventRequest),
         get_permissions(Event),
-    )),
+    ),
 }
 
 
