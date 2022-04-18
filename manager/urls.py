@@ -1,15 +1,7 @@
 from django.urls import path
-
-from manager.views import (
-    Home,
-    EventRequestFormView,
-    EventRequestListView,
-    EventRequestStatusUpdate
-)
+from . import views
 
 urlpatterns = [
-    path('', Home.as_view(), name="home"),
-    path('event-request', EventRequestFormView.as_view(), name="event-request-form"),
-    path('event-requests', EventRequestListView.as_view(), name="event-request-list"),
-    path('event-request/<int:pk>/<int:status>', EventRequestStatusUpdate.as_view(), name="event-request-status"),
+    path('register/', views.register_user, name='register'),
+    path('login/', views.login_user, name='login'),
 ]

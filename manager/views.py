@@ -1,62 +1,38 @@
-from http import HTTPStatus
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import AuthenticationForm
+from django.shortcuts import render, redirect
+from django.contrib import messages
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, HttpResponse
-from django.urls import reverse_lazy
-from django.views import View
-from django.views.generic import TemplateView, FormView, ListView
-
-from manager.forms import EventRequestForm
-from manager.models import EventRequest, EventRequestStatus
+from manager.forms import NewUserForm
 
 
-class Home(TemplateView):
-    template_name = "home.html"
+def register_user(request):
+    if request.method == "POST":
+        form = NewUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Registration successful.")
+            return redirect('manager/home.html')
+        messages.error(request, "Unsuccessful registration. Invalid information.")
+    form = NewUserForm()
+    return render(request=request, template_name="register.html", context={"register_form": form})
 
 
-class EventRequestFormView(LoginRequiredMixin, FormView):
-    template_name = "event_request_form.html"
-    form_class = EventRequestForm
-
-    def form_valid(self, form):
-        event_request: 'EventRequest' = form.save(commit=False)
-        event_request.entity = self.request.user
-        event_request.status = EventRequestStatus.PENDING
-        event_request.save()
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        return reverse_lazy("home")
-
-
-class EventRequestListView(LoginRequiredMixin, ListView):
-    template_name = "event_request_list.html"
-    context_object_name = "events"
-    model = EventRequest
-    paginate_by = 10
-    ordering = "initial_date"
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(object_list=object_list, **kwargs)
-        context["all_status"] = EventRequestStatus.choices
-        return context
-
-
-class EventRequestStatusUpdate(LoginRequiredMixin, View):
-
-    def get(self, request, *args, **kwargs):
-        return HttpResponse(status=HTTPStatus.METHOD_NOT_ALLOWED)
-
-    def post(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
-        event_request = EventRequest.objects.get(id=pk)
-        if event_request is None:
-            return HttpResponse("Invalid pk", status=HTTPStatus.BAD_REQUEST)
-
-        status = kwargs.get('status')
-        if status is None:
-            return HttpResponse("Invalid status", status=HTTPStatus.BAD_REQUEST)
-
-        event_request.status = EventRequestStatus(status)
-        event_request.save()
-        return HttpResponseRedirect(reverse_lazy("event-request-list"))
+def login_user(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.info(request, f"You are now logged in as {username}.")
+                return redirect('manager/home.html')
+            else:
+                messages.error(request, "Invalid username or password.")
+        else:
+            messages.error(request, "Invalid username or password.")
+    form = AuthenticationForm()
+    return render(request=request, template_name="login.html", context={"login_form": form})

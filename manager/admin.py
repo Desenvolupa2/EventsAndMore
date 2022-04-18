@@ -12,6 +12,7 @@ from .models import (
     EventContract,
 )
 
+
 # Register your models here.
 admin.site.register(Stand)
 admin.site.register(StandRequest)
