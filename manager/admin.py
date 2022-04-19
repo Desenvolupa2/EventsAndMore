@@ -1,10 +1,11 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
 from .models import (
+    User,
     Stand,
     StandRequest,
     StandContract,
-    StandSize,
     AdditionalService,
     ServiceRequest,
     Event,
@@ -12,8 +13,8 @@ from .models import (
     EventContract,
 )
 
+admin.site.register(User, UserAdmin)
 
-# Register your models here.
 admin.site.register(Stand)
 admin.site.register(StandRequest)
 admin.site.register(StandContract)
