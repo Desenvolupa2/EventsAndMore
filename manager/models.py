@@ -1,5 +1,10 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+
+
+class User(AbstractUser):
+    address = models.CharField(max_length=150, blank=True, null=False)
+    # TODO: add all the required fields
 
 
 class Event(models.Model):
@@ -35,11 +40,22 @@ class AdditionalService(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
 
+class EventRequestStatus(models.IntegerChoices):
+    PENDING = 1
+    ACCEPTED = 2
+    DENIED = 3
+
+
 class EventRequest(models.Model):
+    entity = models.ForeignKey(User, on_delete=models.CASCADE)
     event_name = models.CharField(max_length=100)
     initial_date = models.DateField()
     final_date = models.DateField()
-    status = models.BooleanField()
+    status = models.IntegerField(choices=EventRequestStatus.choices)
+
+    @property
+    def status_name(self):
+        return EventRequestStatus(self.status).name
 
 
 class StandRequest(models.Model):
