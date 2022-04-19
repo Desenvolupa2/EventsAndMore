@@ -15,16 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-<<<<<<< HEAD
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('manager.urls'))
-=======
-
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('manager/', include('manager.urls')),
->>>>>>> f493e7a... Added register functionality
 ]
