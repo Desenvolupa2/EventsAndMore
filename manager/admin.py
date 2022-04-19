@@ -14,7 +14,14 @@ from .models import (
 )
 
 
-admin.site.register(User, UserAdmin)
+class CustomUserAdmin(UserAdmin):
+    model = User
+    fieldsets = UserAdmin.fieldsets + (
+        ("Custom Fields", {"fields": ("address",)}),
+    )
+
+
+admin.site.register(User, CustomUserAdmin)
 
 admin.site.register(Stand)
 admin.site.register(StandRequest)
