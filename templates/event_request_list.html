@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Event requests</h1>
+    {% regroup events by status_name as events_by_status %}
+    {% for status in events_by_status %}
+        <h3>{{ status.grouper }}</h3>
+        {% for event in status.list %}
+            <div>
+                <p>Event name: {{ event.event_name }}</p>
+                <p>Entity: {{ event.entity }}</p>
+                <p>Initial date: {{ event.initial_date }}</p>
+                <p>Final date: {{ event.final_date }}</p>
+                {% for c_status in all_status %}
+                    <form action="{% url 'event-request-status' pk=event.id status=c_status.0 %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-primary" value="{{ c_status.1 }}"/>
+                    </form>
+                {% endfor %}
+                <p>----------------------</p>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+{% endblock %}
