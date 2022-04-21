@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import User, EventRequest
+from .models import Profile, EventRequest
 
 
 class EventRequestForm(ModelForm):
@@ -12,5 +12,5 @@ class EventRequestForm(ModelForm):
 
 class NewUserForm(UserCreationForm):
     class Meta:
-        model = User
+        model = Profile
         fields = ("username", "email", "address", "password1", "password2")
