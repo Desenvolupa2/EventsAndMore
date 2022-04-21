@@ -1,14 +1,18 @@
+import json
+
 from django.contrib.auth.views import LoginView
+from django.core import serializers
 from django.views.generic import CreateView, TemplateView, FormView, ListView
 from http import HTTPStatus
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse_lazy
 from django.views import View
 
 from manager.forms import EventRequestForm
 from manager.models import EventRequest, EventRequestStatus
+from django.forms.models import model_to_dict
 
 from manager.forms import NewUserForm
 
@@ -64,21 +68,31 @@ class EventRequestListView(LoginRequiredMixin, ListView):
         return context
 
 
-class EventRequestStatusUpdate(LoginRequiredMixin, View):
+class EventRequestUpdate(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         return HttpResponse(status=HTTPStatus.METHOD_NOT_ALLOWED)
 
-    def post(self, request, *args, **kwargs):
+    def put(self, *args, **kwargs):
+        if not self.request.user.has_perm("change_event_request"):
+            return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
+
         pk = kwargs.get('pk')
         event_request = EventRequest.objects.get(id=pk)
         if event_request is None:
-            return HttpResponse("Invalid pk", status=HTTPStatus.BAD_REQUEST)
+            return JsonResponse({"status": "error", "content": "Invalid pk"}, status=HTTPStatus.BAD_REQUEST)
 
-        status = kwargs.get('status')
-        if status is None:
-            return HttpResponse("Invalid status", status=HTTPStatus.BAD_REQUEST)
+        if event_request.status != EventRequestStatus.PENDING:
+            return JsonResponse(
+                {"status": "error", "content": "This request can't be updated"},
+                status=HTTPStatus.BAD_REQUEST
+            )
+        body = json.loads(self.request.body)
+        for key, value in body.items():
+            if hasattr(event_request, key):
+                setattr(event_request, key, value)
+            else:
+                return JsonResponse({"status": "error", "content": "Invalid format"}, status=HTTPStatus.BAD_REQUEST)
 
-        event_request.status = EventRequestStatus(status)
         event_request.save()
-        return HttpResponseRedirect(reverse_lazy("event-request-list"))
+        return JsonResponse({"status": "success", "content": model_to_dict(event_request)}, status=HTTPStatus.OK)

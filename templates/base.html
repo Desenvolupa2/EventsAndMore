@@ -5,6 +5,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Events And More</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+            integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
+            crossorigin="anonymous"></script>
+
 </head>
 <body>
 <div class="container py-5">
@@ -12,4 +24,66 @@
     {% endblock %}
 </div>
 </body>
+
+
+<script>
+    function sendRequest(url, method, data) {
+        return axios({
+            method: method,
+            url: url,
+            data: data,
+            accept: '*',
+            xsrfCookieName: 'csrftoken',
+            xsrfHeaderName: 'X-CSRFToken',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    }
+
+    function getCookie(c_name) {
+        var c_value = " " + document.cookie;
+        var c_start = c_value.indexOf(" " + c_name + "=");
+        if (c_start == -1) {
+            c_value = null;
+        } else {
+            c_start = c_value.indexOf("=", c_start) + 1;
+            var c_end = c_value.indexOf(";", c_start);
+            if (c_end == -1) {
+                c_end = c_value.length;
+            }
+            c_value = unescape(c_value.substring(c_start, c_end));
+        }
+        return c_value;
+    }
+
+    function changeEventDate(eventRequestId) {
+        Swal.fire({
+            title: "<i>Title</i>",
+            html: '<input type="date" id="datepicker">',
+            showConfirmButton: true,
+        }).then(function () {
+            let newDate = document.getElementById('datepicker').value;
+            console.log(newDate)
+            let data = {};
+            data['initial_date'] = newDate;
+            sendRequest('/event-request/' + eventRequestId + "/", 'put', data)
+                .then(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Request submitted',
+                        text: 'Your next requests will replace this one.'
+                    })
+                })
+                .catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error while updating address'
+                    })
+                });
+        })
+        ;
+    }
+
+</script>
 </html>
