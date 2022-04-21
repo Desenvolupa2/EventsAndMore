@@ -1,12 +1,11 @@
 from django.contrib.auth.views import LoginView
-from django.views.generic import CreateView, TemplateView, FormView
+from django.views.generic import CreateView, TemplateView, FormView, ListView
 from http import HTTPStatus
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, FormView, ListView
 
 from manager.forms import EventRequestForm
 from manager.models import EventRequest, EventRequestStatus
