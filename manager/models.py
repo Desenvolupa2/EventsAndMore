@@ -1,5 +1,10 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+
+
+class User(AbstractUser):
+    address = models.CharField(max_length=150, blank=True, null=False)
+    # TODO: add all the required fields
 
 
 class Event(models.Model):

@@ -1,3 +1,5 @@
+from django.contrib.auth.views import LoginView
+from django.views.generic import CreateView, TemplateView, FormView
 from http import HTTPStatus
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -9,9 +11,26 @@ from django.views.generic import TemplateView, FormView, ListView
 from manager.forms import EventRequestForm
 from manager.models import EventRequest, EventRequestStatus
 
+from manager.forms import NewUserForm
+
 
 class Home(TemplateView):
     template_name = "home.html"
+
+
+class Register(CreateView):
+    form_class = NewUserForm
+    template_name = "register.html"
+
+    def get_success_url(self):
+        return reverse_lazy("home")
+
+
+class Login(LoginView):
+    template_name = "login.html"
+
+    def get_success_url(self):
+        return reverse_lazy('home')
 
 
 class EventRequestFormView(LoginRequiredMixin, FormView):
@@ -52,11 +71,3 @@ class EventRequestStatusUpdate(LoginRequiredMixin, View):
         event_request = EventRequest.objects.get(id=pk)
         if event_request is None:
             return HttpResponse("Invalid pk", status=HTTPStatus.BAD_REQUEST)
-
-        status = kwargs.get('status')
-        if status is None:
-            return HttpResponse("Invalid status", status=HTTPStatus.BAD_REQUEST)
-
-        event_request.status = EventRequestStatus(status)
-        event_request.save()
-        return HttpResponseRedirect(reverse_lazy("event-request-list"))
