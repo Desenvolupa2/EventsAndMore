@@ -6,7 +6,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, FormView, ListView
 
 from manager.forms import EventRequestForm
 from manager.models import EventRequest, EventRequestStatus
@@ -28,6 +27,10 @@ class Register(CreateView):
 
 class Login(LoginView):
     template_name = "login.html"
+    redirect_authenticated_user = True
+
+    def get_redirect_url(self):
+        return reverse_lazy("home")
 
     def get_success_url(self):
         return reverse_lazy('home')
