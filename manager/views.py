@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse_lazy
 from django.views import View
+from django.views.generic import TemplateView, FormView, ListView
 
 from manager.forms import EventRequestForm
 from manager.models import EventRequest, EventRequestStatus
@@ -70,3 +71,11 @@ class EventRequestStatusUpdate(LoginRequiredMixin, View):
         event_request = EventRequest.objects.get(id=pk)
         if event_request is None:
             return HttpResponse("Invalid pk", status=HTTPStatus.BAD_REQUEST)
+
+        status = kwargs.get('status')
+        if status is None:
+            return HttpResponse("Invalid status", status=HTTPStatus.BAD_REQUEST)
+
+        event_request.status = EventRequestStatus(status)
+        event_request.save()
+        return HttpResponseRedirect(reverse_lazy("event-request-list"))
