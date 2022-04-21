@@ -1,10 +1,11 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
 from .models import (
+    User,
     Stand,
     StandRequest,
     StandContract,
-    StandSize,
     AdditionalService,
     ServiceRequest,
     Event,
@@ -12,7 +13,16 @@ from .models import (
     EventContract,
 )
 
-# Register your models here.
+
+class CustomUserAdmin(UserAdmin):
+    model = User
+    fieldsets = UserAdmin.fieldsets + (
+        ("Custom Fields", {"fields": ("address",)}),
+    )
+
+
+admin.site.register(User, CustomUserAdmin)
+
 admin.site.register(Stand)
 admin.site.register(StandRequest)
 admin.site.register(StandContract)
