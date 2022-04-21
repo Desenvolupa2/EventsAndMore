@@ -12,13 +12,10 @@
                 <p>Entity: {{ event.entity }}</p>
                 <p>Initial date: {{ event.initial_date }}</p>
                 <p>Final date: {{ event.final_date }}</p>
-                {% if perms.manager.change_event_request %}
+                {% if perms.manager.change_event_request and event.status != 2%}
                     <button class="btn btn-primary" onclick="acceptEvent({{ event.id }})">Accept</button>
                     <button class="btn btn-warning" onclick="changeEventDate({{ event.id }})">Change date</button>
                     <button class="btn btn-danger" onclick="denyEvent({{ event.id }})">Deny</button>
-
-                    {% for c_status in all_status %}
-                    {% endfor %}
                     <p>----------------------</p>
                 {% endif %}
             </div>

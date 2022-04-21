@@ -86,6 +86,8 @@
                         icon: 'success',
                         title: 'Request submitted',
                         text: 'Your next changes will replace this one.'
+                    }).then(() => {
+                        location.reload();
                     })
                 })
                 .catch(() => {
@@ -96,6 +98,26 @@
                 });
         })
         ;
+    }
+
+    function acceptEvent(eventRequestId) {
+        let data = {};
+        data['status'] = 2;
+        sendRequest('/event-request/' + eventRequestId + "/", 'put', data)
+                .then(() => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Event accepted',
+                    }).then(() => {
+                        location.reload();
+                    })
+                })
+                .catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error accepting event.'
+                    })
+                });
     }
 
 </script>
