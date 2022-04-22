@@ -17,5 +17,5 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('event-request/', EventRequestFormView.as_view(), name="event-request-form"),
     path('event-requests/', EventRequestListView.as_view(), name="event-request-list"),
-    path('event-request/<int:pk>/', EventRequestUpdate.as_view(), name="event-request-update"),
+    path('event-requests/<int:pk>/', EventRequestUpdate.as_view(), name="event-request-update"),
 ]

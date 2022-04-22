@@ -80,7 +80,7 @@
             let data = {};
             data['initial_date'] = initialDate;
             data['final_date'] = finalDate;
-            sendRequest('/event-request/' + eventRequestId + "/", 'put', data)
+            sendRequest('/event-requests/' + eventRequestId + "/", 'put', data)
                 .then(() => {
                     Swal.fire({
                         icon: 'success',
@@ -103,41 +103,41 @@
     function acceptEvent(eventRequestId) {
         let data = {};
         data['status'] = 2;
-        sendRequest('/event-request/' + eventRequestId + "/", 'put', data)
-                .then(() => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Event accepted',
-                    }).then(() => {
-                        location.reload();
-                    })
+        sendRequest('/event-requests/' + eventRequestId + "/", 'put', data)
+            .then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Event accepted',
+                }).then(() => {
+                    location.reload();
                 })
-                .catch(() => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error accepting the event request.'
-                    })
-                });
+            })
+            .catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error accepting the event request.'
+                })
+            });
     }
 
     function denyEvent(eventRequestId) {
         let data = {};
         data['status'] = 3;
-        sendRequest('/event-request/' + eventRequestId + "/", 'put', data)
-                .then(() => {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Event denied',
-                    }).then(() => {
-                        location.reload();
-                    })
+        sendRequest('/event-requests/' + eventRequestId + "/", 'put', data)
+            .then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Event denied',
+                }).then(() => {
+                    location.reload();
                 })
-                .catch(() => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error denying the event request.'
-                    })
-                });
+            })
+            .catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error denying the event request.'
+                })
+            });
     }
 
 </script>
