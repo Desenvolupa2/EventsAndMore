@@ -20,32 +20,16 @@ Download all the GitHub project and libraries or clone the repository in order t
 
 ## Models
 
-We have defined four models:
-
-- USER: **!!!explaination needed!!!**
-- others...
-- EVENT: **!!!explaination needed!!!**
-- others...
-- STAND: **!!!explaination needed!!!**
-- others...
+_Further explanation yet to be done._
 
 ## Views
 
-We have deployed the following views as planned:
+_Further explanation yet to be done._
 
-FIRST SPRINT:
-- [x] Login
-- [x] Register
-- [x] Logout
-- [x] OTHERS...
-
-SECOND SPRINT:
-- [x] Home
-- [x] other...
 
 ## Additional features
 
-**!!!explaination needed!!!**
+_Further explanation yet to be done._
 
 ## Authors
 
