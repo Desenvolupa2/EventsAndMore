@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-class User(AbstractUser):
+class Profile(AbstractUser):
     address = models.CharField(max_length=150, blank=True, null=False)
     # TODO: add all the required fields
 
@@ -15,7 +15,7 @@ class Event(models.Model):
 
 class EventContract(models.Model):
     event = models.ForeignKey(Event, on_delete=models.SET_NULL, null=True)
-    entity = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    entity = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     file = models.FileField()
 
 
@@ -30,7 +30,7 @@ class Stand(models.Model):
 
 
 class StandContract(models.Model):
-    entity = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    entity = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     stand = models.ForeignKey(Stand, on_delete=models.SET_NULL, null=True)
     file = models.FileField()
 
@@ -47,7 +47,7 @@ class EventRequestStatus(models.IntegerChoices):
 
 
 class EventRequest(models.Model):
-    entity = models.ForeignKey(User, on_delete=models.CASCADE)
+    entity = models.ForeignKey(Profile, on_delete=models.CASCADE)
     event_name = models.CharField(max_length=100)
     initial_date = models.DateField()
     final_date = models.DateField()
@@ -59,7 +59,7 @@ class EventRequest(models.Model):
 
 
 class StandRequest(models.Model):
-    entity = models.ForeignKey(User, on_delete=models.CASCADE)
+    entity = models.ForeignKey(Profile, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     stand = models.ForeignKey(Stand, on_delete=models.CASCADE)
     initial_date = models.DateField()
@@ -67,7 +67,7 @@ class StandRequest(models.Model):
 
 
 class ServiceRequest(models.Model):
-    entity = models.ForeignKey(User, on_delete=models.CASCADE)
+    entity = models.ForeignKey(Profile, on_delete=models.CASCADE)
     stand = models.ForeignKey(Stand, on_delete=models.CASCADE)
     service = models.ForeignKey(AdditionalService, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)

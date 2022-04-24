@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .models import (
-    User,
+    Profile,
     Stand,
     StandRequest,
     StandContract,
@@ -14,14 +14,14 @@ from .models import (
 )
 
 
-class CustomUserAdmin(UserAdmin):
-    model = User
+class ProfileAdmin(UserAdmin):
+    model = Profile
     fieldsets = UserAdmin.fieldsets + (
         ("Custom Fields", {"fields": ("address",)}),
     )
 
 
-admin.site.register(User, CustomUserAdmin)
+admin.site.register(Profile, ProfileAdmin)
 
 admin.site.register(Stand)
 admin.site.register(StandRequest)
