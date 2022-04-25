@@ -10,7 +10,7 @@
 </head>
 <div>
     <form method="post">{% csrf_token %}
-        <h4>Are you sure you want to delete the category: "{{ object.name }}"?</h4>
+        <h4>Are you sure you want to delete the subcategory: "{{ object.name }}" that belongs to {{ object.belongs_to }}?</h4>
         <button type="submit" class="btn btn-danger">Delete</button>
         <a href="{{ view.get_success_url }}" class="btn btn-secondary">Cancel</a>
 

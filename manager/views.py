@@ -121,7 +121,7 @@ class DeleteAdditionalServiceCategoryView(PermissionRequiredMixin, DeleteView):
     model = AdditionalServiceCategory
     permission_required = "AdditionalServiceCategory"
     template_name = 'service_category_delete.html'
-    success_url = reverse_lazy("add-service")
+    success_url = reverse_lazy("service-category")
 
 
 # Add subcategories
@@ -150,7 +150,7 @@ class DeleteAdditionalServiceSubcategoryView(PermissionRequiredMixin, DeleteView
     model = AdditionalServiceSubcategory
     permission_required = "AdditionalServiceSubcategory"
     template_name = 'service_subcategory_delete.html'
-    success_url = reverse_lazy("add-service")
+    success_url = reverse_lazy("service-subcategory")
 
 
 class ServiceListView(LoginRequiredMixin, ListView):

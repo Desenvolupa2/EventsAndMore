@@ -6,7 +6,7 @@
         <input type="submit" value="Submit" class="btn btn-primary">
     </form>
     <h2 style='text-align:center'>
-        Categories existents:
+        Subcategories:
     </h2>
     {% for subcategory in subcategories|dictsort:"name" %}
         <h6 style="margin-top:2%;">
@@ -14,7 +14,7 @@
                 <div class="card-body">
                     <h5 class="d-inline-block card-title">{{ subcategory.name }}</h5>
                     <br>
-                    <a href="{% url 'delete-service-category' subcategory.id %}"
+                    <a href="{% url 'delete-service-subcategory' subcategory.id %}"
                        class="btn btn-outline-danger btn-sm float-right">Delete subcategory</a>
                     <h6 class="d-inline-block card-title"> Belongs to the category: "{{ subcategory.belongs_to }}"</h6>
 
