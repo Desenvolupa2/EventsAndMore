@@ -7,7 +7,10 @@ from manager.views import (
     Login,
     EventRequestFormView,
     EventRequestListView,
-    EventRequestUpdate
+    EventRequestUpdate,
+    AdditionalServiceCategoryCreateView,
+    AdditionalServiceSubcategoryCreateView,
+    DeleteAdditionalServiceCategoryView, DeleteAdditionalServiceSubcategoryView,
 )
 
 urlpatterns = [

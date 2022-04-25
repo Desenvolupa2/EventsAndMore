@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit" class="btn btn-primary">
+    </form>
+    <h2 style='text-align:center'>
+        Categories existents:
+    </h2>
+    {% for category in categories|dictsort:"name" %}
+        <h6 style="margin-top:2%;">
+            <div class="card" style="width: 45rem;">
+                <div class="card-body">
+                    <h5 class="d-inline-block card-title">{{ category.name }}</h5>
+                    <a href="{% url 'delete-service-category' category.id %}"
+                    class="btn btn-outline-danger btn-sm float-right">Delete category</a>
+
+                </div>
+            </div>
+        </h6>
+    {% empty %}
+        <li>No objects yet.</li>
+    {% endfor %}
+{% endblock %}

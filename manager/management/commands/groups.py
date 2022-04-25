@@ -7,8 +7,6 @@ from django.core.management import BaseCommand
 from django.db.models import Model
 
 from manager.models import (
-    ServiceRequest,
-    AdditionalService,
     StandRequest,
     EventRequest,
     Stand,
