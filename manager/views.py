@@ -1,20 +1,17 @@
 import json
-
-from django.contrib.auth.views import LoginView
-from django.core import serializers
-from django.views.generic import CreateView, TemplateView, FormView, ListView
 from http import HTTPStatus
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.views import LoginView
+from django.forms.models import model_to_dict
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse_lazy
 from django.views import View
+from django.views.generic import CreateView, TemplateView, FormView, ListView, DeleteView
 
-from manager.forms import EventRequestForm
-from manager.models import EventRequest, EventRequestStatus
-from django.forms.models import model_to_dict
-
-from manager.forms import NewUserForm
+from manager.forms import EventRequestForm, AdditionalServiceCategoryForm, NewUserForm, AdditionalServiceSubcategoryForm
+from manager.models import EventRequest, EventRequestStatus, AdditionalService, AdditionalServiceCategory, \
+    AdditionalServiceSubcategory
 
 
 class Home(TemplateView):
@@ -96,3 +93,75 @@ class EventRequestUpdate(LoginRequiredMixin, View):
 
         event_request.save()
         return JsonResponse({"status": "success", "content": model_to_dict(event_request)}, status=HTTPStatus.OK)
+
+
+# Add categories
+class AdditionalServiceCategoryCreateView(PermissionRequiredMixin, CreateView):
+    context = {}
+    permission_required = "AdditionalServiceCategory"
+    template_name = 'service_category_form.html'
+    form_class = AdditionalServiceCategoryForm
+
+    def get_context_data(self, **kwargs):
+        context = super(AdditionalServiceCategoryCreateView, self).get_context_data(**kwargs)
+        context['categories'] = AdditionalServiceCategory.objects.all()
+        return context
+
+    def get_success_url(self):
+        return self.request.path
+
+    def form_valid(self, form):
+        if self.request.user.has_perm:
+            form.save()
+            return super().form_valid(form)
+
+
+# Delete categories
+class DeleteAdditionalServiceCategoryView(PermissionRequiredMixin, DeleteView):
+    model = AdditionalServiceCategory
+    permission_required = "AdditionalServiceCategory"
+    template_name = 'service_category_delete.html'
+    success_url = reverse_lazy("add-service")
+
+
+# Add subcategories
+class AdditionalServiceSubcategoryCreateView(PermissionRequiredMixin, CreateView):
+    context = {}
+    permission_required = "AdditionalServiceSubcategory"
+    template_name = 'service_subcategory_form.html'
+    form_class = AdditionalServiceSubcategoryForm
+
+    def get_context_data(self, **kwargs):
+        context = super(AdditionalServiceSubcategoryCreateView, self).get_context_data(**kwargs)
+        context['subcategories'] = AdditionalServiceSubcategory.objects.all()
+        return context
+
+    def get_success_url(self):
+        return self.request.path
+
+    def form_valid(self, form):
+        if self.request.user.has_perm:
+            form.save()
+            return super().form_valid(form)
+
+
+# Delete subcategories
+class DeleteAdditionalServiceSubcategoryView(PermissionRequiredMixin, DeleteView):
+    model = AdditionalServiceSubcategory
+    permission_required = "AdditionalServiceSubcategory"
+    template_name = 'service_subcategory_delete.html'
+    success_url = reverse_lazy("add-service")
+
+
+class ServiceListView(LoginRequiredMixin, ListView):
+    template_name = "service_list.html"
+    context_object_name = "services"
+    model = AdditionalService
+    paginate_by = 10
+
+    # ordering = "initial_date"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        # context["services"] = AdditionalService.objects.filter()
+        return context

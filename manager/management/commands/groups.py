@@ -12,8 +12,13 @@ from manager.models import (
     StandRequest,
     EventRequest,
     Stand,
-    Event
+    Event,
+    ServiceRequest,
+    AdditionalService,
+    AdditionalServiceSubcategory,
+    AdditionalServiceCategory
 )
+from manager.views import DeleteAdditionalServiceCategoryView
 
 
 def get_permissions(model: Type['Model']):
@@ -24,7 +29,11 @@ GROUPS_PERMISSIONS = {
     "Additional services": chain(
         get_permissions(ServiceRequest),
         get_permissions(AdditionalService),
+        get_permissions(AdditionalService),
+        get_permissions(AdditionalServiceCategory),
+        get_permissions(AdditionalServiceSubcategory),
     ),
+
     "Request management": chain(
         get_permissions(StandRequest),
         get_permissions(Stand),
