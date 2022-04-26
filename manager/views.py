@@ -33,6 +33,7 @@ class Login(LoginView):
     template_name = "login.html"
     redirect_authenticated_user = True
 
+
     def get_redirect_url(self):
         return reverse_lazy("home")
 
@@ -64,6 +65,8 @@ class EventRequestListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
+        if not self.request.user.is_superuser:
+            context["events"] = context["events"].filter(user=self.request.user)
         context["all_status"] = EventRequestStatus.choices
         return context
 
