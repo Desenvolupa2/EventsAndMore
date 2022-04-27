@@ -2,7 +2,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.forms import ModelForm
 
-from manager.models import EventRequest, Profile, AdditionalServiceCategory, AdditionalService, AdditionalServiceSubcategory
+from manager.models import EventRequest, Profile, AdditionalServiceCategory, AdditionalService, \
+    AdditionalServiceSubcategory
 
 
 class NewUserForm(UserCreationForm):
@@ -25,12 +26,6 @@ class EventRequestForm(ModelForm):
         }
 
 
-class AdditionalServiceForm(ModelForm):
-    class Meta:
-        model = AdditionalService
-        fields = ['name', 'description', 'price', 'taxes', 'category', 'subcategory', 'picture']
-
-
 class AdditionalServiceCategoryForm(ModelForm):
     class Meta:
         model = AdditionalServiceCategory
@@ -42,3 +37,8 @@ class AdditionalServiceSubcategoryForm(ModelForm):
         model = AdditionalServiceSubcategory
         fields = ['name', 'belongs_to']
 
+
+class AdditionalServiceForm(ModelForm):
+    class Meta:
+        model = AdditionalService
+        fields = '__all__'

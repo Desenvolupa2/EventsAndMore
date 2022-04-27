@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.template.defaultfilters import slugify
 
 
 class Profile(AbstractUser):
@@ -41,8 +40,6 @@ class AdditionalServiceCategory(models.Model):
     slug = models.SlugField(null=True)
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
         return super().save(*args, **kwargs)
 
     def __str__(self):
@@ -55,8 +52,6 @@ class AdditionalServiceSubcategory(models.Model):
     slug = models.SlugField(null=True)
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
         return super().save(*args, **kwargs)
 
     def __str__(self):
@@ -71,11 +66,8 @@ class AdditionalService(models.Model):
     category = models.ForeignKey(AdditionalServiceCategory, on_delete=models.CASCADE)
     subcategory = models.ForeignKey(AdditionalServiceSubcategory, on_delete=models.CASCADE)
     picture = models.ImageField(upload_to='uploads/')
-    slug = models.SlugField(null=True)
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
         return super().save(*args, **kwargs)
 
     def __str__(self):

@@ -3,9 +3,16 @@
     {% csrf_token %}
     <h1>Services lists</h1>
 
-
-{#    VOLEM QUE ENS SURTI UNA CATEGORIA I A SOTA LES SUBCATEGORIES #}
-    {# SOTA DE CADA SUBCATEGORIA TOTS ELS SERVEIS DE LA CATEGORIA  #}
-   {# I QUE A CADA SERVEI HI HAGI BOTO D'EDITAR I D'ELIMINAR #}
+    {% for service in services|dictsort:"name" %}
+        <h6 style="margin-top:2%;">
+            <div class="card" style="width: 45rem;">
+                <div class="card-body">
+                    <h5 class="d-inline-block card-title">{{ service.name }}</h5>
+                </div>
+            </div>
+        </h6>
+    {% empty %}
+        <li>No objects yet.</li>
+    {% endfor %}
 
 {% endblock %}

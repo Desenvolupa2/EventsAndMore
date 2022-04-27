@@ -9,7 +9,8 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, TemplateView, FormView, ListView, DeleteView
 
-from manager.forms import EventRequestForm, AdditionalServiceCategoryForm, NewUserForm, AdditionalServiceSubcategoryForm
+from manager.forms import EventRequestForm, AdditionalServiceCategoryForm, NewUserForm, \
+    AdditionalServiceSubcategoryForm, AdditionalServiceForm
 from manager.models import EventRequest, EventRequestStatus, AdditionalService, AdditionalServiceCategory, \
     AdditionalServiceSubcategory
 
@@ -165,3 +166,15 @@ class ServiceListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(object_list=object_list, **kwargs)
         # context["services"] = AdditionalService.objects.filter()
         return context
+
+
+class ServiceCreateView(PermissionRequiredMixin, CreateView):
+    permission_required = "AdditionalService"
+    template_name = 'service_form.html'
+    form_class = AdditionalServiceForm
+    success_url = reverse_lazy("service-subcategory")
+
+    def form_valid(self, form):
+        if self.request.user.has_perm:
+            form.save()
+            return super().form_valid(form)
