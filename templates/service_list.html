@@ -2,15 +2,13 @@
 {% block content %}
     {% csrf_token %}
     <h1>Services lists</h1>
-
+    <a href="{% url 'service-control-panel' %}" class="btn btn-primary" role="button">Crea un nou servei</a>
     {% for service in services|dictsort:"name" %}
-        <h6 style="margin-top:2%;">
-            <div class="card" style="width: 45rem;">
-                <div class="card-body">
-                    <h5 class="d-inline-block card-title">{{ service.name }}</h5>
-                </div>
+        <div class="card" style="width: 45rem;">
+            <div class="card-body">
+                <h5 class="d-inline-block card-title">{{ service.name }}</h5>
             </div>
-        </h6>
+        </div>
     {% empty %}
         <li>No objects yet.</li>
     {% endfor %}
