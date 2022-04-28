@@ -11,7 +11,7 @@ from manager.views import (
     AdditionalServiceCategoryCreateView,
     AdditionalServiceSubcategoryCreateView,
     DeleteAdditionalServiceCategoryView,
-    DeleteAdditionalServiceSubcategoryView, ServiceCreateView,
+    DeleteAdditionalServiceSubcategoryView, ServiceCreateView, ServiceListView,
 )
 
 urlpatterns = [
@@ -25,7 +25,7 @@ urlpatterns = [
     path('service-category/', AdditionalServiceCategoryCreateView.as_view(), name="service-category"),
     path('service-subcategory/', AdditionalServiceSubcategoryCreateView.as_view(), name="service-subcategory"),
     # path('add-service/', AdditionalServiceFormView.as_view(), name="add-service"),
-    path('service-list/', EventRequestListView.as_view(), name="event-request-list"),
+    path('service-list/', ServiceListView.as_view(), name="event-request-list"),
     path('service-category/delete/<pk>', DeleteAdditionalServiceCategoryView.as_view(), name="delete-service-category"),
     path('service-subcategory/delete/<pk>', DeleteAdditionalServiceSubcategoryView.as_view(),
          name="delete-service-subcategory"),
