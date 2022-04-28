@@ -42,3 +42,17 @@ class AdditionalServiceForm(ModelForm):
     class Meta:
         model = AdditionalService
         fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['subcategory'].queryset = AdditionalServiceSubcategory.objects.none()
+
+        if 'subcategory' in self.data:
+            try:
+                category_id = int(self.data.get('category'))
+                self.fields['subcategory'].queryset = AdditionalServiceSubcategory.objects.filter(
+                    belongs_to_id=category_id).order_by('name')
+            except (ValueError, TypeError):
+                pass
+        elif self.instance.pk:
+            self.fields['subcategory'].queryset = self.instance.category.subcategory_set.order_by('name')

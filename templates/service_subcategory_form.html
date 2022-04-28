@@ -5,7 +5,8 @@
         {{ form.as_p }}
         <input type="submit" value="Submit" class="btn btn-primary">
     </form>
-    <h2 style='text-align:center'>
+    <br>
+    <h2 style='text-align:left'>
         Subcategories:
     </h2>
     {% for subcategory in subcategories|dictsort:"name" %}

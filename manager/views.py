@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.auth.views import LoginView
 from django.forms.models import model_to_dict
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, TemplateView, FormView, ListView, DeleteView
@@ -178,3 +179,9 @@ class ServiceCreateView(PermissionRequiredMixin, CreateView):
         if self.request.user.has_perm:
             form.save()
             return super().form_valid(form)
+
+
+def load_subcategories(request):
+    category_id = request.GET.get('categoryId')
+    subcategories = AdditionalServiceSubcategory.objects.filter(belongs_to_id=category_id).order_by('name')
+    return render(request, 'subcategory_dropdown_list_options.html', {'subcategories': subcategories})

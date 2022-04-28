@@ -1,6 +1,6 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path
-
+from manager import views
 from manager.views import (
     Home,
     Register,
@@ -11,7 +11,9 @@ from manager.views import (
     AdditionalServiceCategoryCreateView,
     AdditionalServiceSubcategoryCreateView,
     DeleteAdditionalServiceCategoryView,
-    DeleteAdditionalServiceSubcategoryView, ServiceCreateView, ServiceListView,
+    DeleteAdditionalServiceSubcategoryView,
+    ServiceCreateView,
+    ServiceListView,
 )
 
 urlpatterns = [
@@ -24,10 +26,10 @@ urlpatterns = [
     path('event-requests/<int:pk>/', EventRequestUpdate.as_view(), name="event-request-update"),
     path('service-category/', AdditionalServiceCategoryCreateView.as_view(), name="service-category"),
     path('service-subcategory/', AdditionalServiceSubcategoryCreateView.as_view(), name="service-subcategory"),
-    # path('add-service/', AdditionalServiceFormView.as_view(), name="add-service"),
     path('service-list/', ServiceListView.as_view(), name="event-request-list"),
     path('service-category/delete/<pk>', DeleteAdditionalServiceCategoryView.as_view(), name="delete-service-category"),
     path('service-subcategory/delete/<pk>', DeleteAdditionalServiceSubcategoryView.as_view(),
          name="delete-service-subcategory"),
     path('service-control-panel/', ServiceCreateView.as_view(), name="service-control-panel"),
+    path('ajax/load-subcategories', views.load_subcategories, name='ajax_load_subcategories' )
 ]
