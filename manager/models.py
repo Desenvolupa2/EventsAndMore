@@ -41,9 +41,10 @@ class AdditionalService(models.Model):
 
 
 class EventRequestStatus(models.IntegerChoices):
-    PENDING = 1
-    ACCEPTED = 2
-    DENIED = 3
+    PENDING_ON_MANAGER = 1
+    PENDING_ON_ORGANIZER = 2
+    ACCEPTED = 3
+    DENIED = 4
 
 
 class EventRequest(models.Model):
