@@ -3,9 +3,10 @@ from http import HTTPStatus
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.core.exceptions import SuspiciousOperation
 from django.forms.models import model_to_dict
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, TemplateView, FormView, ListView, DeleteView
@@ -98,9 +99,8 @@ class EventRequestUpdate(LoginRequiredMixin, View):
 
 
 # Add categories
-class AdditionalServiceCategoryCreateView(PermissionRequiredMixin, CreateView):
+class AdditionalServiceCategoryCreateView(CreateView):
     context = {}
-    permission_required = "AdditionalServiceCategory"
     template_name = 'service_category_form.html'
     form_class = AdditionalServiceCategoryForm
 
@@ -113,23 +113,27 @@ class AdditionalServiceCategoryCreateView(PermissionRequiredMixin, CreateView):
         return self.request.path
 
     def form_valid(self, form):
-        if self.request.user.has_perm:
+        if self.request.user.has_perm('manager.add_additionalservicecategory'):
             form.save()
             return super().form_valid(form)
+        else:
+            return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
 
 
 # Delete categories
 class DeleteAdditionalServiceCategoryView(PermissionRequiredMixin, DeleteView):
     model = AdditionalServiceCategory
-    permission_required = "AdditionalServiceCategory"
+    permission_required = "manager.delete_additionalservicecategory"
     template_name = 'service_category_delete.html'
     success_url = reverse_lazy("service-category")
 
+    def handle_no_permission(self):
+        return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
+
 
 # Add subcategories
-class AdditionalServiceSubcategoryCreateView(PermissionRequiredMixin, CreateView):
+class AdditionalServiceSubcategoryCreateView(CreateView):
     context = {}
-    permission_required = "AdditionalServiceSubcategory"
     template_name = 'service_subcategory_form.html'
     form_class = AdditionalServiceSubcategoryForm
 
@@ -142,17 +146,23 @@ class AdditionalServiceSubcategoryCreateView(PermissionRequiredMixin, CreateView
         return self.request.path
 
     def form_valid(self, form):
-        if self.request.user.has_perm:
+        print(self.request.user.get_all_permissions())
+        if self.request.user.has_perm('manager.add_additionalservicesubcategory'):
             form.save()
             return super().form_valid(form)
+        else:
+            return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
 
 
 # Delete subcategories
 class DeleteAdditionalServiceSubcategoryView(PermissionRequiredMixin, DeleteView):
     model = AdditionalServiceSubcategory
-    permission_required = "AdditionalServiceSubcategory"
+    permission_required = "manager.delete_additionalservicesubcategory"
     template_name = 'service_subcategory_delete.html'
     success_url = reverse_lazy("service-subcategory")
+
+    def handle_no_permission(self):
+        return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
 
 
 class ServiceListView(LoginRequiredMixin, ListView):
@@ -165,20 +175,20 @@ class ServiceListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        # context["services"] = AdditionalService.objects.filter()
         return context
 
 
-class ServiceCreateView(PermissionRequiredMixin, CreateView):
-    permission_required = "AdditionalService"
+class ServiceCreateView(LoginRequiredMixin, CreateView):
     template_name = 'service_form.html'
     form_class = AdditionalServiceForm
-    success_url = reverse_lazy("service-subcategory")
+    success_url = reverse_lazy("service-control-panel")
 
     def form_valid(self, form):
-        if self.request.user.has_perm:
+        if self.request.user.has_perm('manager.add.additionalservice'):
             form.save()
             return super().form_valid(form)
+        else:
+            return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
 
 
 def load_subcategories(request):

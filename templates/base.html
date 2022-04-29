@@ -18,7 +18,7 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-light " style="background-color:#d6d6d6;">
+<nav class="navbar navbar-expand-lg navbar-light " style="background-color:#343232;">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'home' %}">EventsAndMore</a>
         <ul class="navbar-nav">
@@ -45,7 +45,12 @@
                         <a role="button" class="btn btn-outline-light"
                            href="{% url 'home' %}">Gestió de reserves</a>
                     </li>
+
                 {% endif %}
+                <li class="nav-item pe-2 py-1">
+                    <a role="button" class="btn btn-outline-light"
+                       href="{% url 'logout' %}">Logout</a>
+                </li>
             {% else %}
                 <li class="nav-item pe-2 py-1">
                     <a role="button" class="btn btn-outline-light" href="{% url 'login' %}">Login</a>

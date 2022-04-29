@@ -37,7 +37,6 @@ class StandContract(models.Model):
 
 class AdditionalServiceCategory(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(null=True)
 
     def save(self, *args, **kwargs):
         return super().save(*args, **kwargs)
@@ -49,7 +48,6 @@ class AdditionalServiceCategory(models.Model):
 class AdditionalServiceSubcategory(models.Model):
     name = models.CharField(max_length=100, unique=True)
     belongs_to = models.ForeignKey(AdditionalServiceCategory, on_delete=models.CASCADE)
-    slug = models.SlugField(null=True)
 
     def save(self, *args, **kwargs):
         return super().save(*args, **kwargs)

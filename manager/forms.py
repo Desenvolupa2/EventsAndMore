@@ -35,7 +35,7 @@ class AdditionalServiceCategoryForm(ModelForm):
 class AdditionalServiceSubcategoryForm(ModelForm):
     class Meta:
         model = AdditionalServiceSubcategory
-        fields = ['name', 'belongs_to']
+        fields = '__all__'
 
 
 class AdditionalServiceForm(ModelForm):
