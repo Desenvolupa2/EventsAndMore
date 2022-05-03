@@ -3,52 +3,83 @@
     {% csrf_token %}
 
     <h1>Event requests</h1>
-    <form method="get">
+    <form method="GET">
         {{ filter.form.as_p }}
-        <input type="submit" />
+        <input type="submit"/>
     </form>
-    {% for obj in filter.qs %}
-        {{ obj.event_name }} - ${{ obj.status }}<br />
-    {% endfor %}
-{#    <h3>PENDING</h3>#}
-{#    {% if perms.manager.change_event_request %}#}
-{#        {% for event in pending_on_manager %}#}
-{#            {{ event }}#}
-{#            <button class="btn btn-primary" onclick="acceptEvent({{ event.id }})">Accept</button>#}
-{#            <button class="btn btn-warning" onclick="changeEventDate({{ event.id }})">Change date</button>#}
-{#            <button class="btn btn-danger" onclick="denyEvent({{ event.id }})">Deny</button>#}
-{#        {% endfor %}#}
-{#        {% for event in pending_on_organizer %}#}
-{#            {{ event }}#}
-{#            <button class="btn btn-primary" onclick="acceptEvent({{ event.id }})">Accept</button>#}
-{#            <button class="btn btn-warning" onclick="changeEventDate({{ event.id }})">Change date</button>#}
-{#            <button class="btn btn-danger" onclick="denyEvent({{ event.id }})">Deny</button>#}
-{#        {% endfor %}#}
-{#    {% else %}#}
-{#        {% for event in pending_on_organizer %}#}
-{#            {{ event }}#}
-{#            <button class="btn btn-primary" onclick="acceptEvent({{ event.id }})">Accept</button>#}
-{#            <button class="btn btn-warning" onclick="changeEventDate({{ event.id }})">Change date</button>#}
-{#            <button class="btn btn-danger" onclick="denyEvent({{ event.id }})">Deny</button>#}
-{#        {% endfor %}#}
-{#        {% for event in pending_on_manager %}#}
-{#            {{ event }}#}
-{#        {% endfor %}#}
-{#    {% endif %}#}
-{#    <h3>ACCEPTED</h3>#}
-{#    {% for event in accepted %}#}
-{#        {{ event }}#}
-{#        {% if perms.manager.change_event_request %}#}
-{#            <button class="btn btn-warning" onclick="changeEventDate({{ event.id }})">Change date</button>#}
-{#            <button class="btn btn-danger" onclick="denyEvent({{ event.id }})">Deny</button>#}
-{#        {% endif %}#}
-{#    {% endfor %}#}
-{#    <h3>DENIED</h3>#}
-{#    {% for event in denied %}#}
-{#        {{ event }}#}
-{#        {% if perms.manager.change_event_request %}#}
-{#            <button class="btn btn-primary" onclick="acceptEvent({{ event.id }})">Accept</button>#}
-{#            <button class="btn btn-warning" onclick="changeEventDate({{ event.id }})">Change date</button>#}
-{#        {% endif %}#}
-{#    {% endfor %}#}
+    <table>
+        <tr>
+            <th>Event name</th>
+            <th>Status</th>
+            <th>Initial date</th>
+            <th>Final date</th>
+            <th>Accept</th>
+            <th>Edit</th>
+            <th>Deny</th>
+        </tr>
+        {% for obj in filter.qs %}
+            <tr>
+                <td>{{ obj.event_name }}</td>
+                <td>{{ obj.status }}</td>
+                <td>{{ obj.initial_date }}</td>
+                <td>{{ obj.final_date }}</td>
+                <td>
+                    {% if perms.manager.change_event_request and obj.status != 3 %}
+                        <button class="btn btn-primary" onclick="acceptEvent({{ obj.id }})"><i class="fas fa-check"></i></button>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if perms.manager.change_event_request and obj.status != 3 %}
+                        <button class="btn btn-warning" onclick="changeEventDate({{ obj.id }})"><i class="far fa-edit"></i></button>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if perms.manager.change_event_request and obj.status != 3 and obj.status != 4%}
+                        <button class="btn btn-danger" onclick="denyEvent({{ obj.id }})"><i class="fas fa-times"></i></button>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    {#    <h3>PENDING</h3>#}
+    {#    {% if perms.manager.change_event_request %}#}
+    {#        {% for event in pending_on_manager %}#}
+    {#            {{ event }}#}
+    {#            <button class="btn btn-primary" onclick="acceptEvent({{ event.id }})">Accept</button>#}
+    {#            <button class="btn btn-warning" onclick="changeEventDate({{ event.id }})">Change date</button>#}
+    {#            <button class="btn btn-danger" onclick="denyEvent({{ event.id }})">Deny</button>#}
+    {#        {% endfor %}#}
+    {#        {% for event in pending_on_organizer %}#}
+    {#            {{ event }}#}
+    {#            <button class="btn btn-primary" onclick="acceptEvent({{ event.id }})">Accept</button>#}
+    {#            <button class="btn btn-warning" onclick="changeEventDate({{ event.id }})">Change date</button>#}
+    {#            <button class="btn btn-danger" onclick="denyEvent({{ event.id }})">Deny</button>#}
+    {#        {% endfor %}#}
+    {#    {% else %}#}
+    {#        {% for event in pending_on_organizer %}#}
+    {#            {{ event }}#}
+    {#            <button class="btn btn-primary" onclick="acceptEvent({{ event.id }})">Accept</button>#}
+    {#            <button class="btn btn-warning" onclick="changeEventDate({{ event.id }})">Change date</button>#}
+    {#            <button class="btn btn-danger" onclick="denyEvent({{ event.id }})">Deny</button>#}
+    {#        {% endfor %}#}
+    {#        {% for event in pending_on_manager %}#}
+    {#            {{ event }}#}
+    {#        {% endfor %}#}
+    {#    {% endif %}#}
+    {#    <h3>ACCEPTED</h3>#}
+    {#    {% for event in accepted %}#}
+    {#        {{ event }}#}
+    {#        {% if perms.m        {% endif %}anager.change_event_request %}#}
+    {#            <button class="btn btn-warning" onclick="changeEventDate({{ event.id }})">Change date</button>#}
+    {#            <button class="btn btn-danger" onclick="denyEvent({{ event.id }})">Deny</button>#}
+    {#        {% endif %}#}
+    {#    {% endfor %}#}
+    {#    <h3>DENIED</h3>#}
+    {#    {% for event in denied %}#}
+    {#        {{ event }}#}
+    {#        {% if perms.manager.change_event_request %}#}
+    {#            <button class="btn btn-primary" onclick="acceptEvent({{ event.id }})">Accept</button>#}
+    {#            <button class="btn btn-warning" onclick="changeEventDate({{ event.id }})">Change date</button>#}
+    {#        {% endif %}#}
+    {#    {% endfor %}#}
 {% endblock %}

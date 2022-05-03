@@ -87,7 +87,7 @@ class EventRequestUpdate(LoginRequiredMixin, View):
         pk = kwargs.get('pk')
         event_request = EventRequest.objects.get(id=pk)
 
-        if not self.request.user.has_perm("change_event_request") or (
+        if not self.request.user.has_perm("change_event_request") and (
             event_request.status is not EventRequestStatus.PENDING_ON_ORGANIZER
             and event_request.entity is not self.request.user
         ):
