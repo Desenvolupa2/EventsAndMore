@@ -74,7 +74,7 @@ class EventRequestListView(LoginRequiredMixin, TemplateView):
         queryset = EventRequest.objects.all()
         if not self.request.user.has_perm("change_event_request"):
             queryset = queryset.filter(entity=self.request.user)
-        queryset = queryset.order_by("-initial_date")
+        queryset = queryset.order_by("status", "-initial_date")
         context["filter"] = EventRequestsFilter(self.request.GET, queryset=queryset)
         return context
 

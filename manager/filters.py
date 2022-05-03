@@ -9,3 +9,4 @@ class EventRequestsFilter(django_filters.FilterSet):
     class Meta:
         model = EventRequest
         fields = ['status']
+

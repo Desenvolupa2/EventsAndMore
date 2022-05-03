@@ -3,42 +3,56 @@
     {% csrf_token %}
 
     <h1>Event requests</h1>
-    <form method="GET">
-        {{ filter.form.as_p }}
-        <input type="submit"/>
-    </form>
-    <table>
+    <div class="row">
+        <form method="GET">
+            <div class="col">
+                {{ filter.form }}
+                <input type="submit" value="Filter">
+            </div>
+        </form>
+    </div>
+
+    <table class="table table-hover">
         <tr>
-            <th>Event name</th>
-            <th>Status</th>
-            <th>Initial date</th>
-            <th>Final date</th>
-            <th>Accept</th>
-            <th>Edit</th>
-            <th>Deny</th>
+            <th scope="col">Event name</th>
+            <th scope="col">Initial date</th>
+            <th scope="col">Final date</th>
+            <th scope="col">Accept</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Deny</th>
         </tr>
-        {% for obj in filter.qs %}
-            <tr>
-                <td>{{ obj.event_name }}</td>
-                <td>{{ obj.status }}</td>
-                <td>{{ obj.initial_date }}</td>
-                <td>{{ obj.final_date }}</td>
-                <td>
-                    {% if perms.manager.change_event_request and obj.status != 3 %}
-                        <button class="btn btn-primary" onclick="acceptEvent({{ obj.id }})"><i class="fas fa-check"></i></button>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if perms.manager.change_event_request and obj.status != 3 %}
-                        <button class="btn btn-warning" onclick="changeEventDate({{ obj.id }})"><i class="far fa-edit"></i></button>
-                    {% endif %}
-                </td>
-                <td>
-                    {% if perms.manager.change_event_request and obj.status != 3 and obj.status != 4%}
-                        <button class="btn btn-danger" onclick="denyEvent({{ obj.id }})"><i class="fas fa-times"></i></button>
-                    {% endif %}
-                </td>
+        {% regroup filter.qs by status_name as event_requests %}
+        {% for type in event_requests %}
+            <tr class="bg-light">
+                <th scope="col" colspan="6" style="text-align: center">{{ type.grouper }}</th>
             </tr>
+            {% for event in type.list|dictsort:"initial_date" %}
+                <tr>
+                    <td>{{ event.event_name }}</td>
+                    <td>{{ event.initial_date }}</td>
+                    <td>{{ event.final_date }}</td>
+                    <td>
+                        {% if perms.manager.change_event_request and event.status != 3 %}
+                            <button class="btn btn-primary" onclick="acceptEvent({{ event.id }})"><i
+                                    class="fas fa-check"></i>
+                            </button>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if perms.manager.change_event_request and event.status != 3 %}
+                            <button class="btn btn-warning" onclick="changeEventDate({{ event.id }})"><i
+                                    class="far fa-edit"></i></button>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if perms.manager.change_event_request and event.status != 3 and event.status != 4 %}
+                            <button class="btn btn-danger" onclick="denyEvent({{ event.id }})"><i
+                                    class="fas fa-times"></i>
+                            </button>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
         {% endfor %}
     </table>
     {#    <h3>PENDING</h3>#}

@@ -88,7 +88,7 @@ class EventRequest(models.Model):
 
     @property
     def status_name(self):
-        return EventRequestStatus(self.status).name
+        return " ".join(EventRequestStatus(self.status).name.split("_"))
 
 
 class StandRequest(models.Model):
