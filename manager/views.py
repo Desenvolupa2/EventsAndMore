@@ -35,25 +35,19 @@ class Home(TemplateView):
 class Register(CreateView):
     form_class = NewUserForm
     template_name = "register.html"
-
-    def get_success_url(self):
-        return reverse_lazy("home")
+    success_url = reverse_lazy("login")
 
 
 class Login(LoginView):
     template_name = "login.html"
     redirect_authenticated_user = True
-
-    def get_redirect_url(self):
-        return reverse_lazy("home")
-
-    def get_success_url(self):
-        return reverse_lazy('home')
+    success_url = reverse_lazy("home")
 
 
 class EventRequestFormView(LoginRequiredMixin, FormView):
     template_name = "event_request_form.html"
     form_class = EventRequestForm
+    success_url = reverse_lazy("event-request-list")
 
     def form_valid(self, form):
         event_request: 'EventRequest' = form.save(commit=False)
@@ -61,9 +55,6 @@ class EventRequestFormView(LoginRequiredMixin, FormView):
         event_request.status = EventRequestStatus.PENDING_ON_MANAGER
         event_request.save()
         return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        return reverse_lazy("home")
 
 
 class EventRequestListView(LoginRequiredMixin, TemplateView):
@@ -80,6 +71,7 @@ class EventRequestListView(LoginRequiredMixin, TemplateView):
 
 
 class EventRequestUpdate(LoginRequiredMixin, View):
+
     def get(self, request, *args, **kwargs):
         return HttpResponse(status=HTTPStatus.METHOD_NOT_ALLOWED)
 
@@ -158,7 +150,6 @@ class AdditionalServiceSubcategoryCreateView(CreateView):
         return self.request.path
 
     def form_valid(self, form):
-        print(self.request.user.get_all_permissions())
         if self.request.user.has_perm('manager.add_additionalservicesubcategory'):
             form.save()
             return super().form_valid(form)
