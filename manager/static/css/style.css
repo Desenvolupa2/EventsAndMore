@@ -1,0 +1,64 @@
+:root {
+    --text-main: 'Lato', sans-serif;
+    --black: #1f1f1f;
+    --white: #efefef;
+}
+
+
+.cell {
+    user-select: none;
+}
+
+.cell.empty {
+    background-color: var(--white);
+    border: 1px solid gray;
+}
+
+.cell.confirmed {
+    background-color: green;
+    border: 1px solid gray;
+}
+
+.cell.empty:hover {
+    background: red;
+}
+
+.cell.selected {
+    transform: scale(0);
+    background-color: blue;
+    animation: pop 0.3s ease-in forwards;
+}
+
+@keyframes pop {
+    10% {
+        transform: scale(0.0);
+    }
+    30% {
+        transform: scale(0.25)
+    }
+    75% {
+        transform: scale(1.25)
+    }
+    100% {
+        transform: scale(1)
+    }
+}
+
+table {
+    width: calc(45 * 25px);
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-top: 40px;
+    border: 2px solid black;
+    background-color: var(--white);
+}
+
+tr {
+    height: 45px;
+}
+
+td {
+    color: white;
+    text-align: center;
+}
+

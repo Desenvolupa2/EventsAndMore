@@ -197,3 +197,8 @@ class ServiceCreateView(LoginRequiredMixin, CreateView):
 def load_subcategories(request, category_id):
     subcategories = AdditionalServiceSubcategory.objects.filter(belongs_to_id=category_id).order_by('name')
     return render(request, 'subcategory_dropdown_list_options.html', {'subcategories': subcategories})
+
+
+class EventLayout(TemplateView):
+    template_name = "event_layout.html"
+
