@@ -149,3 +149,10 @@ cython_debug/
 
 # PyCharm
 .idea/
+
+# MacOS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
