@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method="POST" enctype="multipart/form-data" id="serviceForm" novalidate>
+        {% csrf_token %}
+        <h2>Introdueix nous serveis:</h2>
+        <br>
+        {{ form.as_p }}
+        <input type="submit" value="Submit" class="btn btn-primary">
+    </form>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        $("#id_category").change(function () {
+            var url = '/load-subcategories';
+            var categoryId = $(this).val();
+            $.ajax({
+                url: url+'/'+categoryId,
+                success: function (data) {
+                    $("#id_subcategory").html(data);
+                }
+            });
+        });
+    </script>
+{% endblock %}

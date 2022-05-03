@@ -7,12 +7,14 @@ from django.core.management import BaseCommand
 from django.db.models import Model
 
 from manager.models import (
-    ServiceRequest,
-    AdditionalService,
     StandRequest,
     EventRequest,
     Stand,
-    Event
+    Event,
+    ServiceRequest,
+    AdditionalService,
+    AdditionalServiceSubcategory,
+    AdditionalServiceCategory
 )
 
 
@@ -24,7 +26,10 @@ GROUPS_PERMISSIONS = {
     "Additional services": chain(
         get_permissions(ServiceRequest),
         get_permissions(AdditionalService),
+        get_permissions(AdditionalServiceCategory),
+        get_permissions(AdditionalServiceSubcategory),
     ),
+
     "Request management": chain(
         get_permissions(StandRequest),
         get_permissions(Stand),

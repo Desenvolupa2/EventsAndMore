@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit" class="btn btn-primary">
+    </form>
+    <br>
+    <h2 style='text-align:left'>
+        Subcategories:
+    </h2>
+    {% for subcategory in subcategories|dictsort:"name" %}
+        <h6 style="margin-top:2%;">
+            <div class="card" style="width: 45rem;">
+                <div class="card-body">
+                    <h5 class="d-inline-block card-title">{{ subcategory.name }}</h5>
+                    <br>
+                    <a href="{% url 'delete-service-subcategory' subcategory.id %}"
+                       class="btn btn-outline-danger btn-sm float-right">Delete subcategory</a>
+                    <h6 class="d-inline-block card-title"> Belongs to the category: "{{ subcategory.belongs_to }}"</h6>
+
+                </div>
+            </div>
+        </h6>
+    {% empty %}
+        <li>No objects yet.</li>
+    {% endfor %}
+{% endblock %}

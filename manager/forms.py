@@ -2,7 +2,13 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.forms import ModelForm
 
-from .models import EventRequest, Profile
+from manager.models import (
+    EventRequest,
+    Profile,
+    AdditionalServiceCategory,
+    AdditionalService,
+    AdditionalServiceSubcategory,
+)
 
 
 class NewUserForm(UserCreationForm):
@@ -23,3 +29,33 @@ class EventRequestForm(ModelForm):
             'initial_date': DateInput(),
             'final_date': DateInput()
         }
+
+
+class AdditionalServiceCategoryForm(ModelForm):
+    class Meta:
+        model = AdditionalServiceCategory
+        fields = ['name']
+
+
+class AdditionalServiceSubcategoryForm(ModelForm):
+    class Meta:
+        model = AdditionalServiceSubcategory
+        fields = '__all__'
+
+
+class AdditionalServiceForm(ModelForm):
+    class Meta:
+        model = AdditionalService
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['subcategory'].queryset = AdditionalServiceSubcategory.objects.none()
+
+        if 'subcategory' in self.data:
+            category_id = int(self.data.get('category'))
+            self.fields['subcategory'].queryset = AdditionalServiceSubcategory.objects.filter(
+                belongs_to_id=category_id).order_by('name')
+
+        elif self.instance.pk:
+            self.fields['subcategory'].queryset = self.instance.category.subcategory_set.order_by('name')

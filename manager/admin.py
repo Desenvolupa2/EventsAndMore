@@ -11,6 +11,8 @@ from .models import (
     Event,
     EventRequest,
     EventContract,
+    AdditionalServiceCategory,
+    AdditionalServiceSubcategory,
 )
 
 
@@ -27,6 +29,8 @@ admin.site.register(Stand)
 admin.site.register(StandRequest)
 admin.site.register(StandContract)
 
+admin.site.register(AdditionalServiceCategory)
+admin.site.register(AdditionalServiceSubcategory)
 admin.site.register(AdditionalService)
 admin.site.register(ServiceRequest)
 
