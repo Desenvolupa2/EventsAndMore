@@ -191,7 +191,6 @@ class ServiceCreateView(LoginRequiredMixin, CreateView):
             return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
 
 
-def load_subcategories(request):
-    category_id = request.GET.get('categoryId')
+def load_subcategories(request, category_id):
     subcategories = AdditionalServiceSubcategory.objects.filter(belongs_to_id=category_id).order_by('name')
     return render(request, 'subcategory_dropdown_list_options.html', {'subcategories': subcategories})

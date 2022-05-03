@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-    <form method="POST" enctype="multipart/form-data" id="serviceForm"
-          data-subcategories-url="{% url 'ajax_load_subcategories' %}" novalidate>
+    <form method="POST" enctype="multipart/form-data" id="serviceForm" novalidate>
         {% csrf_token %}
         <h2>Introdueix nous serveis:</h2>
         <br>
@@ -11,13 +10,10 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
         $("#id_category").change(function () {
-            var url = $("#serviceForm").attr("data-subcategories-url");
+            var url = '/load-subcategories';
             var categoryId = $(this).val();
             $.ajax({
-                url: url,
-                data: {
-                    'categoryId': categoryId
-                },
+                url: url+'/'+categoryId,
                 success: function (data) {
                     $("#id_subcategory").html(data);
                 }

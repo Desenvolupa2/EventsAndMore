@@ -31,5 +31,5 @@ urlpatterns = [
     path('service-subcategory/delete/<pk>', DeleteAdditionalServiceSubcategoryView.as_view(),
          name="delete-service-subcategory"),
     path('service-control-panel/', ServiceCreateView.as_view(), name="service-control-panel"),
-    path('ajax/load-subcategories', views.load_subcategories, name='ajax_load_subcategories' )
+    path('load-subcategories/<int:category_id>/', views.load_subcategories, name='load_subcategories')
 ]
