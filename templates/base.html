@@ -122,12 +122,13 @@
             let data = {};
             data['initial_date'] = initialDate;
             data['final_date'] = finalDate;
+            data['status'] = 2;
             sendRequest('/event-requests/' + eventRequestId + "/", 'put', data)
                 .then(() => {
                     Swal.fire({
                         icon: 'success',
                         title: 'Request submitted',
-                        text: 'Your next changes will replace this one.'
+                        text: 'Your proposal has been submitted to the organizer'
                     }).then(() => {
                         location.reload();
                     })
@@ -144,7 +145,7 @@
 
     function acceptEvent(eventRequestId) {
         let data = {};
-        data['status'] = 2;
+        data['status'] = 3;
         sendRequest('/event-requests/' + eventRequestId + "/", 'put', data)
             .then(() => {
                 Swal.fire({
@@ -164,7 +165,7 @@
 
     function denyEvent(eventRequestId) {
         let data = {};
-        data['status'] = 3;
+        data['status'] = 4;
         sendRequest('/event-requests/' + eventRequestId + "/", 'put', data)
             .then(() => {
                 Swal.fire({
