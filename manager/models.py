@@ -73,9 +73,10 @@ class AdditionalService(models.Model):
 
 
 class EventRequestStatus(models.IntegerChoices):
-    PENDING = 1
-    ACCEPTED = 2
-    DENIED = 3
+    PENDING_ON_MANAGER = 1
+    PENDING_ON_ORGANIZER = 2
+    ACCEPTED = 3
+    DENIED = 4
 
 
 class EventRequest(models.Model):
@@ -87,7 +88,18 @@ class EventRequest(models.Model):
 
     @property
     def status_name(self):
-        return EventRequestStatus(self.status).name
+        return " ".join(EventRequestStatus(self.status).name.split("_"))
+
+    @property
+    def has_conflicts(self):
+        for event_request in EventRequest.objects.filter(status=EventRequestStatus.ACCEPTED):
+            if (
+                event_request != self and
+                event_request.initial_date <= self.initial_date <= event_request.final_date or
+                event_request.initial_date <= self.final_date <= event_request.final_date
+            ):
+                return True
+        return False
 
 
 class StandRequest(models.Model):
