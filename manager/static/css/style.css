@@ -29,6 +29,11 @@
     animation: pop 0.3s ease-in forwards;
 }
 
+.cell.available {
+    background-color: green;
+    border: 1px solid gray;
+}
+
 @keyframes pop {
     10% {
         transform: scale(0.0);

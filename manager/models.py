@@ -26,6 +26,7 @@ class StandSize(models.IntegerChoices):
 
 
 class Stand(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     size = models.IntegerField(choices=StandSize.choices)
 
 
@@ -115,3 +116,9 @@ class ServiceRequest(models.Model):
     stand = models.ForeignKey(Stand, on_delete=models.CASCADE)
     service = models.ForeignKey(AdditionalService, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+
+
+class GridPosition(models.Model):
+    x_position = models.IntegerField()
+    y_position = models.IntegerField()
+    stand = models.ForeignKey(Stand, on_delete=models.CASCADE, null=True)

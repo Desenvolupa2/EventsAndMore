@@ -2,7 +2,7 @@ from django.contrib.auth.views import LogoutView
 from django.urls import path
 from manager import views
 from manager.views import (
-    Home,
+    GridPositions, Home,
     Register,
     Login,
     EventRequestFormView,
@@ -34,5 +34,6 @@ urlpatterns = [
     path('service-control-panel/', ServiceCreateView.as_view(), name="service-control-panel"),
     path('load-subcategories/<int:category_id>/', views.load_subcategories, name='load_subcategories'),
     path('event-layout/', EventLayout.as_view(), name='event-layout'),
+    path('grid-positions/', GridPositions.as_view(), name='grid-positions'),
 ]
 

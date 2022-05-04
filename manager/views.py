@@ -11,6 +11,7 @@ from django.views.generic import CreateView, TemplateView, FormView, ListView, D
 
 from manager.filters import EventRequestsFilter
 from django.forms.models import model_to_dict
+from django.utils.dateparse import parse_date
 
 from manager.forms import (
     EventRequestForm,
@@ -19,12 +20,13 @@ from manager.forms import (
     AdditionalServiceSubcategoryForm,
     AdditionalServiceForm
 )
+
 from manager.models import (
-    EventRequest,
+    Event, EventRequest,
     EventRequestStatus,
     AdditionalService,
     AdditionalServiceCategory,
-    AdditionalServiceSubcategory
+    AdditionalServiceSubcategory, GridPosition, Stand
 )
 
 
@@ -202,3 +204,24 @@ def load_subcategories(request, category_id):
 class EventLayout(TemplateView):
     template_name = "event_layout.html"
 
+
+class GridPositions(View):
+
+    def get(self, request, *args, **kwargs):
+        initial_date = self.request.GET.get('initial_date')
+        final_date = self.request.GET.get('final_date')
+        if not initial_date or not final_date:
+            return JsonResponse({"status": "error", "content": "Invalid format"}, status=HTTPStatus.BAD_REQUEST)
+
+        initial_date = parse_date(initial_date)
+        final_date = parse_date(final_date)
+
+        stands_same_date = Stand.objects.filter(
+            event__in=Event.objects.filter(initial_date__gte=initial_date, final_date__lte=final_date)
+        )
+        occupied_positions = [GridPosition.objects.get(stand=stand) for stand in stands_same_date]
+        positions = [
+            {**model_to_dict(instance, exclude=['id', 'stand']), **{"available": instance not in occupied_positions}}
+            for instance in GridPosition.objects.all()
+        ]
+        return JsonResponse({"status": "success", "content": positions}, status=HTTPStatus.OK)

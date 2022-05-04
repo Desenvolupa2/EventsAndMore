@@ -1,4 +1,4 @@
-import {clearSelection} from "./utils.js";
+import {clearSelection} from "../utils.js";
 import {Default} from "./states/default.js";
 import {Selecting} from "./states/selecting.js";
 
@@ -7,7 +7,6 @@ class Context {
         this.cells = cells;
         this.states = [new Default(this), new Selecting(this)];
         this.current = this.states[0];
-        this.toggleDraw = false;
         this.nextId = 1;
     }
 

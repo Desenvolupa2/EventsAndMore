@@ -1,8 +1,18 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block headers %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script type="module" src="{% static 'js/event_grid/script.js' %}"></script>
+{% endblock %}
 {% block content %}
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
+        <div class="container">
+            <button type="button" class="btn btn-primary" id="button-all">All available</button>
+            <button type="button" class="btn btn-danger" id="button-reset">Reset selection</button>
+            <table id="grid" style="table-layout:fixed;"></table>
+        </div>
         <input type="submit" value="Submit" class="btn btn-primary">
     </form>
 {% endblock %}

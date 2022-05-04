@@ -1,6 +1,6 @@
 import {State} from "./state.js";
 import {Default} from "./default.js";
-import {isEmpty} from "../utils.js";
+import {isEmpty} from "../../utils.js";
 
 class Selecting extends State {
 

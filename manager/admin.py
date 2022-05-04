@@ -13,6 +13,7 @@ from .models import (
     EventContract,
     AdditionalServiceCategory,
     AdditionalServiceSubcategory,
+    GridPosition
 )
 
 
@@ -37,3 +38,5 @@ admin.site.register(ServiceRequest)
 admin.site.register(Event)
 admin.site.register(EventRequest)
 admin.site.register(EventContract)
+
+admin.site.register(GridPosition)
