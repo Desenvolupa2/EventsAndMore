@@ -5,8 +5,8 @@
     <script type="module" src="{% static 'js/event_grid/script.js' %}"></script>
 {% endblock %}
 {% block content %}
-    <form method="POST">
-        {% csrf_token %}
+    {% csrf_token %}
+    <div>
         {{ form.as_p }}
         <div class="container">
             <button type="button" class="btn btn-primary" id="button-all">All available</button>
@@ -16,6 +16,6 @@
             <p><b>Space selected: </b> <span id="percentage">0</span>%</p>
             <table id="grid" style="table-layout:fixed;"></table>
         </div>
-        <input type="submit" value="Submit" class="btn btn-primary">
-    </form>
+        <button class="btn btn-primary" id="button-submit">Submit</button>
+    </div>
 {% endblock %}

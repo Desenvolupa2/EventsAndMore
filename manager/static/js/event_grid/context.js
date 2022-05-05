@@ -1,4 +1,4 @@
-import {clearSelection, dateIsSelected, getPercentageSelected, updateStand} from "../utils.js";
+import {clearSelection, dateIsSelected, getPercentageSelected, getSelected, updateStand} from "../utils.js";
 import {Default} from "./states/default.js";
 import {Selecting} from "./states/selecting.js";
 
@@ -41,6 +41,13 @@ class Context {
         document.addEventListener("mousemove", function (event) {
             _this.current.handleMousemove(event)
         })
+
+        document.getElementById("button-submit").addEventListener(
+            "click",
+            (event) => {
+                _this.submitEventRequest();
+            }
+        )
 
 
         document.getElementById("button-all").addEventListener(
@@ -95,6 +102,35 @@ class Context {
         _this.current.run();
     };
 
+    submitEventRequest() {
+        const eventName = document.getElementById('id_event_name').value;
+        const initialDate = document.getElementById('id_initial_date').value;
+        const finalDate = document.getElementById('id_final_date').value;
+        const selectedGrid = getSelected(this.cells);
+
+        const data = {
+            'eventName': eventName,
+            'initialDate': initialDate,
+            'finalDate': finalDate,
+            'grid': selectedGrid
+        }
+
+        sendRequest('/event-request/', 'POST', data).then(() => {
+            Swal.fire(
+                'Success!',
+                'Your event request has been submitted.',
+                'success'
+            )
+        }).catch(()=> {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Error submitting your request',
+            })
+        });
+
+    }
+
     updateAvailablePositions() {
         //make request with inital and final date
         const initialDate = document.getElementById('id_initial_date').value;
@@ -116,7 +152,7 @@ class Context {
         })
     }
 
-    selectAll(event) {
+    async selectAll(event) {
         for (let i = 0; i < this.cells.length; i++) {
             for (let j = 0; j < this.cells[0].length; j++) {
                 if (this.cells[i][j].classList.contains('available')) {
@@ -127,7 +163,7 @@ class Context {
         }
     }
 
-    selectLeftHalf(event) {
+    async selectLeftHalf(event) {
         for (let i = 0; i < this.cells.length; i++) {
             for (let j = 0; j < this.cells[0].length / 2; j++) {
                 if (this.cells[i][j].classList.contains('available')) {
@@ -138,7 +174,7 @@ class Context {
         }
     }
 
-    selectRightHalf(event) {
+    async selectRightHalf(event) {
         for (let i = 0; i < this.cells.length; i++) {
             for (let j = this.cells[0].length / 2; j < this.cells[0].length; j++) {
                 if (this.cells[i][j].classList.contains('available')) {

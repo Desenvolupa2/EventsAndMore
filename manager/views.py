@@ -51,12 +51,29 @@ class EventRequestFormView(LoginRequiredMixin, FormView):
     form_class = EventRequestForm
     success_url = reverse_lazy("event-request-list")
 
-    def form_valid(self, form):
-        event_request: 'EventRequest' = form.save(commit=False)
-        event_request.entity = self.request.user
-        event_request.status = EventRequestStatus.PENDING_ON_MANAGER
-        event_request.save()
-        return HttpResponseRedirect(self.get_success_url())
+    def post(self, request, *args, **kwargs):
+        body = json.loads(self.request.body)
+        event_name = body.get('eventName')
+        initial_date = parse_date(body.get('initialDate'))
+        final_date = parse_date(body.get('finalDate'))
+        grid = body.get('grid')
+        if not event_name or not initial_date or not final_date or not grid:
+            return JsonResponse({"status": "error", "content": "Invalid format"}, status=HTTPStatus.BAD_REQUEST)
+
+        for row, col in grid:
+            grid_position = GridPosition.objects.get(x_position=row, y_position=col)
+            grid_position
+
+        print(event_name, initial_date, final_date)
+        print(grid)
+        return HttpResponse(status=HTTPStatus.OK)
+
+    # def form_valid(self, form):
+    #     event_request: 'EventRequest' = form.save(commit=False)
+    #     event_request.entity = self.request.user
+    #     event_request.status = EventRequestStatus.PENDING_ON_MANAGER
+    #     event_request.save()
+    #     return HttpResponseRedirect(self.get_success_url())
 
 
 class EventRequestListView(LoginRequiredMixin, TemplateView):

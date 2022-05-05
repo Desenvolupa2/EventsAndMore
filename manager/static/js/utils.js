@@ -90,3 +90,15 @@ export async function getPercentageSelected(cells) {
     }
     return selected / total;
 }
+
+export function getSelected(cells) {
+    let selected = [];
+    for (let i = 0; i < cells.length; i++) {
+        for (let j = 0; j < cells[0].length; j++) {
+            if (cells[i][j].classList.contains('selected')) {
+                selected.push([i, j])
+            }
+        }
+    }
+    return selected;
+}
