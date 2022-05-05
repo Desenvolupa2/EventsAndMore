@@ -16,6 +16,7 @@ from manager.forms import (
     EventRequestForm,
     AdditionalServiceCategoryForm,
     NewUserForm,
+    UserForm,
     AdditionalServiceSubcategoryForm,
     AdditionalServiceForm
 )
@@ -42,7 +43,11 @@ class Login(LoginView):
     template_name = "login.html"
     redirect_authenticated_user = True
     success_url = reverse_lazy("home")
-
+    
+def profilepage(request):
+	user_form = UserForm(instance=request.user)
+	profile_form = ProfileForm(instance=request.user.profile)
+	return render(request=request, template_name="main/user.html", context={"user":request.user, "user_form":user_form})
 
 class EventRequestFormView(LoginRequiredMixin, FormView):
     template_name = "event_request_form.html"
