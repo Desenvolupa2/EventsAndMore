@@ -9,7 +9,7 @@ function initializeGrid(rows, columns) {
         for (let j = 0; j < columns; j++) {
             let cell = row.insertCell()
             cell.classList.add("cell")
-            cell.classList.add("available")
+            cell.classList.add("empty")
             rows.push(cell)
         }
         cells.push(rows)
@@ -18,6 +18,9 @@ function initializeGrid(rows, columns) {
 }
 
 window.onload = () => {
+    // table with empty cells -> non drawable
+    // if initial and final (eventlistener on initial and final, check if both) -> make request to get availables
+    // draw table with response
     const ROWS = 10;
     const COLUMNS = 20;
     const cells = initializeGrid(ROWS, COLUMNS);

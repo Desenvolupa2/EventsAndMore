@@ -4,7 +4,7 @@ class State {
         this.context = context;
     }
 
-    run(event, firstTarget = null, previousTarget = null) { throw new Error('unimplemented'); }
+    run(event) { throw new Error('unimplemented'); }
 
     handleMouseup() { throw new Error('unimplemented'); }
 

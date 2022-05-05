@@ -25,6 +25,7 @@
 
 .cell.selected {
     transform: scale(0);
+    border: 1px solid gray;
     background-color: blue;
     animation: pop 0.3s ease-in forwards;
 }

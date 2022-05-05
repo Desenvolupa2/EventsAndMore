@@ -1,6 +1,6 @@
 import {State} from "./state.js";
 import {Default} from "./default.js";
-import {isEmpty} from "../../utils.js";
+import {getPercentageSelected, isAvailable} from "../../utils.js";
 
 class Selecting extends State {
 
@@ -33,10 +33,13 @@ class Selecting extends State {
     }
 
     async drawWalls(target) {
-        if (isEmpty(target)) {
-            target.innerText = target.classList.contains('empty') ? this.context.nextId : "";
+        if (isAvailable(target)) {
             target.classList.toggle("selected");
-            target.classList.toggle("empty");
+            target.classList.toggle("available");
+            getPercentageSelected(this.context.cells).then(percentage => {
+                console.log(percentage);
+                document.getElementById('percentage').innerText = (percentage*100).toFixed(1);
+            });
         }
     }
 

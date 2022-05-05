@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block headers %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/event_grid.css' %}">
     <script type="module" src="{% static 'js/event_grid/script.js' %}"></script>
 {% endblock %}
 {% block content %}
@@ -10,7 +10,10 @@
         {{ form.as_p }}
         <div class="container">
             <button type="button" class="btn btn-primary" id="button-all">All available</button>
+            <button type="button" class="btn btn-primary" id="button-left">Left Half</button>
+            <button type="button" class="btn btn-primary" id="button-right">Right Half</button>
             <button type="button" class="btn btn-danger" id="button-reset">Reset selection</button>
+            <p><b>Space selected: </b> <span id="percentage">0</span>%</p>
             <table id="grid" style="table-layout:fixed;"></table>
         </div>
         <input type="submit" value="Submit" class="btn btn-primary">

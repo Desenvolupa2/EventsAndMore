@@ -1,4 +1,5 @@
 import {Selecting} from './selecting.js';
+import {getPercentageSelected} from "../../utils.js";
 
 class Default {
 
@@ -24,40 +25,14 @@ class Default {
     }
 
     handleReset(event) {
-        const cells = this.context.cells;
-        for (let i = 0; i < cells.length; i++) {
-            for (let j = 0; j < cells[0].length; j++) {
-                if (cells[i][j].classList.contains('selected')) {
-                    cells[i][j].classList.toggle('selected');
-                    cells[i][j].classList.toggle('empty');
-                    cells[i][j].innerText = "";
-                }
+        for (let i = 0; i < this.context.cells.length; i++) {
+            for (let j = 0; j < this.context.cells[0].length; j++) {
+                this.context.cells[i][j].classList = this.context.cellsCopy[i][j].classList;
             }
         }
-    }
-
-    submitStand(event) {
-        const selected = this.getSelected(this.context.cells);
-        const [minRow, maxRow, minCol, maxCol] = this.getExtrems(selected);
-        if ((selected.length === 1 || selected.length === 2 || selected.length === 4) && ((maxRow - minRow) <= 1 && (maxCol - minCol) <= 1)) {
-            // TODO: make request with selected
-            this.context.nextId += 1;
-            for (const coords of selected) {
-                const row = coords[0];
-                const col = coords[1];
-                this.context.cells[row][col].classList.toggle('selected');
-                this.context.cells[row][col].classList.toggle('confirmed');
-            }
-        } else {
-            for (const coords of selected) {
-                const row = coords[0];
-                const col = coords[1];
-                this.context.cells[row][col].innerText = "";
-                this.context.cells[row][col].classList.toggle('selected');
-                this.context.cells[row][col].classList.toggle('empty');
-            }
-
-        }
+        getPercentageSelected(this.context.cells).then(percentage => {
+            document.getElementById('percentage').innerText = (percentage * 100).toFixed(1);
+        });
     }
 
     getSelected(cells) {
@@ -70,16 +45,6 @@ class Default {
             }
         }
         return selected;
-    }
-
-    getExtrems(selected) {
-        const rows = selected.map((coords) => {
-            return coords[0];
-        })
-        const cols = selected.map((coords) => {
-            return coords[1];
-        })
-        return [Math.min(...rows), Math.max(...rows), Math.min(...cols), Math.max(...cols)];
     }
 }
 

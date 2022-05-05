@@ -208,13 +208,10 @@ class EventLayout(TemplateView):
 class GridPositions(View):
 
     def get(self, request, *args, **kwargs):
-        initial_date = self.request.GET.get('initial_date')
-        final_date = self.request.GET.get('final_date')
+        initial_date = parse_date(self.request.GET.get('initial_date'))
+        final_date = parse_date(self.request.GET.get('final_date'))
         if not initial_date or not final_date:
             return JsonResponse({"status": "error", "content": "Invalid format"}, status=HTTPStatus.BAD_REQUEST)
-
-        initial_date = parse_date(initial_date)
-        final_date = parse_date(final_date)
 
         stands_same_date = Stand.objects.filter(
             event__in=Event.objects.filter(initial_date__gte=initial_date, final_date__lte=final_date)
