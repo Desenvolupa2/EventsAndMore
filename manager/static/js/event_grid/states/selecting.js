@@ -1,6 +1,6 @@
 import {State} from "./state.js";
 import {Default} from "./default.js";
-import {getPercentageSelected, isAvailable} from "../../utils.js";
+import {getPercentageSelected, isAvailable, isEmpty} from "../../utils.js";
 
 class Selecting extends State {
 
@@ -33,12 +33,17 @@ class Selecting extends State {
     }
 
     async drawWalls(target) {
-        if (isAvailable(target)) {
+        if (isEmpty(target)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Select initial and final dates first.',
+            })
+        } else if (isAvailable(target)) {
             target.classList.toggle("selected");
             target.classList.toggle("available");
             getPercentageSelected(this.context.cells).then(percentage => {
-                console.log(percentage);
-                document.getElementById('percentage').innerText = (percentage*100).toFixed(1);
+                document.getElementById('percentage').innerText = (percentage * 100).toFixed(1);
             });
         }
     }

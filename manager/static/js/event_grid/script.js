@@ -18,9 +18,6 @@ function initializeGrid(rows, columns) {
 }
 
 window.onload = () => {
-    // table with empty cells -> non drawable
-    // if initial and final (eventlistener on initial and final, check if both) -> make request to get availables
-    // draw table with response
     const ROWS = 10;
     const COLUMNS = 20;
     const cells = initializeGrid(ROWS, COLUMNS);

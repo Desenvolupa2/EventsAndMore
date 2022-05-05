@@ -58,6 +58,7 @@ export async function updateStand(context, stand) {
     const col = stand['y_position'];
 
     if (context.cells[row][col].classList.contains('empty')) {
+        context.cells[row][col].classList.toggle('empty');
         context.cells[row][col].classList.toggle(stand['available'] ? 'available' : 'unavailable');
     }
 
