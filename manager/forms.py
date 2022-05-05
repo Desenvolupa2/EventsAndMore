@@ -16,6 +16,10 @@ class NewUserForm(UserCreationForm):
         model = Profile
         fields = ("username", "email", "address", "password1", "password2")
 
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = user
+        fields = ("username", "email", "address")
 
 class DateInput(forms.DateInput):
     input_type = 'date'
