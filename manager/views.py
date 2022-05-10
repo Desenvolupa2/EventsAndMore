@@ -19,12 +19,13 @@ from manager.forms import (
     AdditionalServiceSubcategoryForm,
     AdditionalServiceForm
 )
+
 from manager.models import (
     EventRequest,
     EventRequestStatus,
     AdditionalService,
-    AdditionalServiceCategory,
-    AdditionalServiceSubcategory
+    ServiceCategory,
+    ServiceSubcategory
 )
 
 
@@ -110,7 +111,7 @@ class AdditionalServiceCategoryCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(AdditionalServiceCategoryCreateView, self).get_context_data(**kwargs)
-        context['categories'] = AdditionalServiceCategory.objects.all()
+        context['categories'] = ServiceCategory.objects.all()
         return context
 
     def get_success_url(self):
@@ -126,7 +127,7 @@ class AdditionalServiceCategoryCreateView(CreateView):
 
 # Delete categories
 class DeleteAdditionalServiceCategoryView(PermissionRequiredMixin, DeleteView):
-    model = AdditionalServiceCategory
+    model = ServiceCategory
     permission_required = "manager.delete_additionalservicecategory"
     template_name = 'service_category_delete.html'
     success_url = reverse_lazy("service-category")
@@ -143,7 +144,7 @@ class AdditionalServiceSubcategoryCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(AdditionalServiceSubcategoryCreateView, self).get_context_data(**kwargs)
-        context['subcategories'] = AdditionalServiceSubcategory.objects.all()
+        context['subcategories'] = ServiceSubcategory.objects.all()
         return context
 
     def get_success_url(self):
@@ -159,7 +160,7 @@ class AdditionalServiceSubcategoryCreateView(CreateView):
 
 # Delete subcategories
 class DeleteAdditionalServiceSubcategoryView(PermissionRequiredMixin, DeleteView):
-    model = AdditionalServiceSubcategory
+    model = ServiceSubcategory
     permission_required = "manager.delete_additionalservicesubcategory"
     template_name = 'service_subcategory_delete.html'
     success_url = reverse_lazy("service-subcategory")
@@ -195,5 +196,5 @@ class ServiceCreateView(LoginRequiredMixin, CreateView):
 
 
 def load_subcategories(request, category_id):
-    subcategories = AdditionalServiceSubcategory.objects.filter(belongs_to_id=category_id).order_by('name')
+    subcategories = ServiceSubcategory.objects.filter(belongs_to_id=category_id).order_by('name')
     return render(request, 'subcategory_dropdown_list_options.html', {'subcategories': subcategories})

@@ -5,9 +5,9 @@ from django.forms import ModelForm
 from manager.models import (
     EventRequest,
     Profile,
-    AdditionalServiceCategory,
+    ServiceCategory,
     AdditionalService,
-    AdditionalServiceSubcategory,
+    ServiceSubcategory,
 )
 
 
@@ -24,7 +24,7 @@ class DateInput(forms.DateInput):
 class EventRequestForm(ModelForm):
     class Meta:
         model = EventRequest
-        fields = ['event_name', 'initial_date', 'final_date']
+        fields = ['name', 'initial_date', 'final_date']
         widgets = {
             'initial_date': DateInput(),
             'final_date': DateInput()
@@ -33,13 +33,13 @@ class EventRequestForm(ModelForm):
 
 class AdditionalServiceCategoryForm(ModelForm):
     class Meta:
-        model = AdditionalServiceCategory
+        model = ServiceCategory
         fields = ['name']
 
 
 class AdditionalServiceSubcategoryForm(ModelForm):
     class Meta:
-        model = AdditionalServiceSubcategory
+        model = ServiceSubcategory
         fields = '__all__'
 
 
@@ -50,11 +50,11 @@ class AdditionalServiceForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['subcategory'].queryset = AdditionalServiceSubcategory.objects.none()
+        self.fields['subcategory'].queryset = ServiceSubcategory.objects.none()
 
         if 'subcategory' in self.data:
             category_id = int(self.data.get('category'))
-            self.fields['subcategory'].queryset = AdditionalServiceSubcategory.objects.filter(
+            self.fields['subcategory'].queryset = ServiceSubcategory.objects.filter(
                 belongs_to_id=category_id).order_by('name')
 
         elif self.instance.pk:
