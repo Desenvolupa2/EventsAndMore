@@ -30,6 +30,22 @@
     animation: pop 0.3s ease-in forwards;
 }
 
+.cell.border-left {
+    border-left: 1px solid gray;
+}
+
+.cell.border-right {
+    border-right: 1px solid gray;
+}
+
+.cell.border-top {
+    border-top: 1px solid gray;
+}
+
+.cell.border-bottom {
+    border-bottom: 1px solid gray;
+}
+
 .cell.available {
     background-color: green;
     border: 1px solid gray;
