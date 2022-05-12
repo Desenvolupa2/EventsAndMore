@@ -40,6 +40,11 @@ class Default {
         const selected = this.getSelected(this.context.cells);
         const [minRow, maxRow, minCol, maxCol] = this.getExtrems(selected);
         if ((selected.length === 1 || selected.length === 2 || selected.length === 4) && ((maxRow - minRow) <= 1 && (maxCol - minCol) <= 1)) {
+            const data = {
+                'positions': selected
+            }
+            console.log(data)
+            sendRequest('/grid-stands/', 'POST', data)
             // TODO: make request with selected
             this.context.nextId += 1;
             for (const coords of selected) {
@@ -48,6 +53,48 @@ class Default {
                 this.context.cells[row][col].classList.toggle('selected');
                 this.context.cells[row][col].classList.toggle('confirmed');
             }
+            if (selected.length === 1) {
+                this.context.cells[minRow][minCol].classList.toggle('border-left');
+                this.context.cells[minRow][minCol].classList.toggle('border-right');
+                this.context.cells[minRow][minCol].classList.toggle('border-top');
+                this.context.cells[minRow][minCol].classList.toggle('border-bottom');
+            } else if (selected.length === 2) {
+                if (minCol === maxCol) {
+                    // same column
+                    this.context.cells[minRow][minCol].classList.toggle('border-left');
+                    this.context.cells[minRow][minCol].classList.toggle('border-top');
+                    this.context.cells[minRow][minCol].classList.toggle('border-right');
+
+                    this.context.cells[maxRow][minCol].classList.toggle('border-left');
+                    this.context.cells[maxRow][minCol].classList.toggle('border-bottom');
+                    this.context.cells[maxRow][minCol].classList.toggle('border-right');
+
+                } else {
+                    // same row
+                    this.context.cells[minRow][minCol].classList.toggle('border-left');
+                    this.context.cells[minRow][minCol].classList.toggle('border-top');
+                    this.context.cells[minRow][minCol].classList.toggle('border-bottom');
+
+                    this.context.cells[minRow][maxCol].classList.toggle('border-top');
+                    this.context.cells[minRow][maxCol].classList.toggle('border-right');
+                    this.context.cells[minRow][maxCol].classList.toggle('border-bottom');
+
+                }
+            } else {
+                // square
+                this.context.cells[minRow][minCol].classList.toggle('border-left');
+                this.context.cells[minRow][minCol].classList.toggle('border-top');
+
+                this.context.cells[minRow][maxCol].classList.toggle('border-top');
+                this.context.cells[minRow][maxCol].classList.toggle('border-right');
+
+                this.context.cells[maxRow][minCol].classList.toggle('border-bottom');
+                this.context.cells[maxRow][minCol].classList.toggle('border-left');
+
+                this.context.cells[maxRow][maxCol].classList.toggle('border-right');
+                this.context.cells[maxRow][maxCol].classList.toggle('border-bottom');
+            }
+
         } else {
             for (const coords of selected) {
                 const row = coords[0];

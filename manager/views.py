@@ -26,7 +26,7 @@ from manager.models import (
     EventRequestStatus,
     AdditionalService,
     AdditionalServiceCategory,
-    AdditionalServiceSubcategory, GridPosition, Stand
+    AdditionalServiceSubcategory, GridPosition, Stand, StandReservation, Reservation
 )
 
 
@@ -228,12 +228,67 @@ class GridPositions(View):
         if not initial_date or not final_date:
             return JsonResponse({"status": "error", "content": "Invalid format"}, status=HTTPStatus.BAD_REQUEST)
 
-        stands_same_date = Stand.objects.filter(
-            event__in=Event.objects.filter(initial_date__gte=initial_date, final_date__lte=final_date)
+        stand_reservations_same_date = StandReservation.objects.filter(
+            reservation__in=Reservation.objects.filter(initial_date__gte=initial_date, final_date__lte=final_date)
         )
-        occupied_positions = [GridPosition.objects.get(stand=stand) for stand in stands_same_date]
+
+        occupied_positions = [
+            GridPosition.objects.get(stand=stand_reservation.stand)
+            for stand_reservation in stand_reservations_same_date
+        ]
+
         positions = [
-            {**model_to_dict(instance, exclude=['id', 'stand']), **{"available": instance not in occupied_positions}}
+            {**model_to_dict(instance, exclude=['id', 'stand', 'creation_date', 'update_date']), **{"available": instance not in occupied_positions}}
             for instance in GridPosition.objects.all()
         ]
         return JsonResponse({"status": "success", "content": positions}, status=HTTPStatus.OK)
+
+
+class GridStands(View):
+
+    def get(self, request, *args, **kwargs):
+        content = {}
+
+        for position in GridPosition.objects.all():
+            if position.stand is None:
+                if 'unassigned' not in content.keys():
+                    content['unassigned'] = []
+                content['unassigned'].append([position.x_position, position.y_position])
+            else:
+                if position.stand.id not in content.keys():
+                    content[position.stand.id] = []
+                content[position.stand.id].append([position.x_position, position.y_position])
+        # for stand in Stand.objects.all():
+        #     positions = GridPosition.objects.filter(stand=stand)
+        #     content[stand.id] = list(positions)
+        return JsonResponse({"status": "success", "content": content}, status=HTTPStatus.OK)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            body = json.loads(self.request.body)
+        except:
+            return JsonResponse({"status": "error", "content": "Unexpected format"}, status=HTTPStatus.BAD_REQUEST)
+
+        positions = body.get('positions')
+        if positions is None:
+            return JsonResponse({"status": "error", "content": "Unexpected format"}, status=HTTPStatus.BAD_REQUEST)
+        stand = Stand()
+        stand.save()
+        new_grid_positions = []
+        for x, y in positions:
+            grid_position = GridPosition.objects.get(x_position=x, y_position=y)
+            if grid_position.stand is None:
+                grid_position.stand = stand
+                new_grid_positions.append(grid_position)
+            else:
+                return JsonResponse(
+                    {"status": "error", "content": "This position is already assigned"},
+                    status=HTTPStatus.BAD_REQUEST
+                )
+
+        for grid_position in new_grid_positions:
+            grid_position.save()
+        return JsonResponse(
+            {"status": "success", "content": f"Positions {positions} created successfully"},
+            status=HTTPStatus.OK
+        )

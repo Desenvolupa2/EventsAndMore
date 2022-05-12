@@ -14,7 +14,7 @@ from manager.views import (
     DeleteAdditionalServiceSubcategoryView,
     ServiceCreateView,
     ServiceListView,
-    EventLayout
+    EventLayout, GridStands
 )
 
 urlpatterns = [
@@ -35,5 +35,6 @@ urlpatterns = [
     path('load-subcategories/<int:category_id>/', views.load_subcategories, name='load_subcategories'),
     path('event-layout/', EventLayout.as_view(), name='event-layout'),
     path('grid-positions/', GridPositions.as_view(), name='grid-positions'),
+    path('grid-stands/', GridStands.as_view(), name='grid-stand'),
 ]
 

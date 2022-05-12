@@ -16,7 +16,6 @@
 
 .cell.confirmed {
     background-color: green;
-    border: 1px solid gray;
 }
 
 .cell.empty:hover {
@@ -24,46 +23,29 @@
 }
 
 .cell.selected {
-    transform: scale(0);
     border: 1px solid gray;
     background-color: blue;
-    animation: pop 0.3s ease-in forwards;
 }
 
-.cell.border-left {
-    border-left: 1px solid gray;
+.cell.confirmed.border-left {
+    border-left: 1px solid black !important;
 }
 
-.cell.border-right {
-    border-right: 1px solid gray;
+.cell.confirmed.border-right {
+    border-right: 1px solid black !important;
 }
 
-.cell.border-top {
-    border-top: 1px solid gray;
+.cell.confirmed.border-top {
+    border-top: 1px solid black !important;
 }
 
-.cell.border-bottom {
-    border-bottom: 1px solid gray;
+.cell.confirmed.border-bottom {
+    border-bottom: 1px solid black !important;
 }
 
 .cell.available {
     background-color: green;
     border: 1px solid gray;
-}
-
-@keyframes pop {
-    10% {
-        transform: scale(0.0);
-    }
-    30% {
-        transform: scale(0.25)
-    }
-    75% {
-        transform: scale(1.25)
-    }
-    100% {
-        transform: scale(1)
-    }
 }
 
 table {

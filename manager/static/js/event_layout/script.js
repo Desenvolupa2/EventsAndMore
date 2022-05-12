@@ -14,6 +14,16 @@ function initializeGrid(rows, columns) {
         }
         cells.push(rows)
     }
+    sendRequest('/grid-stands/', 'GET', null).then( (response) => {
+        let ids = [];
+        for (let stand of response.body) {
+            ids.push(stand['id']);
+            for (let position of stand['positions']) {
+                const x = position['x_coordinate'];
+                const y = position['y_coordinate'];
+            }
+        }
+    })
     return cells
 }
 

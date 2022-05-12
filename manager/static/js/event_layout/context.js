@@ -50,6 +50,15 @@ class Context {
             }
         )
 
+        document.addEventListener(
+            "keypress",
+            (event) => {
+                if (event.key === "Enter") {
+                    document.getElementById("button-submit").click();
+                }
+            }
+        )
+
         document.getElementById("button-reset").addEventListener(
             "click",
             (event) => {
