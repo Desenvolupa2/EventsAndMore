@@ -124,3 +124,4 @@ AUTH_USER_MODEL = 'manager.Profile'
 LOGIN_URL = "/login"
 
 LOGOUT_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/"

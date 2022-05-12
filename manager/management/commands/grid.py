@@ -18,3 +18,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         GridPosition.objects.bulk_create(self._get_all_grid_positions())
+
