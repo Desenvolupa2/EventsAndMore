@@ -11,8 +11,8 @@ from manager.models import (
     Event,
     Stand,
     AdditionalService,
-    ServiceCategory,
-    ServiceSubcategory,
+    AdditionalServiceCategory,
+    AdditionalServiceSubcategory,
 )
 
 
@@ -23,8 +23,8 @@ def get_permissions(model: Type['Model']):
 GROUPS_PERMISSIONS = {
     "Additional services": chain(
         get_permissions(AdditionalService),
-        get_permissions(ServiceCategory),
-        get_permissions(ServiceSubcategory),
+        get_permissions(AdditionalServiceCategory),
+        get_permissions(AdditionalServiceSubcategory),
     ),
 
     "Request management": chain(

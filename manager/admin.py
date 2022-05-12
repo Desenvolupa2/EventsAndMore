@@ -16,8 +16,8 @@ from .models import (
     StandReservation,
     Catalog,
     AdditionalService,
-    ServiceCategory,
-    ServiceSubcategory,
+    AdditionalServiceCategory,
+    AdditionalServiceSubcategory,
     AdditionalServiceReservation,
 )
 
@@ -47,6 +47,6 @@ admin.site.register(StandReservation)
 
 admin.site.register(Catalog)
 admin.site.register(AdditionalService)
-admin.site.register(ServiceCategory)
-admin.site.register(ServiceSubcategory)
+admin.site.register(AdditionalServiceCategory)
+admin.site.register(AdditionalServiceSubcategory)
 admin.site.register(AdditionalServiceReservation)

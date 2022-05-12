@@ -133,19 +133,19 @@ class AdditionalService(models.Model):
     )
 
 
-class ServiceCategory(models.Model):
+class AdditionalServiceCategory(models.Model):
     name = models.CharField(max_length=100)
 
 
-class ServiceSubcategory(models.Model):
-    category = models.ForeignKey(ServiceCategory, on_delete=models.CASCADE)
+class AdditionalServiceSubcategory(models.Model):
+    category = models.ForeignKey(AdditionalServiceCategory, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
 
 
 class AdditionalServiceReservation(models.Model):
     stand_reservation = models.ForeignKey(StandReservation, on_delete=models.CASCADE)
     additional_service = models.ForeignKey(AdditionalService, on_delete=models.CASCADE)
-    subcategory = models.ForeignKey(ServiceSubcategory, on_delete=models.CASCADE)
+    subcategory = models.ForeignKey(AdditionalServiceSubcategory, on_delete=models.CASCADE)
     initial_date = models.DateField()
     final_date = models.DateField()
     creation_date = models.DateTimeField(auto_now_add=True)

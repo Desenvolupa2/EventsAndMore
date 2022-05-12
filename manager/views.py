@@ -24,8 +24,8 @@ from manager.models import (
     EventRequest,
     EventRequestStatus,
     AdditionalService,
-    ServiceCategory,
-    ServiceSubcategory
+    AdditionalServiceCategory,
+    AdditionalServiceSubcategory
 )
 
 
@@ -111,7 +111,7 @@ class AdditionalServiceCategoryCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(AdditionalServiceCategoryCreateView, self).get_context_data(**kwargs)
-        context['categories'] = ServiceCategory.objects.all()
+        context['categories'] = AdditionalServiceCategory.objects.all()
         return context
 
     def get_success_url(self):
@@ -127,7 +127,7 @@ class AdditionalServiceCategoryCreateView(CreateView):
 
 # Delete categories
 class DeleteAdditionalServiceCategoryView(PermissionRequiredMixin, DeleteView):
-    model = ServiceCategory
+    model = AdditionalServiceCategory
     permission_required = "manager.delete_additionalservicecategory"
     template_name = 'service_category_delete.html'
     success_url = reverse_lazy("service-category")
@@ -144,7 +144,7 @@ class AdditionalServiceSubcategoryCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(AdditionalServiceSubcategoryCreateView, self).get_context_data(**kwargs)
-        context['subcategories'] = ServiceSubcategory.objects.all()
+        context['subcategories'] = AdditionalServiceSubcategory.objects.all()
         return context
 
     def get_success_url(self):
@@ -160,7 +160,7 @@ class AdditionalServiceSubcategoryCreateView(CreateView):
 
 # Delete subcategories
 class DeleteAdditionalServiceSubcategoryView(PermissionRequiredMixin, DeleteView):
-    model = ServiceSubcategory
+    model = AdditionalServiceSubcategory
     permission_required = "manager.delete_additionalservicesubcategory"
     template_name = 'service_subcategory_delete.html'
     success_url = reverse_lazy("service-subcategory")
@@ -194,5 +194,5 @@ class ServiceCreateView(LoginRequiredMixin, CreateView):
 
 
 def load_subcategories(request, category_id):
-    subcategories = ServiceSubcategory.objects.filter(category_id=category_id).order_by('name')
+    subcategories = AdditionalServiceSubcategory.objects.filter(category_id=category_id).order_by('name')
     return render(request, 'subcategory_dropdown_list_options.html', {'subcategories': subcategories})
