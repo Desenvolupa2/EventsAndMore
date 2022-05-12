@@ -193,8 +193,6 @@ class ServiceListView(LoginRequiredMixin, ListView):
     model = AdditionalService
     paginate_by = 10
 
-    # ordering = "initial_date"
-
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
         return context
@@ -214,7 +212,7 @@ class ServiceCreateView(LoginRequiredMixin, CreateView):
 
 
 def load_subcategories(request, category_id):
-    subcategories = AdditionalServiceSubcategory.objects.filter(belongs_to_id=category_id).order_by('name')
+    subcategories = AdditionalServiceSubcategory.objects.filter(category_id=category_id).order_by('name')
     return render(request, 'subcategory_dropdown_list_options.html', {'subcategories': subcategories})
 
 

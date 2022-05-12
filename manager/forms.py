@@ -24,7 +24,7 @@ class DateInput(forms.DateInput):
 class EventRequestForm(ModelForm):
     class Meta:
         model = EventRequest
-        fields = ['event_name', 'initial_date', 'final_date']
+        fields = ['name', 'initial_date', 'final_date']
         widgets = {
             'initial_date': DateInput(),
             'final_date': DateInput()
