@@ -2,6 +2,7 @@
 {% block content %}
     <form method="POST">
         {% csrf_token %}
+        <h2>Create an event</h2>
         {{ form.as_p }}
         <input type="submit" value="Submit" class="btn btn-primary">
     </form>
