@@ -48,5 +48,3 @@ admin.site.register(Catalog)
 admin.site.register(AdditionalService)
 admin.site.register(AdditionalServiceCategory)
 admin.site.register(AdditionalServiceSubcategory)
-
-admin.site.register(GridPosition)

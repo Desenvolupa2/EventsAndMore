@@ -101,8 +101,8 @@ class Stand(models.Model):
 
 
 class GridPosition(models.Model):
-    x_coordinate = models.IntegerField()
-    y_coordinate = models.IntegerField()
+    x_position = models.IntegerField()
+    y_position = models.IntegerField()
     stand = models.ForeignKey(Stand, on_delete=models.SET_NULL, null=True)
     creation_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now_add=True)
