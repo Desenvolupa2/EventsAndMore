@@ -224,11 +224,12 @@ def load_subcategories(request, category_id):
     return render(request, 'subcategory_dropdown_list_options.html', {'subcategories': subcategories})
 
 
-class EventLayout(TemplateView):
+class EventLayout(PermissionRequiredMixin, TemplateView):
     template_name = "event_layout.html"
+    permission_required = "can_add_stand"
 
 
-class GridPositions(View):
+class GridPositions(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         initial_date = parse_date(self.request.GET.get('initial_date'))
@@ -262,7 +263,7 @@ class GridPositions(View):
         return JsonResponse({"status": "success", "content": positions}, status=HTTPStatus.OK)
 
 
-class GridStands(View):
+class GridStands(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         content = {}
@@ -280,6 +281,8 @@ class GridStands(View):
         return JsonResponse({"status": "success", "content": content}, status=HTTPStatus.OK)
 
     def post(self, request, *args, **kwargs):
+        if not self.request.user.has_perm("change_grid_position"):
+            return JsonResponse({"status": "error", "content": "No permissions"}, status=HTTPStatus.FORBIDDEN)
         try:
             body = json.loads(self.request.body)
         except:

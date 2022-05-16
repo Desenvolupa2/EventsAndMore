@@ -144,7 +144,7 @@ class Context {
                 'Success!',
                 'Your event request has been submitted.',
                 'success'
-            )
+            ).then(() => { window.location.replace('/event-requests/')})
         }).catch(() => {
             Swal.fire({
                 icon: 'error',
