@@ -1,5 +1,5 @@
 import {Context} from "./context.js";
-import {getExtrems, putBorders} from "../utils.js";
+import {getExtrems, putBorders, sendRequest} from "../utils.js";
 
 async function initializeGrid(rows, columns) {
     let grid = document.getElementById("grid")

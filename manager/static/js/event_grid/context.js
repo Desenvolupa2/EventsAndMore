@@ -1,4 +1,11 @@
-import {clearSelection, dateIsSelected, getPercentageSelected, getSelected, updateStand} from "../utils.js";
+import {
+    clearSelection,
+    dateIsSelected,
+    getPercentageSelected,
+    getSelected,
+    sendRequest,
+    updateStand
+} from "../utils.js";
 import {Default} from "./states/default.js";
 import {Selecting} from "./states/selecting.js";
 

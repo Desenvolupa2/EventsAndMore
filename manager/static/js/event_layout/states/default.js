@@ -1,5 +1,5 @@
 import {Selecting} from './selecting.js';
-import {getExtrems, putBorders} from "../../utils.js";
+import {getExtrems, putBorders, sendRequest} from "../../utils.js";
 
 
 
@@ -47,7 +47,6 @@ class Default {
                 'positions': selected
             }
             sendRequest('/grid-stands/', 'POST', data)
-            // TODO: make request with selected
             this.context.nextId += 1;
             for (const coords of selected) {
                 const row = coords[0];

@@ -115,6 +115,13 @@ class StandReservation(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 
+class EventRequestStand(models.Model):
+    stand = models.ForeignKey(Stand, on_delete=models.CASCADE)
+    event_request = models.ForeignKey(EventRequest, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+
 class Catalog(models.Model):
     status = models.BooleanField()
     created = models.DateTimeField(auto_now_add=True)

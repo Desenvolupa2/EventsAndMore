@@ -20,7 +20,7 @@
 }
 
 .cell.available:hover {
-    background: red;
+    background: blue;
 }
 
 .cell.selected {
@@ -29,6 +29,10 @@
 
 .cell.available {
     background-color: green;
+}
+
+.cell.unavailable {
+    background-color: red;
 }
 
 .border-left {

@@ -1,3 +1,4 @@
+
 export function clearSelection() {
     if (window.getSelection) {
         window.getSelection().removeAllRanges();
@@ -165,4 +166,37 @@ export function getExtrems(arr) {
         return coords[1];
     })
     return [Math.min(...rows), Math.max(...rows), Math.min(...cols), Math.max(...cols)];
+}
+
+
+
+// Accept or deny event requests
+export function sendRequest(url, method, data) {
+    return axios({
+        method: method,
+        url: url,
+        data: data,
+        accept: '*',
+        xsrfCookieName: 'csrftoken',
+        xsrfHeaderName: 'X-CSRFToken',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+}
+
+export function getCookie(c_name) {
+    var c_value = " " + document.cookie;
+    var c_start = c_value.indexOf(" " + c_name + "=");
+    if (c_start == -1) {
+        c_value = null;
+    } else {
+        c_start = c_value.indexOf("=", c_start) + 1;
+        var c_end = c_value.indexOf(";", c_start);
+        if (c_end == -1) {
+            c_end = c_value.length;
+        }
+        c_value = unescape(c_value.substring(c_start, c_end));
+    }
+    return c_value;
 }

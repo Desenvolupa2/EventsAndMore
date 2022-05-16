@@ -1,9 +1,10 @@
 import json
 from http import HTTPStatus
+from itertools import chain
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
@@ -22,11 +23,16 @@ from manager.forms import (
 )
 
 from manager.models import (
-    Event, EventRequest,
+    Event,
+    EventRequest,
+    EventRequestStand,
     EventRequestStatus,
     AdditionalService,
     AdditionalServiceCategory,
-    AdditionalServiceSubcategory, GridPosition, Stand, StandReservation, Reservation
+    AdditionalServiceSubcategory,
+    GridPosition, Stand,
+    StandReservation,
+    Reservation
 )
 
 
@@ -60,20 +66,25 @@ class EventRequestFormView(LoginRequiredMixin, FormView):
         if not event_name or not initial_date or not final_date or not grid:
             return JsonResponse({"status": "error", "content": "Invalid format"}, status=HTTPStatus.BAD_REQUEST)
 
+        event_request = EventRequest.objects.create(
+            name=event_name,
+            initial_date=initial_date,
+            final_date=final_date,
+            entity=self.request.user,
+            status=EventRequestStatus.PENDING_ON_MANAGER
+        )
+        event_request.save()
+
+        stands_requested = set()
+
         for row, col in grid:
             grid_position = GridPosition.objects.get(x_position=row, y_position=col)
-            grid_position.stand = None
+            if grid_position.stand not in stands_requested:
+                stands_requested.add(grid_position.stand)
+                event_request_stand = EventRequestStand(event_request=event_request, stand=grid_position.stand)
+                event_request_stand.save()
 
-        print(event_name, initial_date, final_date)
-        print(grid)
         return HttpResponse(status=HTTPStatus.OK)
-
-    # def form_valid(self, form):
-    #     event_request: 'EventRequest' = form.save(commit=False)
-    #     event_request.entity = self.request.user
-    #     event_request.status = EventRequestStatus.PENDING_ON_MANAGER
-    #     event_request.save()
-    #     return HttpResponseRedirect(self.get_success_url())
 
 
 class EventRequestListView(LoginRequiredMixin, TemplateView):
@@ -228,21 +239,28 @@ class GridPositions(View):
         if not initial_date or not final_date:
             return JsonResponse({"status": "error", "content": "Invalid format"}, status=HTTPStatus.BAD_REQUEST)
 
-        stand_reservations_same_date = StandReservation.objects.filter(
-            reservation__in=Reservation.objects.filter(initial_date__gte=initial_date, final_date__lte=final_date)
-        )
-
-        occupied_positions = [
-            GridPosition.objects.get(stand=stand_reservation.stand)
-            for stand_reservation in stand_reservations_same_date
+        stands_same_date = [
+            stand_request.stand for stand_request in EventRequestStand.objects.filter(
+                event_request__in=EventRequest.objects.filter(
+                    initial_date__gte=initial_date,
+                    final_date__lte=final_date,
+                    status=EventRequestStatus.ACCEPTED)
+            )
         ]
+
+        occupied_positions = list(chain.from_iterable([
+            GridPosition.objects.filter(stand=stand)
+            for stand in stands_same_date
+        ]))
 
         positions = {}
         for grid_position in GridPosition.objects.all():
             if grid_position.stand is not None:
                 if grid_position.stand.id not in positions.keys():
                     positions[grid_position.stand.id] = []
-                positions[grid_position.stand.id].append({**model_to_dict(grid_position, exclude=['id', 'stand', 'creation_date', 'update_date']), **{"available": grid_position not in occupied_positions}})
+                positions[grid_position.stand.id].append(
+                    {**model_to_dict(grid_position, exclude=['id', 'stand', 'creation_date', 'update_date']),
+                     **{"available": grid_position not in occupied_positions}})
 
         return JsonResponse({"status": "success", "content": positions}, status=HTTPStatus.OK)
 
