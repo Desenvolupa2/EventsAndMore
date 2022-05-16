@@ -1,75 +1,17 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 
 class Profile(AbstractUser):
-    address = models.CharField(max_length=150, blank=True, null=False)
-    # TODO: add all the required fields
+    nif = models.CharField(max_length=9)
+    address = models.CharField(max_length=100)
 
 
-class Event(models.Model):
-    name = models.CharField(max_length=100, blank=False, null=False)
-    initial_date = models.DateField()
-    final_date = models.DateField()
-
-
-class EventContract(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.SET_NULL, null=True)
-    entity = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
-    file = models.FileField()
-
-
-class StandSize(models.IntegerChoices):
-    SMALL = 1
-    MEDIUM = 2
-    LARGE = 3
-
-
-class Stand(models.Model):
-    size = models.IntegerField(choices=StandSize.choices)
-
-
-class StandContract(models.Model):
-    entity = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
-    stand = models.ForeignKey(Stand, on_delete=models.SET_NULL, null=True)
-    file = models.FileField()
-
-
-class AdditionalServiceCategory(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-
-    def save(self, *args, **kwargs):
-        return super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
-
-
-class AdditionalServiceSubcategory(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    belongs_to = models.ForeignKey(AdditionalServiceCategory, on_delete=models.CASCADE)
-
-    def save(self, *args, **kwargs):
-        return super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
-
-
-class AdditionalService(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.CharField(max_length=9999, blank=True, null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    taxes = models.DecimalField(max_digits=10, decimal_places=2)
-    category = models.ForeignKey(AdditionalServiceCategory, on_delete=models.CASCADE)
-    subcategory = models.ForeignKey(AdditionalServiceSubcategory, on_delete=models.CASCADE)
-    picture = models.ImageField(upload_to='uploads/')
-
-    def save(self, *args, **kwargs):
-        return super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
+class PhoneNumber(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    prefix = models.PositiveIntegerField()
+    number = models.PositiveIntegerField()
 
 
 class EventRequestStatus(models.IntegerChoices):
@@ -80,11 +22,12 @@ class EventRequestStatus(models.IntegerChoices):
 
 
 class EventRequest(models.Model):
-    entity = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    event_name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     initial_date = models.DateField()
     final_date = models.DateField()
     status = models.IntegerField(choices=EventRequestStatus.choices)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now_add=True)
 
     @property
     def status_name(self):
@@ -102,16 +45,108 @@ class EventRequest(models.Model):
         return False
 
 
-class StandRequest(models.Model):
-    entity = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    stand = models.ForeignKey(Stand, on_delete=models.CASCADE)
+class Event(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000)
     initial_date = models.DateField()
     final_date = models.DateField()
+    status = models.BooleanField()
+    image = models.ImageField()
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now_add=True)
 
 
-class ServiceRequest(models.Model):
-    entity = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    stand = models.ForeignKey(Stand, on_delete=models.CASCADE)
-    service = models.ForeignKey(AdditionalService, on_delete=models.CASCADE)
+class EventContract(models.Model):
+    event_request = models.ForeignKey(EventRequest, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    file = models.FileField(null=False)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now_add=True)
+
+
+class EventInvoice(models.Model):
+    event_request = models.ForeignKey(EventRequest, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    file = models.FileField(null=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now_add=True)
+
+
+class Reservation(models.Model):
+    initial_date = models.DateField()
+    final_date = models.DateField()
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now_add=True)
+
+
+class ReservationContract(models.Model):
+    client = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    booking = models.ForeignKey(Reservation, on_delete=models.CASCADE)
+    file = models.FileField(null=False)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now_add=True)
+
+
+class ReservationInvoice(models.Model):
+    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
+    file = models.FileField(null=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now_add=True)
+
+
+class Stand(models.Model):
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now_add=True)
+
+
+class GridPosition(models.Model):
+    x_coordinate = models.IntegerField()
+    y_coordinate = models.IntegerField()
+    stand = models.ForeignKey(Stand, on_delete=models.SET_NULL, null=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now_add=True)
+
+
+class StandReservation(models.Model):
+    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
+    stand = models.ForeignKey(Stand, on_delete=models.CASCADE)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now_add=True)
+
+
+class Catalog(models.Model):
+    status = models.BooleanField()
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now_add=True)
+
+
+class AdditionalService(models.Model):
+    catalog = models.ForeignKey(Catalog, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    price = models.DecimalField(decimal_places=2, max_digits=100)
+    image = models.ImageField()
+    status = models.BooleanField()
+    taxes = models.DecimalField(
+        decimal_places=2,
+        max_digits=4,
+        validators=[MinValueValidator(0), MaxValueValidator(1)]
+    )
+
+
+class AdditionalServiceCategory(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class AdditionalServiceSubcategory(models.Model):
+    category = models.ForeignKey(AdditionalServiceCategory, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+
+
+class AdditionalServiceReservation(models.Model):
+    stand_reservation = models.ForeignKey(StandReservation, on_delete=models.CASCADE)
+    additional_service = models.ForeignKey(AdditionalService, on_delete=models.CASCADE)
+    subcategory = models.ForeignKey(AdditionalServiceSubcategory, on_delete=models.CASCADE)
+    initial_date = models.DateField()
+    final_date = models.DateField()
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now_add=True)

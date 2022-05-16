@@ -3,16 +3,22 @@ from django.contrib.auth.admin import UserAdmin
 
 from .models import (
     Profile,
-    Stand,
-    StandRequest,
-    StandContract,
-    AdditionalService,
-    ServiceRequest,
-    Event,
+    PhoneNumber,
     EventRequest,
+    Event,
     EventContract,
+    EventInvoice,
+    Reservation,
+    ReservationContract,
+    ReservationInvoice,
+    Stand,
+    GridPosition,
+    StandReservation,
+    Catalog,
+    AdditionalService,
     AdditionalServiceCategory,
     AdditionalServiceSubcategory,
+    AdditionalServiceReservation,
 )
 
 
@@ -24,16 +30,23 @@ class ProfileAdmin(UserAdmin):
 
 
 admin.site.register(Profile, ProfileAdmin)
-
-admin.site.register(Stand)
-admin.site.register(StandRequest)
-admin.site.register(StandContract)
-
-admin.site.register(AdditionalServiceCategory)
-admin.site.register(AdditionalServiceSubcategory)
-admin.site.register(AdditionalService)
-admin.site.register(ServiceRequest)
+admin.site.register(PhoneNumber)
 
 admin.site.register(Event)
 admin.site.register(EventRequest)
 admin.site.register(EventContract)
+admin.site.register(EventInvoice)
+
+admin.site.register(Reservation)
+admin.site.register(ReservationContract)
+admin.site.register(ReservationInvoice)
+
+admin.site.register(Stand)
+admin.site.register(GridPosition)
+admin.site.register(StandReservation)
+
+admin.site.register(Catalog)
+admin.site.register(AdditionalService)
+admin.site.register(AdditionalServiceCategory)
+admin.site.register(AdditionalServiceSubcategory)
+admin.site.register(AdditionalServiceReservation)
