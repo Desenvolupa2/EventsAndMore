@@ -19,7 +19,7 @@
 }
 
 .cell.empty:hover {
-    background: red;
+    background: blue;
 }
 
 .cell.selected {
@@ -28,19 +28,19 @@
 }
 
 .cell.confirmed.border-left {
-    border-left: 1px solid black !important;
+    border-left: 3px solid black !important;
 }
 
 .cell.confirmed.border-right {
-    border-right: 1px solid black !important;
+    border-right: 3px solid black !important;
 }
 
 .cell.confirmed.border-top {
-    border-top: 1px solid black !important;
+    border-top: 3px solid black !important;
 }
 
 .cell.confirmed.border-bottom {
-    border-bottom: 1px solid black !important;
+    border-bottom: 3px solid black !important;
 }
 
 .cell.available {

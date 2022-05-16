@@ -3,6 +3,7 @@ import {Default} from "./states/default.js";
 import {Selecting} from "./states/selecting.js";
 
 class Context {
+
     constructor(cells) {
         this.cells = cells;
         this.states = [new Default(this), new Selecting(this)];

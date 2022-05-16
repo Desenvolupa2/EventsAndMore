@@ -27,8 +27,8 @@ class EventRequest(models.Model):
     initial_date = models.DateField()
     final_date = models.DateField()
     status = models.IntegerField(choices=EventRequestStatus.choices)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     @property
     def status_name(self):
@@ -53,72 +53,72 @@ class Event(models.Model):
     final_date = models.DateField()
     status = models.BooleanField()
     image = models.ImageField()
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 class EventContract(models.Model):
     event_request = models.ForeignKey(EventRequest, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     file = models.FileField(null=False)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 class EventInvoice(models.Model):
     event_request = models.ForeignKey(EventRequest, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     file = models.FileField(null=True)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 class Reservation(models.Model):
     initial_date = models.DateField()
     final_date = models.DateField()
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 class ReservationContract(models.Model):
     client = models.ForeignKey(Profile, on_delete=models.CASCADE)
     booking = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     file = models.FileField(null=False)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 class ReservationInvoice(models.Model):
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     file = models.FileField(null=True)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 class Stand(models.Model):
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 class GridPosition(models.Model):
     x_position = models.IntegerField()
     y_position = models.IntegerField()
     stand = models.ForeignKey(Stand, on_delete=models.SET_NULL, null=True)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 class StandReservation(models.Model):
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     stand = models.ForeignKey(Stand, on_delete=models.CASCADE)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 class Catalog(models.Model):
     status = models.BooleanField()
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 class AdditionalService(models.Model):
@@ -149,5 +149,5 @@ class AdditionalServiceReservation(models.Model):
     subcategory = models.ForeignKey(AdditionalServiceSubcategory, on_delete=models.CASCADE)
     initial_date = models.DateField()
     final_date = models.DateField()
-    creation_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)

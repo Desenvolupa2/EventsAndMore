@@ -102,3 +102,57 @@ export function getSelected(cells) {
     }
     return selected;
 }
+
+export function putBorders(cells, selected, minRow, minCol, maxRow, maxCol) {
+    if (selected === 1) {
+        cells[minRow][minCol].classList.toggle('border-left');
+        cells[minRow][minCol].classList.toggle('border-right');
+        cells[minRow][minCol].classList.toggle('border-top');
+        cells[minRow][minCol].classList.toggle('border-bottom');
+    } else if (selected === 2) {
+        if (minCol === maxCol) {
+            // same column
+            cells[minRow][minCol].classList.toggle('border-left');
+            cells[minRow][minCol].classList.toggle('border-top');
+            cells[minRow][minCol].classList.toggle('border-right');
+
+            cells[maxRow][minCol].classList.toggle('border-left');
+            cells[maxRow][minCol].classList.toggle('border-bottom');
+            cells[maxRow][minCol].classList.toggle('border-right');
+
+        } else {
+            // same row
+            cells[minRow][minCol].classList.toggle('border-left');
+            cells[minRow][minCol].classList.toggle('border-top');
+            cells[minRow][minCol].classList.toggle('border-bottom');
+
+            cells[minRow][maxCol].classList.toggle('border-top');
+            cells[minRow][maxCol].classList.toggle('border-right');
+            cells[minRow][maxCol].classList.toggle('border-bottom');
+
+        }
+    } else {
+        // square
+        cells[minRow][minCol].classList.toggle('border-left');
+        cells[minRow][minCol].classList.toggle('border-top');
+
+        cells[minRow][maxCol].classList.toggle('border-top');
+        cells[minRow][maxCol].classList.toggle('border-right');
+
+        cells[maxRow][minCol].classList.toggle('border-bottom');
+        cells[maxRow][minCol].classList.toggle('border-left');
+
+        cells[maxRow][maxCol].classList.toggle('border-right');
+        cells[maxRow][maxCol].classList.toggle('border-bottom');
+    }
+}
+
+export function getExtrems(arr) {
+    const rows = arr.map((coords) => {
+        return coords[0];
+    })
+    const cols = arr.map((coords) => {
+        return coords[1];
+    })
+    return [Math.min(...rows), Math.max(...rows), Math.min(...cols), Math.max(...cols)];
+}

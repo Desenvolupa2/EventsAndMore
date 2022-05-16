@@ -1,4 +1,7 @@
 import {Selecting} from './selecting.js';
+import {getExtrems, putBorders} from "../../utils.js";
+
+
 
 class Default {
 
@@ -38,12 +41,11 @@ class Default {
 
     submitStand(event) {
         const selected = this.getSelected(this.context.cells);
-        const [minRow, maxRow, minCol, maxCol] = this.getExtrems(selected);
+        const [minRow, maxRow, minCol, maxCol] = getExtrems(selected);
         if ((selected.length === 1 || selected.length === 2 || selected.length === 4) && ((maxRow - minRow) <= 1 && (maxCol - minCol) <= 1)) {
             const data = {
                 'positions': selected
             }
-            console.log(data)
             sendRequest('/grid-stands/', 'POST', data)
             // TODO: make request with selected
             this.context.nextId += 1;
@@ -53,47 +55,7 @@ class Default {
                 this.context.cells[row][col].classList.toggle('selected');
                 this.context.cells[row][col].classList.toggle('confirmed');
             }
-            if (selected.length === 1) {
-                this.context.cells[minRow][minCol].classList.toggle('border-left');
-                this.context.cells[minRow][minCol].classList.toggle('border-right');
-                this.context.cells[minRow][minCol].classList.toggle('border-top');
-                this.context.cells[minRow][minCol].classList.toggle('border-bottom');
-            } else if (selected.length === 2) {
-                if (minCol === maxCol) {
-                    // same column
-                    this.context.cells[minRow][minCol].classList.toggle('border-left');
-                    this.context.cells[minRow][minCol].classList.toggle('border-top');
-                    this.context.cells[minRow][minCol].classList.toggle('border-right');
-
-                    this.context.cells[maxRow][minCol].classList.toggle('border-left');
-                    this.context.cells[maxRow][minCol].classList.toggle('border-bottom');
-                    this.context.cells[maxRow][minCol].classList.toggle('border-right');
-
-                } else {
-                    // same row
-                    this.context.cells[minRow][minCol].classList.toggle('border-left');
-                    this.context.cells[minRow][minCol].classList.toggle('border-top');
-                    this.context.cells[minRow][minCol].classList.toggle('border-bottom');
-
-                    this.context.cells[minRow][maxCol].classList.toggle('border-top');
-                    this.context.cells[minRow][maxCol].classList.toggle('border-right');
-                    this.context.cells[minRow][maxCol].classList.toggle('border-bottom');
-
-                }
-            } else {
-                // square
-                this.context.cells[minRow][minCol].classList.toggle('border-left');
-                this.context.cells[minRow][minCol].classList.toggle('border-top');
-
-                this.context.cells[minRow][maxCol].classList.toggle('border-top');
-                this.context.cells[minRow][maxCol].classList.toggle('border-right');
-
-                this.context.cells[maxRow][minCol].classList.toggle('border-bottom');
-                this.context.cells[maxRow][minCol].classList.toggle('border-left');
-
-                this.context.cells[maxRow][maxCol].classList.toggle('border-right');
-                this.context.cells[maxRow][maxCol].classList.toggle('border-bottom');
-            }
+            putBorders(this.context.cells, selected.length, minRow, minCol, maxRow, maxCol);
 
         } else {
             for (const coords of selected) {
@@ -119,15 +81,7 @@ class Default {
         return selected;
     }
 
-    getExtrems(selected) {
-        const rows = selected.map((coords) => {
-            return coords[0];
-        })
-        const cols = selected.map((coords) => {
-            return coords[1];
-        })
-        return [Math.min(...rows), Math.max(...rows), Math.min(...cols), Math.max(...cols)];
-    }
+
 }
 
 export {Default}

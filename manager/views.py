@@ -62,7 +62,7 @@ class EventRequestFormView(LoginRequiredMixin, FormView):
 
         for row, col in grid:
             grid_position = GridPosition.objects.get(x_position=row, y_position=col)
-            grid_position
+            grid_position.stand = None
 
         print(event_name, initial_date, final_date)
         print(grid)
