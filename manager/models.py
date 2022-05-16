@@ -36,11 +36,14 @@ class EventRequest(models.Model):
 
     @property
     def has_conflicts(self):
+        self_stand_requests = EventRequestStand.objects.filter(event_request=self)
         for event_request in EventRequest.objects.filter(status=EventRequestStatus.ACCEPTED):
+            event_stand_requests = EventRequestStand.objects.filter(event_request=event_request)
             if (
                 event_request != self and
-                event_request.initial_date <= self.initial_date <= event_request.final_date or
-                event_request.initial_date <= self.final_date <= event_request.final_date
+                (event_request.initial_date <= self.initial_date <= event_request.final_date or
+                 event_request.initial_date <= self.final_date <= event_request.final_date) and
+                any(e in event_stand_requests for e in self_stand_requests)
             ):
                 return True
         return False
