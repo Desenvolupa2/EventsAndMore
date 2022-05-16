@@ -242,7 +242,8 @@ class GridPositions(LoginRequiredMixin, View):
                 event_request__in=EventRequest.objects.filter(
                     initial_date__gte=initial_date,
                     final_date__lte=final_date,
-                    status=EventRequestStatus.ACCEPTED)
+                    status=EventRequestStatus.ACCEPTED
+                ),
             )
         ]
 
