@@ -61,23 +61,33 @@ class EventRequestFormView(LoginRequiredMixin, FormView):
         if not event_name or not initial_date or not final_date or not grid:
             return JsonResponse({"status": "error", "content": "Invalid format"}, status=HTTPStatus.BAD_REQUEST)
 
-        event_request = EventRequest.objects.create(
+        event_request = EventRequest(
             name=event_name,
             initial_date=initial_date,
             final_date=final_date,
             entity=self.request.user,
             status=EventRequestStatus.PENDING_ON_MANAGER
         )
-        event_request.save()
 
         stands_requested = set()
 
-        for row, col in grid:
-            grid_position = GridPosition.objects.get(x_position=row, y_position=col)
+        grid_positions = [GridPosition.objects.get(x_position=row, y_position=col) for row, col in grid]
+        event_stand_requests = []
+        for grid_position in grid_positions:
+            stand_positions = GridPosition.objects.filter(stand=grid_position.stand)
+            if any(position not in grid_positions for position in stand_positions):
+                return JsonResponse(
+                    {"status": "error", "content": "An stand must be selected in its entirety"},
+                    status=HTTPStatus.BAD_REQUEST
+                )
+
             if grid_position.stand not in stands_requested:
                 stands_requested.add(grid_position.stand)
-                event_request_stand = EventRequestStand(event_request=event_request, stand=grid_position.stand)
-                event_request_stand.save()
+                event_stand_requests.append(EventRequestStand(event_request=event_request, stand=grid_position.stand))
+
+        event_request.save()
+        for event_stand_request in event_stand_requests:
+            event_stand_request.save()
 
         return HttpResponse(status=HTTPStatus.OK)
 
