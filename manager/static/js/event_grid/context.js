@@ -22,7 +22,6 @@ class Context {
     }
 
     change(state, event) {
-        // console.log(this.current.toString(), " -> ", newState.toString())
         this.current = this.getState(state)
         this.current.run(event);
     };
@@ -157,7 +156,6 @@ class Context {
     }
 
     updateAvailablePositions() {
-        //make request with inital and final date
         const initialDate = document.getElementById('id_initial_date').value;
         const finalDate = document.getElementById('id_final_date').value;
         if (Date.parse(initialDate) > Date.parse(finalDate)) {

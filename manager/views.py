@@ -4,35 +4,32 @@ from itertools import chain
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.forms.models import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils.dateparse import parse_date
 from django.views import View
-from django.views.generic import CreateView, TemplateView, FormView, ListView, DeleteView
+from django.views.generic import CreateView, DeleteView, FormView, ListView, TemplateView
 
 from manager.filters import EventRequestsFilter
-from django.forms.models import model_to_dict
-from django.utils.dateparse import parse_date
-
 from manager.forms import (
-    EventRequestForm,
     AdditionalServiceCategoryForm,
-    NewUserForm,
+    AdditionalServiceForm,
     AdditionalServiceSubcategoryForm,
-    AdditionalServiceForm
+    EventRequestForm,
+    NewUserForm
 )
 
 from manager.models import (
-    Event,
-    EventRequest,
-    EventRequestStand,
-    EventRequestStatus,
     AdditionalService,
     AdditionalServiceCategory,
     AdditionalServiceSubcategory,
-    GridPosition, Stand,
-    StandReservation,
-    Reservation
+    EventRequest,
+    EventRequestStand,
+    EventRequestStatus,
+    GridPosition,
+    Stand
 )
 
 
@@ -279,9 +276,7 @@ class GridStands(View):
                 if position.stand.id not in content.keys():
                     content[position.stand.id] = []
                 content[position.stand.id].append([position.x_position, position.y_position])
-        # for stand in Stand.objects.all():
-        #     positions = GridPosition.objects.filter(stand=stand)
-        #     content[stand.id] = list(positions)
+
         return JsonResponse({"status": "success", "content": content}, status=HTTPStatus.OK)
 
     def post(self, request, *args, **kwargs):

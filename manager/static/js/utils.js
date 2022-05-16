@@ -169,8 +169,6 @@ export function getExtrems(arr) {
 }
 
 
-
-// Accept or deny event requests
 export function sendRequest(url, method, data) {
     return axios({
         method: method,

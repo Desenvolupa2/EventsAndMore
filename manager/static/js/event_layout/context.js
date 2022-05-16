@@ -12,7 +12,6 @@ class Context {
     }
 
     change(state, event, firstTarget = null, previousTarget = null) {
-        // console.log(this.current.toString(), " -> ", newState.toString())
         this.current = this.getState(state)
         this.current.run(event, firstTarget, previousTarget);
     };
