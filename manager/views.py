@@ -1,6 +1,5 @@
 import json
 from http import HTTPStatus
-from itertools import chain
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView
@@ -20,7 +19,6 @@ from manager.forms import (
     EventRequestForm,
     NewUserForm
 )
-
 from manager.models import (
     AdditionalService,
     AdditionalServiceCategory,
@@ -240,17 +238,14 @@ class GridPositions(LoginRequiredMixin, View):
         stands_same_date = [
             stand_request.stand for stand_request in EventRequestStand.objects.filter(
                 event_request__in=EventRequest.objects.filter(
-                    initial_date__gte=initial_date,
-                    final_date__lte=final_date,
                     status=EventRequestStatus.ACCEPTED
+                ).exclude(
+                    final_date__lt=initial_date,
+                ).exclude(
+                    initial_date__gt=final_date
                 ),
             )
         ]
-
-        occupied_positions = list(chain.from_iterable([
-            GridPosition.objects.filter(stand=stand)
-            for stand in stands_same_date
-        ]))
 
         positions = {}
         for grid_position in GridPosition.objects.all():
@@ -259,7 +254,7 @@ class GridPositions(LoginRequiredMixin, View):
                     positions[grid_position.stand.id] = []
                 positions[grid_position.stand.id].append(
                     {**model_to_dict(grid_position, exclude=['id', 'stand', 'creation_date', 'update_date']),
-                     **{"available": grid_position not in occupied_positions}})
+                     **{"available": grid_position.stand not in stands_same_date}})
 
         return JsonResponse({"status": "success", "content": positions}, status=HTTPStatus.OK)
 

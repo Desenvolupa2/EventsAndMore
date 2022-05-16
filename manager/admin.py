@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .models import (
+    EventRequestStand,
     Profile,
     PhoneNumber,
     EventRequest,
@@ -35,6 +36,7 @@ admin.site.register(Event)
 admin.site.register(EventRequest)
 admin.site.register(EventContract)
 admin.site.register(EventInvoice)
+admin.site.register(EventRequestStand)
 
 admin.site.register(Reservation)
 admin.site.register(ReservationContract)

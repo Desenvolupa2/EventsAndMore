@@ -46,7 +46,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if perms.manager.change_event_request and event.status != 3 %}
+                            {% if perms.manager.change_event_request and event.status != 3 and not event.has_conflicts%}
                                 <button class="btn btn-primary" onclick="acceptEvent({{ event.id }})"><i
                                         class="fas fa-check"></i>
                                 </button>

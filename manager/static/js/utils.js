@@ -60,8 +60,17 @@ export async function updateStand(context, stand_id, positions) {
         const col = position['y_position'];
 
         if (context.cells[row][col].classList.contains('empty')) {
+            // if was empty -> set available or unavailable
             context.cells[row][col].classList.toggle('empty');
             context.cells[row][col].classList.toggle(position['available'] ? 'available' : 'unavailable');
+            context.cells[row][col].innerText = stand_id;
+            continue;
+        } else if(context.cells[row][col].classList.contains('selected')) {
+            // if was selected -> set available or unavailable
+            context.cells[row][col].classList.toggle('selected');
+            context.cells[row][col].classList.toggle(position['available'] ? 'available' : 'unavailable');
+            context.cells[row][col].innerText = stand_id;
+            continue;
         }
 
         if (position['available']) {

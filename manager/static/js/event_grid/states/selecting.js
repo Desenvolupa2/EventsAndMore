@@ -33,13 +33,7 @@ class Selecting extends State {
     }
 
     async drawWalls(target) {
-        if (isEmpty(target)) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Select initial and final dates first.',
-            })
-        } else if (isAvailable(target)) {
+        if (isAvailable(target)) {
             target.classList.toggle("selected");
             target.classList.toggle("available");
             getPercentageSelected(this.context.cells).then(percentage => {
