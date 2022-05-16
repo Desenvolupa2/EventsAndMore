@@ -24,13 +24,27 @@
 }
 
 .cell.selected {
-    border: 1px solid gray;
     background-color: blue;
 }
 
 .cell.available {
     background-color: green;
-    border: 1px solid gray;
+}
+
+.border-left {
+    border-left: 3px solid black !important;
+}
+
+.border-right {
+    border-right: 3px solid black !important;
+}
+
+.border-top {
+    border-top: 3px solid black !important;
+}
+
+.border-bottom {
+    border-bottom: 3px solid black !important;
 }
 
 @keyframes pop {

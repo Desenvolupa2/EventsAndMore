@@ -53,30 +53,40 @@ export function dateIsSelected(element) {
     return document.getElementById(element).value !== "";
 }
 
-export async function updateStand(context, stand) {
-    const row = stand['x_position'];
-    const col = stand['y_position'];
+export async function updateStand(context, stand_id, positions) {
+    for (let position of positions) {
+        const row = position['x_position'];
+        const col = position['y_position'];
 
-    if (context.cells[row][col].classList.contains('empty')) {
-        context.cells[row][col].classList.toggle('empty');
-        context.cells[row][col].classList.toggle(stand['available'] ? 'available' : 'unavailable');
-    }
+        if (context.cells[row][col].classList.contains('empty')) {
+            context.cells[row][col].classList.toggle('empty');
+            context.cells[row][col].classList.toggle(position['available'] ? 'available' : 'unavailable');
+        }
 
-    if (stand['available']) {
-        // if was unavailable -> set available
-        if (context.cells[row][col].classList.contains('unavailable')) {
-            context.cells[row][col].classList.toggle('unavailable');
-            context.cells[row][col].classList.toggle('available');
+        if (position['available']) {
+            // if was unavailable -> set available
+            if (context.cells[row][col].classList.contains('unavailable')) {
+                context.cells[row][col].classList.toggle('unavailable');
+                context.cells[row][col].classList.toggle('available');
+            }
+        } else {
+            // if was available -> set unavailable
+            if (context.cells[row][col].classList.contains('available')) {
+                context.cells[row][col].classList.toggle('available');
+                context.cells[row][col].classList.toggle('unavailable');
+            }
         }
-    } else {
-        // if was available -> set unavailable
-        if (context.cells[row][col].classList.contains('available')) {
-            context.cells[row][col].classList.toggle('available');
-            context.cells[row][col].classList.toggle('unavailable');
-        }
+        context.cells[row][col].innerText = stand_id;
     }
-    context.cellsCopy[row][col] = context.cells[row][col].cloneNode()
+    const selected = positions.map(function (position) {
+        return [position['x_position'], position['y_position']]
+    });
+    const [minRow, maxRow, minCol, maxCol] = getExtrems(selected);
+    putBorders(context.cells, selected.length, minRow, minCol, maxRow, maxCol)
+    context.cloneCells()
+
 }
+
 
 export async function getPercentageSelected(cells) {
     let total = cells.length * cells[0].length;
@@ -105,45 +115,45 @@ export function getSelected(cells) {
 
 export function putBorders(cells, selected, minRow, minCol, maxRow, maxCol) {
     if (selected === 1) {
-        cells[minRow][minCol].classList.toggle('border-left');
-        cells[minRow][minCol].classList.toggle('border-right');
-        cells[minRow][minCol].classList.toggle('border-top');
-        cells[minRow][minCol].classList.toggle('border-bottom');
+        cells[minRow][minCol].classList.add('border-left');
+        cells[minRow][minCol].classList.add('border-right');
+        cells[minRow][minCol].classList.add('border-top');
+        cells[minRow][minCol].classList.add('border-bottom');
     } else if (selected === 2) {
         if (minCol === maxCol) {
             // same column
-            cells[minRow][minCol].classList.toggle('border-left');
-            cells[minRow][minCol].classList.toggle('border-top');
-            cells[minRow][minCol].classList.toggle('border-right');
+            cells[minRow][minCol].classList.add('border-left');
+            cells[minRow][minCol].classList.add('border-top');
+            cells[minRow][minCol].classList.add('border-right');
 
-            cells[maxRow][minCol].classList.toggle('border-left');
-            cells[maxRow][minCol].classList.toggle('border-bottom');
-            cells[maxRow][minCol].classList.toggle('border-right');
+            cells[maxRow][minCol].classList.add('border-left');
+            cells[maxRow][minCol].classList.add('border-bottom');
+            cells[maxRow][minCol].classList.add('border-right');
 
         } else {
             // same row
-            cells[minRow][minCol].classList.toggle('border-left');
-            cells[minRow][minCol].classList.toggle('border-top');
-            cells[minRow][minCol].classList.toggle('border-bottom');
+            cells[minRow][minCol].classList.add('border-left');
+            cells[minRow][minCol].classList.add('border-top');
+            cells[minRow][minCol].classList.add('border-bottom');
 
-            cells[minRow][maxCol].classList.toggle('border-top');
-            cells[minRow][maxCol].classList.toggle('border-right');
-            cells[minRow][maxCol].classList.toggle('border-bottom');
+            cells[minRow][maxCol].classList.add('border-top');
+            cells[minRow][maxCol].classList.add('border-right');
+            cells[minRow][maxCol].classList.add('border-bottom');
 
         }
     } else {
         // square
-        cells[minRow][minCol].classList.toggle('border-left');
-        cells[minRow][minCol].classList.toggle('border-top');
+        cells[minRow][minCol].classList.add('border-left');
+        cells[minRow][minCol].classList.add('border-top');
 
-        cells[minRow][maxCol].classList.toggle('border-top');
-        cells[minRow][maxCol].classList.toggle('border-right');
+        cells[minRow][maxCol].classList.add('border-top');
+        cells[minRow][maxCol].classList.add('border-right');
 
-        cells[maxRow][minCol].classList.toggle('border-bottom');
-        cells[maxRow][minCol].classList.toggle('border-left');
+        cells[maxRow][minCol].classList.add('border-bottom');
+        cells[maxRow][minCol].classList.add('border-left');
 
-        cells[maxRow][maxCol].classList.toggle('border-right');
-        cells[maxRow][maxCol].classList.toggle('border-bottom');
+        cells[maxRow][maxCol].classList.add('border-right');
+        cells[maxRow][maxCol].classList.add('border-bottom');
     }
 }
 

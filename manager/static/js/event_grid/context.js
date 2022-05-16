@@ -2,10 +2,13 @@ import {clearSelection, dateIsSelected, getPercentageSelected, getSelected, upda
 import {Default} from "./states/default.js";
 import {Selecting} from "./states/selecting.js";
 
+const clone = (items) => items.map(item => Array.isArray(item) ? clone(item) : item.cloneNode());
+
 class Context {
     constructor(cells) {
         this.cells = cells;
-        this.cellsCopy = JSON.parse(JSON.stringify(cells)); // deepcopy
+        this.cellsCopy = clone(cells);
+
         this.states = [new Default(this), new Selecting(this)];
         this.current = this.states[0];
         this.nextId = 1;
@@ -26,8 +29,24 @@ class Context {
         return this.states[0]
     }
 
+    cloneCells() {
+        this.cellsCopy = clone(this.cells);
+    }
+
     run() {
         let _this = this;
+        // set initial date = today, and final date = 3 days later -> then check availability
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const final_dd = String(today.getDate() + 3).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        const yyyy = today.getFullYear();
+
+        document.getElementById('id_initial_date').value = yyyy + '-' + mm + '-' + dd;
+        document.getElementById('id_final_date').value = yyyy + '-' + mm + '-' + final_dd;
+        _this.updateAvailablePositions();
+
+
         document.addEventListener("mouseup", function (event) {
             clearSelection()
             _this.current.handleMouseup(event)
@@ -48,7 +67,6 @@ class Context {
                 _this.submitEventRequest();
             }
         )
-
 
         document.getElementById("button-all").addEventListener(
             "click",
@@ -103,7 +121,7 @@ class Context {
     };
 
     submitEventRequest() {
-        const eventName = document.getElementById('id_event_name').value;
+        const eventName = document.getElementById('id_name').value;
         const initialDate = document.getElementById('id_initial_date').value;
         const finalDate = document.getElementById('id_final_date').value;
         const selectedGrid = getSelected(this.cells);
@@ -121,7 +139,7 @@ class Context {
                 'Your event request has been submitted.',
                 'success'
             )
-        }).catch(()=> {
+        }).catch(() => {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
@@ -145,8 +163,9 @@ class Context {
         }
         const url = '/grid-positions/?initial_date=' + initialDate + '&final_date=' + finalDate;
         sendRequest(url, 'GET', null).then((response) => {
-            for (const stand of response.data['content']) {
-                updateStand(this, stand).then(_ => {
+            const content = response.data['content'];
+            for (const stand in content) {
+                updateStand(this, stand, content[stand]).then(_ => {
                 })
             }
         })

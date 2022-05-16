@@ -237,10 +237,13 @@ class GridPositions(View):
             for stand_reservation in stand_reservations_same_date
         ]
 
-        positions = [
-            {**model_to_dict(instance, exclude=['id', 'stand', 'creation_date', 'update_date']), **{"available": instance not in occupied_positions}}
-            for instance in GridPosition.objects.all()
-        ]
+        positions = {}
+        for grid_position in GridPosition.objects.all():
+            if grid_position.stand is not None:
+                if grid_position.stand.id not in positions.keys():
+                    positions[grid_position.stand.id] = []
+                positions[grid_position.stand.id].append({**model_to_dict(grid_position, exclude=['id', 'stand', 'creation_date', 'update_date']), **{"available": grid_position not in occupied_positions}})
+
         return JsonResponse({"status": "success", "content": positions}, status=HTTPStatus.OK)
 
 
