@@ -33,7 +33,7 @@
                 </tr>
                 {% for event in type.list|dictsort:"initial_date" %}
                     <tr>
-                        <td>{{ event.event_name }}</td>
+                        <td>{{ event.name }}</td>
                         <td>{{ event.initial_date }}</td>
                         <td>{{ event.final_date }}</td>
                         <td>
