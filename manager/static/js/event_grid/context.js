@@ -145,11 +145,12 @@ class Context {
                 'Your event request has been submitted.',
                 'success'
             ).then(() => { window.location.replace('/event-requests/')})
-        }).catch(() => {
+        }).catch((r) => {
+            console.log("response", r.response);
             Swal.fire({
                 icon: 'error',
-                title: 'Oops...',
-                text: 'Error submitting your request',
+                title: 'Error submitting your request',
+                text: r.response.data['content'],
             })
         });
 

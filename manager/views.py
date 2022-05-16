@@ -58,8 +58,14 @@ class EventRequestFormView(LoginRequiredMixin, FormView):
         initial_date = parse_date(body.get('initialDate'))
         final_date = parse_date(body.get('finalDate'))
         grid = body.get('grid')
-        if not event_name or not initial_date or not final_date or not grid:
-            return JsonResponse({"status": "error", "content": "Invalid format"}, status=HTTPStatus.BAD_REQUEST)
+        if not event_name:
+            return JsonResponse({"status": "error", "content": "Invalid event name"}, status=HTTPStatus.BAD_REQUEST)
+
+        if not initial_date or not final_date:
+            return JsonResponse({"status": "error", "content": "Invalid dates"}, status=HTTPStatus.BAD_REQUEST)
+
+        if not grid:
+            return JsonResponse({"status": "error", "content": "Invalid grid selection"}, status=HTTPStatus.BAD_REQUEST)
 
         event_request = EventRequest(
             name=event_name,
