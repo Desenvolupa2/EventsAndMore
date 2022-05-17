@@ -1,3 +1,4 @@
+import uuid as uuid
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -61,6 +62,7 @@ class Event(models.Model):
 
 
 class EventContract(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     event_request = models.ForeignKey(EventRequest, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     file = models.FileField(null=False)

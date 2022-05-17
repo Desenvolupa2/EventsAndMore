@@ -1,8 +1,12 @@
+import io
 import json
+import uuid
 from http import HTTPStatus
+from reportlab.pdfgen import canvas
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.core.files import File
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
@@ -24,7 +28,7 @@ from manager.models import (
     AdditionalServiceCategory,
     AdditionalServiceSubcategory,
     Event,
-    EventRequest,
+    EventContract, EventInvoice, EventRequest,
     EventRequestStand,
     EventRequestStatus,
     GridPosition,
@@ -142,12 +146,34 @@ class EventRequestUpdate(LoginRequiredMixin, View):
 
         event_request.save()
         if body.get("status") == EventRequestStatus.ACCEPTED:
-            Event.objects.create(
+            event = Event.objects.create(
                 name=event_request.name,
                 initial_date=event_request.initial_date,
                 final_date=event_request.final_date,
             )
+            EventInvoice.objects.create(
+                event_request=event_request,
+                event=event
+            )
+
+            pdf_buffer = self._generate_pdf_contract(event_request)
+            contract_uuid = uuid.uuid4()
+            EventContract.objects.create(
+                uuid=contract_uuid,
+                event_request=event_request,
+                event=event,
+                file=File(pdf_buffer, name=f"{contract_uuid}.pdf")
+            )
         return JsonResponse({"status": "success", "content": model_to_dict(event_request)}, status=HTTPStatus.OK)
+
+    def _generate_pdf_contract(self, event_request: 'EventRequest') -> io.BytesIO:
+        buffer = io.BytesIO()
+        p = canvas.Canvas(buffer)
+        p.drawString(100, 100, "Hello world.")  # TODO: Create contract (make up text for the contract)
+        p.showPage()
+        p.save()
+        buffer.seek(0)
+        return buffer
 
 
 # Add categories
