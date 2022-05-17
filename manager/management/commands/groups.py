@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from itertools import chain
 from typing import Type
 
@@ -11,8 +12,8 @@ from manager.models import (
     Event,
     Stand,
     AdditionalService,
-    ServiceCategory,
-    ServiceSubcategory,
+    AdditionalServiceCategory,
+    AdditionalServiceSubcategory,
 )
 
 
@@ -23,8 +24,8 @@ def get_permissions(model: Type['Model']):
 GROUPS_PERMISSIONS = {
     "Additional services": chain(
         get_permissions(AdditionalService),
-        get_permissions(ServiceCategory),
-        get_permissions(ServiceSubcategory),
+        get_permissions(AdditionalServiceCategory),
+        get_permissions(AdditionalServiceSubcategory),
     ),
 
     "Request management": chain(
@@ -37,8 +38,17 @@ GROUPS_PERMISSIONS = {
 
 class Command(BaseCommand):
 
+    @classmethod
+    def _manage_group(cls, group_name, permissions):
+        group, _ = Group.objects.get_or_create(name=group_name)
+        group.permissions.add(*permissions)
+        group.save()
+
     def handle(self, *args, **options):
-        for group_name, permissions in GROUPS_PERMISSIONS.items():
-            group, _ = Group.objects.get_or_create(name=group_name)
-            group.permissions.add(*permissions)
-            group.save()
+        with ThreadPoolExecutor() as executor:
+            futures = [
+                executor.submit(self._manage_group, group_name, permissions)
+                for group_name, permissions in GROUPS_PERMISSIONS.items()
+            ]
+            for future in futures:
+                future.result()

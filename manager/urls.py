@@ -2,6 +2,7 @@ from django.contrib.auth.views import LogoutView
 from django.urls import path
 from manager import views
 from manager.views import (
+    GridPositions,
     Home,
     Register,
     Login,
@@ -14,6 +15,7 @@ from manager.views import (
     DeleteAdditionalServiceSubcategoryView,
     ServiceCreateView,
     ServiceListView,
+    EventLayout, GridStands
 )
 
 urlpatterns = [
@@ -31,5 +33,9 @@ urlpatterns = [
     path('service-subcategory/delete/<pk>', DeleteAdditionalServiceSubcategoryView.as_view(),
          name="delete-service-subcategory"),
     path('service-control-panel/', ServiceCreateView.as_view(), name="service-control-panel"),
-    path('load-subcategories/<int:category_id>/', views.load_subcategories, name='load_subcategories')
+    path('load-subcategories/<int:category_id>/', views.load_subcategories, name='load_subcategories'),
+    path('event-layout/', EventLayout.as_view(), name='event-layout'),
+    path('grid-positions/', GridPositions.as_view(), name='grid-positions'),
+    path('grid-stands/', GridStands.as_view(), name='grid-stand'),
 ]
+

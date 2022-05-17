@@ -12,7 +12,7 @@ The main functionalities of the web application are:
 - Users can register, login, logout and change their personal information in their profile as an Organizer, Entity or EventAndMore employee.
 - Events can be created, edited, deleted and searched.
 - Stands can be created, edited, deleted and searched, always linked to an event.
-- Additional services can be created, edited, deleted and searched, always linked to an stand.
+- Additional services can be created, edited, deleted and searched, always linked to a stand.
 
 ## Installation
 
