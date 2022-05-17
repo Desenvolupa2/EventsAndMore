@@ -10,6 +10,7 @@ async function initializeGrid(rows, columns) {
         for (let j = 0; j < columns; j++) {
             let cell = row.insertCell()
             cell.classList.add("cell")
+            cell.classList.add("disable-select")
             rows.push(cell)
         }
         cells.push(rows)
