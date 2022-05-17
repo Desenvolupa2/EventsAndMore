@@ -43,7 +43,7 @@ class EventRequest(models.Model):
                 event_request != self and
                 (event_request.initial_date <= self.initial_date <= event_request.final_date or
                  event_request.initial_date <= self.final_date <= event_request.final_date) and
-                any(e in event_stand_requests for e in self_stand_requests)
+                any(e.stand in (er.stand for er in event_stand_requests) for e in self_stand_requests)
             ):
                 return True
         return False
