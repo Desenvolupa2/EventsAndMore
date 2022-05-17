@@ -156,3 +156,6 @@ cython_debug/
 ._*
 .Spotlight-V100
 .Trashes
+
+# uploaded images
+uploads/

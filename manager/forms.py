@@ -44,9 +44,10 @@ class AdditionalServiceSubcategoryForm(ModelForm):
 
 
 class AdditionalServiceForm(ModelForm):
+    category = forms.ModelChoiceField(queryset=AdditionalServiceCategory.objects.all())
     class Meta:
         model = AdditionalService
-        fields = '__all__'
+        fields = ('name', 'category', 'subcategory', 'price', 'taxes', 'image')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

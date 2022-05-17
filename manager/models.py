@@ -40,10 +40,10 @@ class EventRequest(models.Model):
         for event_request in EventRequest.objects.filter(status=EventRequestStatus.ACCEPTED):
             event_stand_requests = EventRequestStand.objects.filter(event_request=event_request)
             if (
-                event_request != self and
-                (event_request.initial_date <= self.initial_date <= event_request.final_date or
-                 event_request.initial_date <= self.final_date <= event_request.final_date) and
-                any(e.stand in (er.stand for er in event_stand_requests) for e in self_stand_requests)
+                    event_request != self and
+                    (event_request.initial_date <= self.initial_date <= event_request.final_date or
+                     event_request.initial_date <= self.final_date <= event_request.final_date) and
+                    any(e.stand in (er.stand for er in event_stand_requests) for e in self_stand_requests)
             ):
                 return True
         return False
@@ -131,9 +131,22 @@ class Catalog(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 
+class AdditionalServiceCategory(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class AdditionalServiceSubcategory(models.Model):
+    category = models.ForeignKey(AdditionalServiceCategory, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+
+
 class AdditionalService(models.Model):
     catalog = models.ForeignKey(Catalog, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+    subcategory = models.ForeignKey(AdditionalServiceSubcategory, on_delete=models.CASCADE)
     price = models.DecimalField(decimal_places=2, max_digits=100)
     image = models.ImageField()
     status = models.BooleanField()
@@ -142,15 +155,6 @@ class AdditionalService(models.Model):
         max_digits=4,
         validators=[MinValueValidator(0), MaxValueValidator(1)]
     )
-
-
-class AdditionalServiceCategory(models.Model):
-    name = models.CharField(max_length=100)
-
-
-class AdditionalServiceSubcategory(models.Model):
-    category = models.ForeignKey(AdditionalServiceCategory, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
 
 
 class AdditionalServiceReservation(models.Model):
