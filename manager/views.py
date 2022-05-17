@@ -3,29 +3,31 @@ from http import HTTPStatus
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.forms.models import model_to_dict
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils.dateparse import parse_date
 from django.views import View
-from django.views.generic import CreateView, TemplateView, FormView, ListView, DeleteView
+from django.views.generic import CreateView, DeleteView, FormView, ListView, TemplateView
 
 from manager.filters import EventRequestsFilter
-from django.forms.models import model_to_dict
-
 from manager.forms import (
-    EventRequestForm,
     AdditionalServiceCategoryForm,
-    NewUserForm,
+    AdditionalServiceForm,
     AdditionalServiceSubcategoryForm,
-    AdditionalServiceForm
+    EventRequestForm,
+    NewUserForm
 )
-
 from manager.models import (
-    EventRequest,
-    EventRequestStatus,
     AdditionalService,
     AdditionalServiceCategory,
-    AdditionalServiceSubcategory
+    AdditionalServiceSubcategory,
+    EventRequest,
+    EventRequestStand,
+    EventRequestStatus,
+    GridPosition,
+    Stand
 )
 
 
@@ -50,12 +52,50 @@ class EventRequestFormView(LoginRequiredMixin, FormView):
     form_class = EventRequestForm
     success_url = reverse_lazy("event-request-list")
 
-    def form_valid(self, form):
-        event_request: 'EventRequest' = form.save(commit=False)
-        event_request.entity = self.request.user
-        event_request.status = EventRequestStatus.PENDING_ON_MANAGER
+    def post(self, request, *args, **kwargs):
+        body = json.loads(self.request.body)
+        event_name = body.get('eventName')
+        initial_date = parse_date(body.get('initialDate'))
+        final_date = parse_date(body.get('finalDate'))
+        grid = body.get('grid')
+        if not event_name:
+            return JsonResponse({"status": "error", "content": "Invalid event name"}, status=HTTPStatus.BAD_REQUEST)
+
+        if not initial_date or not final_date:
+            return JsonResponse({"status": "error", "content": "Invalid dates"}, status=HTTPStatus.BAD_REQUEST)
+
+        if not grid:
+            return JsonResponse({"status": "error", "content": "Invalid grid selection"}, status=HTTPStatus.BAD_REQUEST)
+
+        event_request = EventRequest(
+            name=event_name,
+            initial_date=initial_date,
+            final_date=final_date,
+            entity=self.request.user,
+            status=EventRequestStatus.PENDING_ON_MANAGER
+        )
+
+        stands_requested = set()
+
+        grid_positions = [GridPosition.objects.get(x_position=row, y_position=col) for row, col in grid]
+        event_stand_requests = []
+        for grid_position in grid_positions:
+            stand_positions = GridPosition.objects.filter(stand=grid_position.stand)
+            if any(position not in grid_positions for position in stand_positions):
+                return JsonResponse(
+                    {"status": "error", "content": "An stand must be selected in its entirety"},
+                    status=HTTPStatus.BAD_REQUEST
+                )
+
+            if grid_position.stand not in stands_requested:
+                stands_requested.add(grid_position.stand)
+                event_stand_requests.append(EventRequestStand(event_request=event_request, stand=grid_position.stand))
+
         event_request.save()
-        return HttpResponseRedirect(self.get_success_url())
+        for event_stand_request in event_stand_requests:
+            event_stand_request.save()
+
+        return HttpResponse(status=HTTPStatus.OK)
 
 
 class EventRequestListView(LoginRequiredMixin, TemplateView):
@@ -196,3 +236,90 @@ class ServiceCreateView(LoginRequiredMixin, CreateView):
 def load_subcategories(request, category_id):
     subcategories = AdditionalServiceSubcategory.objects.filter(category_id=category_id).order_by('name')
     return render(request, 'subcategory_dropdown_list_options.html', {'subcategories': subcategories})
+
+
+class EventLayout(PermissionRequiredMixin, TemplateView):
+    template_name = "event_layout.html"
+    permission_required = "can_add_stand"
+
+
+class GridPositions(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        initial_date = parse_date(self.request.GET.get('initial_date'))
+        final_date = parse_date(self.request.GET.get('final_date'))
+        if not initial_date or not final_date:
+            return JsonResponse({"status": "error", "content": "Invalid format"}, status=HTTPStatus.BAD_REQUEST)
+
+        stands_same_date = [
+            stand_request.stand for stand_request in EventRequestStand.objects.filter(
+                event_request__in=EventRequest.objects.filter(
+                    status=EventRequestStatus.ACCEPTED
+                ).exclude(
+                    final_date__lt=initial_date,
+                ).exclude(
+                    initial_date__gt=final_date
+                ),
+            )
+        ]
+
+        positions = {}
+        for grid_position in GridPosition.objects.all():
+            if grid_position.stand is not None:
+                if grid_position.stand.id not in positions.keys():
+                    positions[grid_position.stand.id] = []
+                positions[grid_position.stand.id].append(
+                    {**model_to_dict(grid_position, exclude=['id', 'stand', 'creation_date', 'update_date']),
+                     **{"available": grid_position.stand not in stands_same_date}})
+
+        return JsonResponse({"status": "success", "content": positions}, status=HTTPStatus.OK)
+
+
+class GridStands(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        content = {}
+
+        for position in GridPosition.objects.all():
+            if position.stand is None:
+                if 'unassigned' not in content.keys():
+                    content['unassigned'] = []
+                content['unassigned'].append([position.x_position, position.y_position])
+            else:
+                if position.stand.id not in content.keys():
+                    content[position.stand.id] = []
+                content[position.stand.id].append([position.x_position, position.y_position])
+
+        return JsonResponse({"status": "success", "content": content}, status=HTTPStatus.OK)
+
+    def post(self, request, *args, **kwargs):
+        if not self.request.user.has_perm("change_grid_position"):
+            return JsonResponse({"status": "error", "content": "No permissions"}, status=HTTPStatus.FORBIDDEN)
+        try:
+            body = json.loads(self.request.body)
+        except:
+            return JsonResponse({"status": "error", "content": "Unexpected format"}, status=HTTPStatus.BAD_REQUEST)
+
+        positions = body.get('positions')
+        if positions is None:
+            return JsonResponse({"status": "error", "content": "Unexpected format"}, status=HTTPStatus.BAD_REQUEST)
+        stand = Stand()
+        stand.save()
+        new_grid_positions = []
+        for x, y in positions:
+            grid_position = GridPosition.objects.get(x_position=x, y_position=y)
+            if grid_position.stand is None:
+                grid_position.stand = stand
+                new_grid_positions.append(grid_position)
+            else:
+                return JsonResponse(
+                    {"status": "error", "content": "This position is already assigned"},
+                    status=HTTPStatus.BAD_REQUEST
+                )
+
+        for grid_position in new_grid_positions:
+            grid_position.save()
+        return JsonResponse(
+            {"status": "success", "content": f"Positions {positions} created successfully"},
+            status=HTTPStatus.OK
+        )

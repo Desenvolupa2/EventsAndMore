@@ -1,13 +1,13 @@
-from django.contrib.auth.forms import UserCreationForm
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm
 
 from manager.models import (
-    EventRequest,
-    Profile,
-    AdditionalServiceCategory,
     AdditionalService,
+    AdditionalServiceCategory,
     AdditionalServiceSubcategory,
+    EventRequest,
+    Profile
 )
 
 

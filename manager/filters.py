@@ -1,6 +1,6 @@
 import django_filters
 
-from manager.models import EventRequestStatus, EventRequest
+from manager.models import EventRequest, EventRequestStatus
 
 
 class EventRequestsFilter(django_filters.FilterSet):
@@ -9,4 +9,3 @@ class EventRequestsFilter(django_filters.FilterSet):
     class Meta:
         model = EventRequest
         fields = ['status']
-

@@ -1,8 +1,21 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block headers %}
+    <link rel="stylesheet" href="{% static 'css/event_grid.css' %}">
+    <script type="module" src="{% static 'js/event_grid/script.js' %}"></script>
+{% endblock %}
 {% block content %}
-    <form method="POST">
-        {% csrf_token %}
+    {% csrf_token %}
+    <div>
         {{ form.as_p }}
-        <input type="submit" value="Submit" class="btn btn-primary">
-    </form>
+        <div class="container">
+            <button type="button" class="btn btn-primary" id="button-all">All available</button>
+            <button type="button" class="btn btn-primary" id="button-left">Left Half</button>
+            <button type="button" class="btn btn-primary" id="button-right">Right Half</button>
+            <button type="button" class="btn btn-danger" id="button-reset">Reset selection</button>
+            <p><b>Space selected: </b> <span id="percentage">0.0</span>%</p>
+            <table id="grid" style="table-layout:fixed;"></table>
+        </div>
+        <button class="btn btn-primary" id="button-submit">Submit</button>
+    </div>
 {% endblock %}
