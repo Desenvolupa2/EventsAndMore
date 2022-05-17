@@ -23,6 +23,7 @@ from manager.models import (
     AdditionalService,
     AdditionalServiceCategory,
     AdditionalServiceSubcategory,
+    Event,
     EventRequest,
     EventRequestStand,
     EventRequestStatus,
@@ -140,6 +141,12 @@ class EventRequestUpdate(LoginRequiredMixin, View):
                 return JsonResponse({"status": "error", "content": "Invalid format"}, status=HTTPStatus.BAD_REQUEST)
 
         event_request.save()
+        if body.get("status") == EventRequestStatus.ACCEPTED:
+            Event.objects.create(
+                name=event_request.name,
+                initial_date=event_request.initial_date,
+                final_date=event_request.final_date,
+            )
         return JsonResponse({"status": "success", "content": model_to_dict(event_request)}, status=HTTPStatus.OK)
 
 

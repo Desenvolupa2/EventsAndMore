@@ -54,7 +54,7 @@ class Event(models.Model):
     description = models.CharField(max_length=1000)
     initial_date = models.DateField()
     final_date = models.DateField()
-    status = models.BooleanField()
+    status = models.BooleanField(default=True)
     image = models.ImageField()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
