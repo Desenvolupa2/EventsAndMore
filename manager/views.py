@@ -83,7 +83,7 @@ class EventRequestFormView(LoginRequiredMixin, FormView):
             stand_positions = GridPosition.objects.filter(stand=grid_position.stand)
             if any(position not in grid_positions for position in stand_positions):
                 return JsonResponse(
-                    {"status": "error", "content": "An stand must be selected in its entirety"},
+                    {"status": "error", "content": "A stand must be selected in its entirety"},
                     status=HTTPStatus.BAD_REQUEST
                 )
 
