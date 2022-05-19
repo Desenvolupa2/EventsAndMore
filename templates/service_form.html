@@ -2,10 +2,10 @@
 {% block content %}
     <form method="POST" enctype="multipart/form-data" id="serviceForm" novalidate>
         {% csrf_token %}
-        <h2>Introdueix nous serveis:</h2>
+        <h2>Introduce a new service:</h2>
         <br>
         {{ form.as_p }}
-        <input type="submit" value="Submit" class="btn btn-primary">
+        <input type="submit" value="Create a new service" class="btn btn-primary">
     </form>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
