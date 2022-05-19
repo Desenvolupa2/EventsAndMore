@@ -436,5 +436,4 @@ class ReserveAdditionalServices(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         # handle the Additional Services selections
-
         pass
