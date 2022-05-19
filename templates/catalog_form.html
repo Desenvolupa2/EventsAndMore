@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Crear catàleg" class="btn btn-primary">
+    </form>
+    <h1>Catalog list</h1>
+    {% for catalog in catalogs|dictsort:"name" %}
+        <div class="card" style="width: 45rem;">
+            <div class="card-body">
+                <h5 class="d-inline-block card-title">{{ catalog.name }}</h5>
+                <a href="{% url 'delete-catalog' catalog.id %}"
+                    class="btn btn-outline-danger btn-sm float-right">Delete category</a>
+            </div>
+        </div>
+    {% empty %}
+        <li>There are no catalogs yet</li>
+    {% endfor %}
+
+{% endblock %}

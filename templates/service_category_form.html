@@ -3,7 +3,7 @@
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="submit" value="Submit" class="btn btn-primary">
+        <input type="submit" value="Crear categoria" class="btn btn-primary">
     </form>
     <br>
     <h2 style='text-align:left'>
@@ -16,11 +16,10 @@
                     <h5 class="d-inline-block card-title">{{ category.name }}</h5>
                     <a href="{% url 'delete-service-category' category.id %}"
                     class="btn btn-outline-danger btn-sm float-right">Delete category</a>
-
                 </div>
             </div>
         </h6>
     {% empty %}
-        <li>No objects yet.</li>
+        <li>There are no categories yet</li>
     {% endfor %}
 {% endblock %}

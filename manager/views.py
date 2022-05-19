@@ -17,7 +17,8 @@ from manager.forms import (
     AdditionalServiceForm,
     AdditionalServiceSubcategoryForm,
     EventRequestForm,
-    NewUserForm
+    NewUserForm,
+    CatalogForm,
 )
 from manager.models import (
     AdditionalService,
@@ -27,7 +28,8 @@ from manager.models import (
     EventRequestStand,
     EventRequestStatus,
     GridPosition,
-    Stand
+    Stand,
+    Catalog,
 )
 
 
@@ -121,8 +123,8 @@ class EventRequestUpdate(LoginRequiredMixin, View):
         event_request = EventRequest.objects.get(id=pk)
 
         if not self.request.user.has_perm("change_event_request") and (
-            event_request.status is not EventRequestStatus.PENDING_ON_ORGANIZER
-            and event_request.entity is not self.request.user
+                event_request.status is not EventRequestStatus.PENDING_ON_ORGANIZER
+                and event_request.entity is not self.request.user
         ):
             return JsonResponse(
                 {"status": "error", "content": "You have no permissions. This request can't be updated"},
@@ -141,6 +143,39 @@ class EventRequestUpdate(LoginRequiredMixin, View):
 
         event_request.save()
         return JsonResponse({"status": "success", "content": model_to_dict(event_request)}, status=HTTPStatus.OK)
+
+
+# Create catalogs
+class CatalogCreateView(CreateView):
+    context = {}
+    template_name = 'catalog_form.html'
+    form_class = CatalogForm
+
+    def get_context_data(self, **kwargs):
+        context = super(CatalogCreateView, self).get_context_data(**kwargs)
+        context['catalogs'] = Catalog.objects.all()
+        return context
+
+    def get_success_url(self):
+        return self.request.path
+
+    def form_valid(self, form):
+        if self.request.user.has_perm('manager.add_catalog'):
+            form.save()
+            return super().form_valid(form)
+        else:
+            return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
+
+
+# Delete catalogs
+class DeleteCatalog(PermissionRequiredMixin, DeleteView):
+    model = Catalog
+    permission_required = "manager.delete_catalog"
+    template_name = 'catalog_delete.html'
+    success_url = reverse_lazy("catalog-control-panel")
+
+    def handle_no_permission(self):
+        return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
 
 
 # Add categories
