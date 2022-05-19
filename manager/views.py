@@ -2,6 +2,8 @@ import io
 import json
 import uuid
 from http import HTTPStatus
+from typing import List
+
 from reportlab.pdfgen import canvas
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -21,7 +23,7 @@ from manager.forms import (
     AdditionalServiceForm,
     AdditionalServiceSubcategoryForm,
     EventRequestForm,
-    NewUserForm
+    NewUserForm, StandForm
 )
 from manager.models import (
     AdditionalService,
@@ -32,7 +34,7 @@ from manager.models import (
     EventRequestStand,
     EventRequestStatus,
     GridPosition,
-    Stand
+    Stand, Reservation, ReservationStatus, ReservationContract, StandReservation
 )
 
 
@@ -356,3 +358,83 @@ class GridStands(LoginRequiredMixin, View):
             {"status": "success", "content": f"Positions {positions} created successfully"},
             status=HTTPStatus.OK
         )
+
+
+class ReserveStand(LoginRequiredMixin, FormView):
+    template_name = None
+    form_class = StandForm
+
+    def post(self, request, *args, **kwargs):
+        try:
+            body = json.loads(self.request.body)
+        except:
+            return JsonResponse({"status": "error", "content": "Unexpected format"}, status=HTTPStatus.BAD_REQUEST)
+        stands = body.get('stands')
+        event_id = body.get('event')
+        initial_date = parse_date(body.get('initial_date'))
+        final_date = parse_date(body.get('final_date'))
+        if not stands:
+            return JsonResponse({"status": "error", "content": "Invalid selection"}, status=HTTPStatus.BAD_REQUEST)
+
+        if not event_id:
+            return JsonResponse({"status": "error", "content": "Invalid event"}, status=HTTPStatus.BAD_REQUEST)
+
+        if not initial_date or not final_date:
+            return JsonResponse({"status": "error", "content": "Invalid dates"}, status=HTTPStatus.BAD_REQUEST)
+
+        stands_to_reserve = []
+        for grid_stand in stands:
+            positions = [GridPosition.objects.get(x_position=x, y_position=y) for x, y in grid_stand]
+            if all(positions[0].stand == position.stand for position in positions):
+                stands_to_reserve.append(positions[0].stand)
+            else:
+                return JsonResponse(
+                    {"status": "error", "content": "Can't select half stand"},
+                    status=HTTPStatus.UNPROCESSABLE_ENTITY
+                )
+
+        reservation = Reservation.objects.create(
+            initial_date=initial_date,
+            final_date=final_date,
+            status=ReservationStatus.PENDING
+        )
+
+        stand_reservations = [
+            StandReservation.objects.create(reservation=reservation, stand=stand)
+            for stand in stands_to_reserve
+        ]
+
+        ReservationContract.objects.create(
+            client=self.request.user,
+            booking=reservation,
+            file=self._generate_pdf_contract(reservation, stand_reservations)
+        )
+
+        return JsonResponse({"status": "success", "content": f"Reservation created successfully"})
+
+    def _generate_pdf_contract(
+        self,
+        reservation: 'Reservation',
+        stand_reservations: List['StandReservation']
+    ) -> io.BytesIO:
+        buffer = io.BytesIO()
+        p = canvas.Canvas(buffer)
+        p.drawString(100, 100, "Hello world.")  # TODO: Create contract (make up text for the contract)
+        p.showPage()
+        p.save()
+        buffer.seek(0)
+        return buffer
+
+
+class ReserveAdditionalServices(LoginRequiredMixin, View):
+    template_name = None
+
+    def get(self, request, *args, **kwargs):
+        # return template with all the StandReservations (1 for each stand)
+        # and allow to select additional services for each of them.
+        pass
+
+    def post(self, request, *args, **kwargs):
+        # handle the Additional Services selections
+
+        pass

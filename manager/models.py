@@ -78,9 +78,16 @@ class EventInvoice(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 
+class ReservationStatus(models.IntegerChoices):
+    DELETED = 0
+    PENDING = 1
+    CONFIRMED = 2
+
+
 class Reservation(models.Model):
     initial_date = models.DateField()
     final_date = models.DateField()
+    status = models.IntegerField(choices=ReservationStatus.choices)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
