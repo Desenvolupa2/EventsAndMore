@@ -36,9 +36,6 @@ class Selecting extends State {
         if (isAvailable(target)) {
             target.classList.toggle("selected");
             target.classList.toggle("available");
-            getPercentageSelected(this.context.cells).then(percentage => {
-                document.getElementById('percentage').innerText = (percentage * 100).toFixed(1);
-            });
         }
     }
 

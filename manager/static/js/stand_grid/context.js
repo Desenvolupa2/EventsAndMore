@@ -1,9 +1,4 @@
-import {
-    clearSelection,
-    getSelected,
-    sendRequest,
-    updateStand
-} from "../utils.js";
+import {clearSelection, getExtrems, getSelectedById, putBorders, sendRequest} from "../utils.js";
 import {Default} from "./states/default.js";
 import {Selecting} from "./states/selecting.js";
 
@@ -17,6 +12,7 @@ class Context {
 
         this.states = [new Default(this), new Selecting(this)];
         this.current = this.states[0];
+        this.eventId = null;
     }
 
     change(state, event) {
@@ -39,6 +35,26 @@ class Context {
 
     run() {
         let _this = this;
+        const url = window.location.pathname;
+        this.eventId = url.substring(url.lastIndexOf('/') + 1);
+        sendRequest('/stand-request-grid/?event=' + this.eventId, 'GET', null).then((response) => {
+            const content = response.data['content'];
+            for (const stand in content) {
+                const positions = content[stand]['positions']
+                const isAvailable = content[stand]['available'];
+                for (const [x, y] of positions) {
+                    const cell = this.cells[x][y]
+                    cell.innerText = parseInt(stand) + 1;
+                    cell.classList.toggle('empty');
+                    cell.classList.toggle(isAvailable ? 'available' : 'unavailable');
+                }
+                const [minRow, maxRow, minCol, maxCol] = getExtrems(content[stand]['positions']);
+                putBorders(_this.cells, content[stand]['positions'].length, minRow, minCol, maxRow, maxCol);
+            }
+            this.cloneCells();
+        })
+
+        // get all the grid positions associated with this event
 
         document.addEventListener("mouseup", function (event) {
             clearSelection()
@@ -57,7 +73,7 @@ class Context {
         document.getElementById("button-submit").addEventListener(
             "click",
             (event) => {
-                _this.submitEventRequest();
+                _this.submitStandRequest();
             }
         )
         document.getElementById("button-reset").addEventListener(
@@ -70,25 +86,30 @@ class Context {
         _this.current.run();
     };
 
-    submitEventRequest() {
-        const eventName = document.getElementById('id_name').value;
-        const initialDate = document.getElementById('id_initial_date').value;
-        const finalDate = document.getElementById('id_final_date').value;
-        const selectedGrid = getSelected(this.cells);
-
+    submitStandRequest() {
+        const wholeEvent = document.getElementById('whole-event').checked
+        const selectedGrid = getSelectedById(this.cells);
+        console.log(selectedGrid)
         const data = {
-            'eventName': eventName,
-            'initialDate': initialDate,
-            'finalDate': finalDate,
+            'wholeEvent': wholeEvent,
             'grid': selectedGrid
         }
 
-        sendRequest('/event-request/', 'POST', data).then(() => {
+        if (!wholeEvent) {
+            const initialDate = document.getElementById('id_initial_date').value;
+            const finalDate = document.getElementById('id_final_date').value;
+            data['initial_date'] = initialDate
+            data['final_date'] = finalDate
+        }
+
+        sendRequest('/stand-request/' + this.eventId, 'POST', data).then(() => {
             Swal.fire(
                 'Success!',
-                'Your event request has been submitted.',
+                'Your stand has been submitted.',
                 'success'
-            ).then(() => { window.location.replace('/event-requests/')})
+            ).then(() => {
+                window.location.replace('/')
+            })
         }).catch((r) => {
             console.log("response", r.response);
             Swal.fire({
@@ -98,17 +119,6 @@ class Context {
             })
         });
 
-    }
-
-    updateAvailablePositions() {
-        const url = '/grid-positions/?initial_date=' + initialDate + '&final_date=' + finalDate;
-        sendRequest(url, 'GET', null).then((response) => {
-            const content = response.data['content'];
-            for (const stand in content) {
-                updateStand(this, stand, content[stand]).then(_ => {
-                })
-            }
-        })
     }
 
 }

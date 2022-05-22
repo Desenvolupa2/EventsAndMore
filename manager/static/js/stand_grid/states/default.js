@@ -1,5 +1,4 @@
 import {Selecting} from './selecting.js';
-import {getPercentageSelected} from "../../utils.js";
 
 class Default {
 
@@ -30,9 +29,6 @@ class Default {
                 this.context.cells[i][j].classList = this.context.cellsCopy[i][j].classList;
             }
         }
-        getPercentageSelected(this.context.cells).then(percentage => {
-            document.getElementById('percentage').innerText = (percentage * 100).toFixed(1);
-        });
     }
 }
 

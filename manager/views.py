@@ -4,8 +4,6 @@ import uuid
 from http import HTTPStatus
 from typing import List
 
-from reportlab.pdfgen import canvas
-
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.core.files import File
@@ -15,7 +13,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.dateparse import parse_date
 from django.views import View
-from django.views.generic import CreateView, DeleteView, FormView, ListView, TemplateView
+from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView
+from reportlab.pdfgen import canvas
 
 from manager.filters import EventRequestsFilter
 from manager.forms import (
@@ -25,17 +24,9 @@ from manager.forms import (
     EventRequestForm,
     NewUserForm, StandForm
 )
-from manager.models import (
-    AdditionalService,
-    AdditionalServiceCategory,
-    AdditionalServiceSubcategory,
-    Event,
-    EventContract, EventInvoice, EventRequest,
-    EventRequestStand,
-    EventRequestStatus,
-    GridPosition,
-    Stand, Reservation, ReservationStatus, ReservationContract, StandReservation
-)
+from manager.models import (AdditionalService, AdditionalServiceCategory, AdditionalServiceSubcategory, Event,
+                            EventContract, EventInvoice, EventRequest, EventRequestStand, EventRequestStatus,
+                            GridPosition, Reservation, ReservationContract, ReservationStatus, Stand, StandReservation)
 
 
 class Home(TemplateView):
@@ -171,7 +162,7 @@ class EventRequestUpdate(LoginRequiredMixin, View):
     def _generate_pdf_contract(self, event_request: 'EventRequest') -> io.BytesIO:
         buffer = io.BytesIO()
         p = canvas.Canvas(buffer)
-        p.drawString(100, 100, "Hello world.")  # TODO: Create contract (make up text for the contract)
+        p.drawString(100, 100, "Event contract.")  # TODO: Create contract (make up text for the contract)
         p.showPage()
         p.save()
         buffer.seek(0)
@@ -361,7 +352,7 @@ class GridStands(LoginRequiredMixin, View):
 
 
 class ReserveStand(LoginRequiredMixin, FormView):
-    template_name = None
+    template_name = "stand_form.html"
     form_class = StandForm
 
     def post(self, request, *args, **kwargs):
@@ -369,21 +360,35 @@ class ReserveStand(LoginRequiredMixin, FormView):
             body = json.loads(self.request.body)
         except:
             return JsonResponse({"status": "error", "content": "Unexpected format"}, status=HTTPStatus.BAD_REQUEST)
-        stands = body.get('stands')
-        event_id = body.get('event')
-        initial_date = parse_date(body.get('initial_date'))
-        final_date = parse_date(body.get('final_date'))
+        event_id = kwargs.get('pk')
+        stands = body.get('grid')
+        whole_event = body.get('wholeEvent')
+
         if not stands:
             return JsonResponse({"status": "error", "content": "Invalid selection"}, status=HTTPStatus.BAD_REQUEST)
 
         if not event_id:
             return JsonResponse({"status": "error", "content": "Invalid event"}, status=HTTPStatus.BAD_REQUEST)
 
-        if not initial_date or not final_date:
-            return JsonResponse({"status": "error", "content": "Invalid dates"}, status=HTTPStatus.BAD_REQUEST)
+        event = Event.objects.get(pk=event_id)
+
+        initial_date = None
+        final_date = None
+        if not whole_event:
+            initial_date = parse_date(body.get('initial_date'))
+            final_date = parse_date(body.get('final_date'))
+
+            if not initial_date or not final_date:
+                return JsonResponse({"status": "error", "content": "Invalid dates"}, status=HTTPStatus.BAD_REQUEST)
+
+            if initial_date < event.initial_date or final_date > event.final_date:
+                return JsonResponse(
+                    {"status": "error", "content": "Dates are outside the duration of the event"},
+                    status=HTTPStatus.BAD_REQUEST
+                )
 
         stands_to_reserve = []
-        for grid_stand in stands:
+        for grid_stand in stands.values():
             positions = [GridPosition.objects.get(x_position=x, y_position=y) for x, y in grid_stand]
             if all(positions[0].stand == position.stand for position in positions):
                 stands_to_reserve.append(positions[0].stand)
@@ -394,8 +399,9 @@ class ReserveStand(LoginRequiredMixin, FormView):
                 )
 
         reservation = Reservation.objects.create(
-            initial_date=initial_date,
-            final_date=final_date,
+            event=event,
+            initial_date=initial_date or event.initial_date,
+            final_date=final_date or event.final_date,
             status=ReservationStatus.PENDING
         )
 
@@ -403,11 +409,13 @@ class ReserveStand(LoginRequiredMixin, FormView):
             StandReservation.objects.create(reservation=reservation, stand=stand)
             for stand in stands_to_reserve
         ]
-
+        pdf_buffer = self._generate_pdf_contract(reservation, stand_reservations)
+        contract_uuid = uuid.uuid4()
         ReservationContract.objects.create(
+            uuid=contract_uuid,
             client=self.request.user,
             booking=reservation,
-            file=self._generate_pdf_contract(reservation, stand_reservations)
+            file=File(pdf_buffer, name=f"{contract_uuid}.pdf")
         )
 
         return JsonResponse({"status": "success", "content": f"Reservation created successfully"})
@@ -419,7 +427,7 @@ class ReserveStand(LoginRequiredMixin, FormView):
     ) -> io.BytesIO:
         buffer = io.BytesIO()
         p = canvas.Canvas(buffer)
-        p.drawString(100, 100, "Hello world.")  # TODO: Create contract (make up text for the contract)
+        p.drawString(100, 100, "Stand reservation.")  # TODO: Create contract (make up text for the contract)
         p.showPage()
         p.save()
         buffer.seek(0)
@@ -437,3 +445,29 @@ class ReserveAdditionalServices(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         # handle the Additional Services selections
         pass
+
+
+class EventDetail(DetailView):
+    model = Event
+    context_object_name = "event"
+    template_name = "event_detail.html"
+
+
+class StandRequestGrid(View):
+
+    def get(self, request, *args, **kwargs):
+        event_id = self.request.GET.get('event')
+        if not event_id:
+            return JsonResponse("Invalid event", status=HTTPStatus.BAD_REQUEST)
+
+        event_request = EventRequest.objects.get(eventcontract=EventContract.objects.get(event_id=event_id))
+        stands = [e.stand for e in EventRequestStand.objects.filter(event_request=event_request)]
+        out = []
+        for stand in stands:
+            positions = [[gp.x_position, gp.y_position] for gp in GridPosition.objects.filter(stand=stand)]
+            is_available = StandReservation.objects.filter(
+                stand=stand,
+                reservation__in=Reservation.objects.filter(event_id=event_id)  # TODO: also filter by date
+            ).count() == 0
+            out.append({"available": is_available, "positions": positions})
+        return JsonResponse({"status": "success", "content": out}, status=HTTPStatus.OK)

@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    {{ event.name }}
+    <a href="{% url 'stand-request' pk=event.id%}">Reserve an stand</a>
+{% endblock %}

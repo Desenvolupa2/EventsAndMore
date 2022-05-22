@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.forms import ModelForm, Form
+from django.forms import Form, ModelForm
 
 from manager.models import (
     AdditionalService,
@@ -45,6 +45,7 @@ class AdditionalServiceSubcategoryForm(ModelForm):
 
 class AdditionalServiceForm(ModelForm):
     category = forms.ModelChoiceField(queryset=AdditionalServiceCategory.objects.all())
+
     class Meta:
         model = AdditionalService
         fields = ('name', 'category', 'subcategory', 'price', 'taxes', 'image')
@@ -63,11 +64,5 @@ class AdditionalServiceForm(ModelForm):
 
 
 class StandForm(Form):
-    initial_date = forms.DateField()
-    final_date = forms.DateField()
-
-    class Meta:
-        widgets = {
-            'initial_date': DateInput(),
-            'final_date': DateInput()
-        }
+    initial_date = forms.DateField(widget=DateInput)
+    final_date = forms.DateField(widget=DateInput)

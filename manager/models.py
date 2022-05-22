@@ -32,11 +32,11 @@ class EventRequest(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     @property
-    def status_name(self):
+    def status_name(self) -> str:
         return " ".join(EventRequestStatus(self.status).name.split("_"))
 
     @property
-    def has_conflicts(self):
+    def has_conflicts(self) -> bool:
         self_stand_requests = EventRequestStand.objects.filter(event_request=self)
         for event_request in EventRequest.objects.filter(status=EventRequestStatus.ACCEPTED):
             event_stand_requests = EventRequestStand.objects.filter(event_request=event_request)
@@ -48,6 +48,11 @@ class EventRequest(models.Model):
             ):
                 return True
         return False
+
+    @property
+    def related_event(self) -> 'Event':
+        contract = EventContract.objects.get(event_request=self)
+        return contract.event
 
 
 class Event(models.Model):
@@ -85,6 +90,7 @@ class ReservationStatus(models.IntegerChoices):
 
 
 class Reservation(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     initial_date = models.DateField()
     final_date = models.DateField()
     status = models.IntegerField(choices=ReservationStatus.choices)
@@ -93,6 +99,7 @@ class Reservation(models.Model):
 
 
 class ReservationContract(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     client = models.ForeignKey(Profile, on_delete=models.CASCADE)
     booking = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     file = models.FileField(null=False)

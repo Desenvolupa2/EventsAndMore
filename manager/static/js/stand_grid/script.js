@@ -1,5 +1,18 @@
 import {Context} from "./context.js";
 
+
+export function toggleDateSelect() {
+    const whole = document.getElementById('whole-event');
+    const custom = document.getElementById('custom-days');
+    if (whole.checked) {
+        document.getElementById('date-selector').classList.add('d-none')
+    } else if(custom.checked) {
+        document.getElementById('date-selector').classList.remove('d-none')
+    }
+}
+
+window.toggleDateSelect = toggleDateSelect;
+
 function initializeGrid(rows, columns) {
     let grid = document.getElementById("grid")
     let cells = []
