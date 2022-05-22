@@ -453,7 +453,7 @@ class EventDetail(DetailView):
     template_name = "event_detail.html"
 
 
-class StandRequestGrid(View):
+class StandRequestGrid(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         event_id = self.request.GET.get('event')
@@ -471,3 +471,17 @@ class StandRequestGrid(View):
             ).count() == 0
             out.append({"available": is_available, "positions": positions})
         return JsonResponse({"status": "success", "content": out}, status=HTTPStatus.OK)
+
+
+class StandReservations(LoginRequiredMixin, ListView):
+    model = StandReservation
+    template_name = "stand_reservations.html"
+    context_object_name = "stand_reservations"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        user_reservations = Reservation.objects.filter(
+            reservationcontract__in=ReservationContract.objects.filter(client=self.request.user)
+        )
+        context['stand_reservations'].filter(reservation__in=user_reservations)
+        return context

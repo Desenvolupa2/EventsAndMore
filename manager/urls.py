@@ -13,6 +13,7 @@ urlpatterns = [
     path('stand-request-grid/', StandRequestGrid.as_view(), name='stand-request-grid'),
     path('event-request/', EventRequestFormView.as_view(), name="event-request-form"),
     path('event-requests/', EventRequestListView.as_view(), name="event-request-list"),
+    path('stand-reservations/', StandReservations.as_view(), name="stand-reservation-list"),
     path('event-requests/<int:pk>/', EventRequestUpdate.as_view(), name="event-request-update"),
     path('service-category/', AdditionalServiceCategoryCreateView.as_view(), name="service-category"),
     path('service-subcategory/', AdditionalServiceSubcategoryCreateView.as_view(), name="service-subcategory"),

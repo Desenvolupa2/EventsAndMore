@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    {% regroup stand_reservations by reservation.event as reservations_by_event %}
+
+    {% for event_grouper in reservations_by_event %}
+        <h3>Event: {{ event_grouper.grouper.name }}</h3>
+        {% for stand_reservation in event_grouper.list %}
+            <p>Stand {{ stand_reservation.stand.pk }}</p>
+        {% endfor %}
+    {% endfor %}
+
+{% endblock %}
