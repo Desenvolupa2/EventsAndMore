@@ -11,6 +11,13 @@
    -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
+input, input:before, input:after {
+  -webkit-user-select: initial;
+  -moz-user-select: initial;
+  -ms-user-select: initial;
+  user-select: initial;
+}
+
 
 .cell {
     user-select: none;
