@@ -2,7 +2,7 @@ import io
 import json
 import uuid
 from http import HTTPStatus
-from reportlab.pdfgen import canvas
+from typing import List
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView
@@ -13,7 +13,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.dateparse import parse_date
 from django.views import View
-from django.views.generic import CreateView, DeleteView, FormView, ListView, TemplateView
+from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView
+from reportlab.pdfgen import canvas
 
 from manager.filters import EventRequestsFilter
 from manager.forms import (
@@ -21,21 +22,11 @@ from manager.forms import (
     AdditionalServiceForm,
     AdditionalServiceSubcategoryForm,
     EventRequestForm,
-    NewUserForm,
-    CatalogForm,
+    NewUserForm, StandForm
 )
-from manager.models import (
-    AdditionalService,
-    AdditionalServiceCategory,
-    AdditionalServiceSubcategory,
-    Event,
-    EventContract, EventInvoice, EventRequest,
-    EventRequestStand,
-    EventRequestStatus,
-    GridPosition,
-    Stand,
-    Catalog,
-)
+from manager.models import (AdditionalService, AdditionalServiceCategory, AdditionalServiceSubcategory, Event,
+                            EventContract, EventInvoice, EventRequest, EventRequestStand, EventRequestStatus,
+                            GridPosition, Reservation, ReservationContract, ReservationStatus, Stand, StandReservation)
 
 
 class Home(TemplateView):
@@ -128,8 +119,8 @@ class EventRequestUpdate(LoginRequiredMixin, View):
         event_request = EventRequest.objects.get(id=pk)
 
         if not self.request.user.has_perm("change_event_request") and (
-                event_request.status is not EventRequestStatus.PENDING_ON_ORGANIZER
-                and event_request.entity is not self.request.user
+            event_request.status is not EventRequestStatus.PENDING_ON_ORGANIZER
+            and event_request.entity is not self.request.user
         ):
             return JsonResponse(
                 {"status": "error", "content": "You have no permissions. This request can't be updated"},
@@ -171,44 +162,11 @@ class EventRequestUpdate(LoginRequiredMixin, View):
     def _generate_pdf_contract(self, event_request: 'EventRequest') -> io.BytesIO:
         buffer = io.BytesIO()
         p = canvas.Canvas(buffer)
-        p.drawString(100, 100, "Hello world.")  # TODO: Create contract (make up text for the contract)
+        p.drawString(100, 100, "Event contract.")  # TODO: Create contract (make up text for the contract)
         p.showPage()
         p.save()
         buffer.seek(0)
         return buffer
-
-
-# Create catalogs
-class CatalogCreateView(CreateView):
-    context = {}
-    template_name = 'catalog_form.html'
-    form_class = CatalogForm
-
-    def get_context_data(self, **kwargs):
-        context = super(CatalogCreateView, self).get_context_data(**kwargs)
-        context['catalogs'] = Catalog.objects.all()
-        return context
-
-    def get_success_url(self):
-        return self.request.path
-
-    def form_valid(self, form):
-        if self.request.user.has_perm('manager.add_catalog'):
-            form.save()
-            return super().form_valid(form)
-        else:
-            return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
-
-
-# Delete catalogs
-class DeleteCatalog(PermissionRequiredMixin, DeleteView):
-    model = Catalog
-    permission_required = "manager.delete_catalog"
-    template_name = 'catalog_delete.html'
-    success_url = reverse_lazy("catalog-control-panel")
-
-    def handle_no_permission(self):
-        return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
 
 
 # Add categories
@@ -391,3 +349,139 @@ class GridStands(LoginRequiredMixin, View):
             {"status": "success", "content": f"Positions {positions} created successfully"},
             status=HTTPStatus.OK
         )
+
+
+class ReserveStand(LoginRequiredMixin, FormView):
+    template_name = "stand_form.html"
+    form_class = StandForm
+
+    def post(self, request, *args, **kwargs):
+        try:
+            body = json.loads(self.request.body)
+        except:
+            return JsonResponse({"status": "error", "content": "Unexpected format"}, status=HTTPStatus.BAD_REQUEST)
+        event_id = kwargs.get('pk')
+        stands = body.get('grid')
+        whole_event = body.get('wholeEvent')
+
+        if not stands:
+            return JsonResponse({"status": "error", "content": "Invalid selection"}, status=HTTPStatus.BAD_REQUEST)
+
+        if not event_id:
+            return JsonResponse({"status": "error", "content": "Invalid event"}, status=HTTPStatus.BAD_REQUEST)
+
+        event = Event.objects.get(pk=event_id)
+
+        initial_date = None
+        final_date = None
+        if not whole_event:
+            initial_date = parse_date(body.get('initial_date'))
+            final_date = parse_date(body.get('final_date'))
+
+            if not initial_date or not final_date:
+                return JsonResponse({"status": "error", "content": "Invalid dates"}, status=HTTPStatus.BAD_REQUEST)
+
+            if initial_date < event.initial_date or final_date > event.final_date:
+                return JsonResponse(
+                    {"status": "error", "content": "Dates are outside the duration of the event"},
+                    status=HTTPStatus.BAD_REQUEST
+                )
+
+        stands_to_reserve = []
+        for grid_stand in stands.values():
+            positions = [GridPosition.objects.get(x_position=x, y_position=y) for x, y in grid_stand]
+            if all(positions[0].stand == position.stand for position in positions):
+                stands_to_reserve.append(positions[0].stand)
+            else:
+                return JsonResponse(
+                    {"status": "error", "content": "Can't select half stand"},
+                    status=HTTPStatus.UNPROCESSABLE_ENTITY
+                )
+
+        reservation = Reservation.objects.create(
+            event=event,
+            initial_date=initial_date or event.initial_date,
+            final_date=final_date or event.final_date,
+            status=ReservationStatus.PENDING
+        )
+
+        stand_reservations = [
+            StandReservation.objects.create(reservation=reservation, stand=stand)
+            for stand in stands_to_reserve
+        ]
+        pdf_buffer = self._generate_pdf_contract(reservation, stand_reservations)
+        contract_uuid = uuid.uuid4()
+        ReservationContract.objects.create(
+            uuid=contract_uuid,
+            client=self.request.user,
+            booking=reservation,
+            file=File(pdf_buffer, name=f"{contract_uuid}.pdf")
+        )
+
+        return JsonResponse({"status": "success", "content": f"Reservation created successfully"})
+
+    def _generate_pdf_contract(
+        self,
+        reservation: 'Reservation',
+        stand_reservations: List['StandReservation']
+    ) -> io.BytesIO:
+        buffer = io.BytesIO()
+        p = canvas.Canvas(buffer)
+        p.drawString(100, 100, "Stand reservation.")  # TODO: Create contract (make up text for the contract)
+        p.showPage()
+        p.save()
+        buffer.seek(0)
+        return buffer
+
+
+class ReserveAdditionalServices(LoginRequiredMixin, View):
+    template_name = None
+
+    def get(self, request, *args, **kwargs):
+        # return template with all the StandReservations (1 for each stand)
+        # and allow to select additional services for each of them.
+        pass
+
+    def post(self, request, *args, **kwargs):
+        # handle the Additional Services selections
+        pass
+
+
+class EventDetail(DetailView):
+    model = Event
+    context_object_name = "event"
+    template_name = "event_detail.html"
+
+
+class StandRequestGrid(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        event_id = self.request.GET.get('event')
+        if not event_id:
+            return JsonResponse("Invalid event", status=HTTPStatus.BAD_REQUEST)
+
+        event_request = EventRequest.objects.get(eventcontract=EventContract.objects.get(event_id=event_id))
+        stands = [e.stand for e in EventRequestStand.objects.filter(event_request=event_request)]
+        out = []
+        for stand in stands:
+            positions = [[gp.x_position, gp.y_position] for gp in GridPosition.objects.filter(stand=stand)]
+            is_available = StandReservation.objects.filter(
+                stand=stand,
+                reservation__in=Reservation.objects.filter(event_id=event_id)  # TODO: also filter by date
+            ).count() == 0
+            out.append({"available": is_available, "positions": positions})
+        return JsonResponse({"status": "success", "content": out}, status=HTTPStatus.OK)
+
+
+class StandReservations(LoginRequiredMixin, ListView):
+    model = StandReservation
+    template_name = "stand_reservations.html"
+    context_object_name = "stand_reservations"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        user_reservations = Reservation.objects.filter(
+            reservationcontract__in=ReservationContract.objects.filter(client=self.request.user)
+        )
+        context['stand_reservations'].filter(reservation__in=user_reservations)
+        return context

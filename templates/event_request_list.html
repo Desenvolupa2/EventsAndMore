@@ -31,14 +31,20 @@
                 <tr class="bg-light">
                     <th scope="col" colspan="7" style="text-align: center">{{ type.grouper }}</th>
                 </tr>
-                {% for event in type.list|dictsort:"initial_date" %}
+                {% for event_request in type.list|dictsort:"initial_date" %}
                     <tr>
-                        <td>{{ event.name }}</td>
-                        <td>{{ event.initial_date }}</td>
-                        <td>{{ event.final_date }}</td>
                         <td>
-                            {% if event.status != 3 %}
-                                {% if event.has_conflicts %}
+                            {% if event_request.status == 3 %}
+                                <a href="{% url 'event-detail' pk=event_request.related_event.id %}">{{ event_request.name }}</a>
+                            {% else %}
+                                <p>{{ event_request.name }}</p>
+                            {% endif %}
+                        </td>
+                        <td>{{ event_request.initial_date }}</td>
+                        <td>{{ event_request.final_date }}</td>
+                        <td>
+                            {% if event_request.status != 3 %}
+                                {% if event_request.has_conflicts %}
                                     <span class="badge badge-danger">Conflicts</span>
                                 {% else %}
                                     <span class="badge badge-success">No conflicts</span>
@@ -46,21 +52,21 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if perms.manager.change_event_request and event.status != 3 and not event.has_conflicts%}
-                                <button class="btn btn-primary" onclick="acceptEvent({{ event.id }})"><i
+                            {% if perms.manager.change_event_request and event_request.status != 3 and not event_request.has_conflicts %}
+                                <button class="btn btn-primary" onclick="acceptEvent({{ event_request.id }})"><i
                                         class="fas fa-check"></i>
                                 </button>
                             {% endif %}
                         </td>
                         <td>
-                            {% if perms.manager.change_event_request and event.status != 3 %}
-                                <button class="btn btn-warning" onclick="changeEventDate({{ event.id }})"><i
+                            {% if perms.manager.change_event_request and event_request.status != 3 %}
+                                <button class="btn btn-warning" onclick="changeEventDate({{ event_request.id }})"><i
                                         class="far fa-edit"></i></button>
                             {% endif %}
                         </td>
                         <td>
-                            {% if perms.manager.change_event_request and event.status != 3 and event.status != 4 %}
-                                <button class="btn btn-danger" onclick="denyEvent({{ event.id }})"><i
+                            {% if perms.manager.change_event_request and event_request.status != 3 and event_request.status != 4 %}
+                                <button class="btn btn-danger" onclick="denyEvent({{ event_request.id }})"><i
                                         class="fas fa-times"></i>
                                 </button>
                             {% endif %}
