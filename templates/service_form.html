@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+    {% if request.user.is_staff %}
     <form method="POST" enctype="multipart/form-data" id="serviceForm" novalidate>
         {% csrf_token %}
         <h2>Introduce a new service:</h2>
@@ -20,4 +21,10 @@
             });
         });
     </script>
+    {% else %}
+        <h2>You must be logged in as staff member to create a new service</h2>
+    {% endif %}
+    <br>
+    <br>
+    <button type="button" class="btn btn-outline-info" onclick="history.back()">Go Back</button>
 {% endblock %}

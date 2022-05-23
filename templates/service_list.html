@@ -2,7 +2,10 @@
 {% block content %}
     {% csrf_token %}
     <h1>Services lists</h1>
-    <a href="{% url 'service-control-panel' %}" class="btn btn-primary" role="button">Crea un nou servei</a>
+    {% if request.user.is_staff %}
+        <a href="{% url 'service-control-panel' %}" class="btn btn-primary" role="button">Add new service!</a>
+    {% endif %}
+    <br>
     {% for service in services|dictsort:"name" %}
         <div class="card" style="width: 45rem;">
             <div class="card-body">
@@ -12,5 +15,4 @@
     {% empty %}
         <li>No objects yet.</li>
     {% endfor %}
-
 {% endblock %}

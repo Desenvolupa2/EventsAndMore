@@ -34,23 +34,10 @@
     <div class="container-fluid">
         <a class="navbar-brand btn font-weight-bold" href="{% url 'home' %}">EventsAndMore</a>
         <ul class="navbar-nav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item dropdown pe-2 py-1">
-                    <a class="nav-link dropdown-toggle btn btn-outline-light text-light mr-3 py-2"
-                       href="#" id="navbarDropdown" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        Reserve
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item bg-light" href="{% url 'event-request-form' %}">Reserve an event</a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item bg-light" href="#workInProgress">Reserve a stand</a></li>
-                    </ul>
-                </li>
-            </ul>
+            <li class="nav-item pe-2 py-1">
+                <a role="button" class="btn btn-outline-light mr-3 py-2"
+                   href="{% url 'home' %}">Events list</a>
+            </li>
             {% if request.user.is_authenticated %}
                 <li class="nav-item dropdown pe-2 py-1">
                     <a class="nav-link dropdown-toggle btn btn-outline-light text-light mr-3 py-2"
@@ -63,24 +50,67 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item bg-light" href="{% url 'catalog-control-panel' %}">Catalogs</a></li>
+                        {#                        <li><a class="dropdown-item bg-light" href="{% url 'catalog-control-panel' %}">Catalogs</a></li>#}
                         <li><a class="dropdown-item bg-light" href="{% url 'service-category' %}">Service categories</a>
                         </li>
                         <li><a class="dropdown-item bg-light" href="{% url 'service-subcategory' %}">Service
                             subcategories</a></li>
                     </ul>
                 </li>
+                {% if not request.user.is_staff %}
+                    <li class="nav-item dropdown pe-2 py-1">
+                        <a class="nav-link dropdown-toggle btn btn-outline-light text-light mr-3 py-2"
+                           href="#" id="navbarDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            My account
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item bg-light" href="{% url 'event-request-form' %}">Reserve an
+                                event</a>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item bg-light" href="{% url 'event-request-list' %}">My events</a>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item bg-light" href="{% url 'stand-reservation-list' %}">Stand
+                                Reservations</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
                 {% if request.user.is_staff %}
-                    <li class="nav-item pe-2 py-1">
-                        <a role="button" class="btn btn-outline-light mr-3 py-2" href="{% url 'service-control-panel' %}">Gestió
-                            administrativa</a>
-                    </li>
+                    <li class="nav-item dropdown pe-2 py-1">
+                        <a class="nav-link dropdown-toggle btn btn-outline-light text-light mr-3 py-2"
+                           href="#" id="navbarDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Admin
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
 
-                    <li class="nav-item pe-2 py-1">
-                        <a role="button" class="btn btn-outline-light mr-3 py-2"
-                           href="{% url 'event-request-list' %}">Gestió de reserves</a>
-                    </li>
+{% comment %}
+                            <li><a class="dropdown-item bg-light" href="{% url 'catalog-control-panel' %}">Catalogs</a></li>
+{% endcomment %}
 
+                            <li><a class="dropdown-item bg-light" href="{% url 'event-request-form' %}">Reserve an
+                                event</a>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item bg-light" href="{% url 'event-request-list' %}">Manage
+                                Reservations</a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item bg-light" href="{% url 'event-layout' %}">Event Layout</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item bg-light" href="{% url 'stand-reservation-list' %}">Stand
+                                Reservation</a></li>
+                        </ul>
+                    </li>
                 {% endif %}
                 <li class="nav-item pe-2 py-1">
                     <a role="button" class="btn btn-outline-light mr-3 py-2"

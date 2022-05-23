@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
     <div>
-    <a class="align-content-center font-italic">
-        <h1>Welcome to EventsAndMore. Please, feel free to make reservations, hire services and more!</h1>
-    </a>
+        <a class="align-content-center">
+            <h1>Welcome to EventsAndMore!</h1>
+            <h4>Here you can find all the events you want to attend!</h4>
+            <h1>and...</h1>
+            <img src="{% static "images/plan_your_next_event_here.gif" %}"
+                 alt="Plan your next event here" width="480px" height="140px">
+            <h4>You can also create your events, reservations, hire services</h4>
+            <h2>and MORE!!!</h2>
+        </a>
     </div>
 {% endblock %}
