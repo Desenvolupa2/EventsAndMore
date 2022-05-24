@@ -483,5 +483,5 @@ class StandReservations(LoginRequiredMixin, ListView):
         user_reservations = Reservation.objects.filter(
             reservationcontract__in=ReservationContract.objects.filter(client=self.request.user)
         )
-        context['stand_reservations'].filter(reservation__in=user_reservations)
+        context['stand_reservations'] = context['stand_reservations'].filter(reservation__in=user_reservations)
         return context
