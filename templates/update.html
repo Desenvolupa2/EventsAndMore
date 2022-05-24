@@ -1,0 +1,24 @@
+{% load i18n %}
+<form method="post" action="{% url 'account_update' request.user.pk %}" enctype="multipart/form-data" class="needs-validation" novalidate>
+    {% csrf_token %}
+    <div class="form-group">
+        {% with field=form.username %}{% include "form_field.html" %}{% endwith %}
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            {% with field=form.email %}{% include "form_field.html" %}{% endwith %}
+        </div>
+        <div class="form-group col-md-6">
+            {% with field=form.address %}{% include "form_field.html" %}{% endwith %}
+        </div>
+        <div class="form-group col-md-6">
+            {% with field=form.password %}{% include "form_field.html" %}{% endwith %}
+        </div>
+    </div>
+
+    <div class="text-center py-2">
+    <small>
+        <a href="{% url 'account_delete' request.user.pk %}" class="text-muted">{% trans "Esborra la meva compta" %}</a>
+    </small>
+</div>
+</form>

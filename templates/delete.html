@@ -1,0 +1,6 @@
+{% load i18n %}
+<form method="post">
+    {% csrf_token %}
+    <p>{% trans "Estàs segur que vols eliminar el teu compte" %} {{ object.email }}?</p>
+    <button type="submit" class="btn btn-danger">{% trans "Eliminar" %}</button>
+</form>

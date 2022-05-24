@@ -7,7 +7,8 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, TemplateView, FormView, ListView, DeleteView
+from django.views.generic import CreateView, TemplateView, FormView, ListView, DeleteView, UpdateView
+
 
 from manager.filters import EventRequestsFilter
 from django.forms.models import model_to_dict
@@ -17,14 +18,15 @@ from manager.forms import (
     AdditionalServiceCategoryForm,
     NewUserForm,
     AdditionalServiceSubcategoryForm,
-    AdditionalServiceForm
+    AdditionalServiceForm,
+    CustomUserUpdateForm
 )
 from manager.models import (
     EventRequest,
     EventRequestStatus,
     AdditionalService,
     AdditionalServiceCategory,
-    AdditionalServiceSubcategory
+    AdditionalServiceSubcategory,
 )
 
 
@@ -192,6 +194,16 @@ class ServiceCreateView(LoginRequiredMixin, CreateView):
             return super().form_valid(form)
         else:
             return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
+
+
+class CustomUserUpdateView(UpdateView):
+    model = NewUserForm
+    form_class = CustomUserUpdateForm
+
+
+class CustomUserDeleteView(DeleteView):
+    model = NewUserForm
+    success_url = reverse_lazy('account_signup')
 
 
 def load_subcategories(request, category_id):
