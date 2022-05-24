@@ -147,6 +147,9 @@ class Catalog(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.name
+
 
 class AdditionalServiceCategory(models.Model):
     name = models.CharField(max_length=100)
@@ -158,6 +161,9 @@ class AdditionalServiceCategory(models.Model):
 class AdditionalServiceSubcategory(models.Model):
     category = models.ForeignKey(AdditionalServiceCategory, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 
 class AdditionalService(models.Model):
@@ -172,6 +178,9 @@ class AdditionalService(models.Model):
         max_digits=4,
         validators=[MinValueValidator(0), MaxValueValidator(1)]
     )
+
+    def __str__(self):
+        return self.name
 
 
 class AdditionalServiceReservation(models.Model):

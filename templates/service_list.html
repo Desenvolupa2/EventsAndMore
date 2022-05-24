@@ -7,12 +7,16 @@
     {% endif %}
     <br>
     {% for service in services|dictsort:"name" %}
-        <div class="card" style="width: 45rem;">
-            <div class="card-body">
-                <h5 class="d-inline-block card-title">{{ service.name }}</h5>
+        <h6 style="margin-top:2%;">
+            <div class="card" style="width: 45rem;">
+                <div class="card-body">
+                    <h5 class="d-inline-block card-title">{{ service.name }}</h5>
+                    {% if request.user.is_staff %}
+                        <a href="{% url 'delete-service' service.id %}"
+                           class="btn btn-outline-danger btn-sm float-right">Delete service</a>
+                    {% endif %}
+                </div>
             </div>
-        </div>
-    {% empty %}
-        <li>No objects yet.</li>
+        </h6>
     {% endfor %}
 {% endblock %}

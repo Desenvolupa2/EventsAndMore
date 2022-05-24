@@ -32,6 +32,12 @@ class EventRequestForm(ModelForm):
         }
 
 
+class CatalogForm(ModelForm):
+    class Meta:
+        model = Catalog
+        fields = ['name']
+
+
 class AdditionalServiceCategoryForm(ModelForm):
     class Meta:
         model = AdditionalServiceCategory
@@ -42,12 +48,6 @@ class AdditionalServiceSubcategoryForm(ModelForm):
     class Meta:
         model = AdditionalServiceSubcategory
         fields = '__all__'
-
-
-class CatalogForm(ModelForm):
-    class Meta:
-        model = Catalog
-        fields = ['name']
 
 
 class AdditionalServiceForm(ModelForm):

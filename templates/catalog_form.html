@@ -5,6 +5,7 @@
         {{ form.as_p }}
         <input type="submit" value="Crear catàleg" class="btn btn-primary">
     </form>
+    <br>
     <h1>Catalog list</h1>
     {% for catalog in catalogs|dictsort:"name" %}
         <br>
@@ -12,7 +13,7 @@
             <div class="card-body">
                 <h5 class="d-inline-block card-title">{{ catalog.name }}</h5>
                 <a href="{% url 'delete-catalog' catalog.id %}"
-                    class="btn btn-outline-danger btn-sm float-right">Delete category</a>
+                   class="btn btn-outline-danger btn-sm float-right">Delete catalog</a>
             </div>
         </div>
     {% empty %}

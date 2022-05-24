@@ -55,6 +55,8 @@
                         </li>
                         <li><a class="dropdown-item bg-light" href="{% url 'service-subcategory' %}">Service
                             subcategories</a></li>
+                        <li><a class="dropdown-item bg-light" href="{% url 'catalog-control-panel' %}">Catalogs</a></li>
+
                     </ul>
                 </li>
                 {% if not request.user.is_staff %}
@@ -88,7 +90,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
 
-{% comment %}
+                            {% comment %}
                             <li><a class="dropdown-item bg-light" href="{% url 'catalog-control-panel' %}">Catalogs</a></li>
 {% endcomment %}
 
