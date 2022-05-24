@@ -124,7 +124,7 @@ class Stand(models.Model):
         if len(positions) == 1:
             return "Small"
 
-        if len(positions) == 1:
+        if len(positions) == 2:
             return "Medium"
 
         return "Large"

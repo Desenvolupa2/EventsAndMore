@@ -390,13 +390,13 @@ class ReserveStand(LoginRequiredMixin, FormView):
         stands_to_reserve = []
         for grid_stand in stands.values():
             positions = [GridPosition.objects.get(x_position=x, y_position=y) for x, y in grid_stand]
-            if all(positions[0].stand == position.stand for position in positions):
-                stands_to_reserve.append(positions[0].stand)
-            else:
+            expected_positions = GridPosition.objects.filter(stand__in=[p.stand for p in positions])
+            if len(set(expected_positions) - set(positions)) != 0:
                 return JsonResponse(
                     {"status": "error", "content": "Can't select half stand"},
                     status=HTTPStatus.UNPROCESSABLE_ENTITY
                 )
+            stands_to_reserve.append(positions[0].stand)
 
         reservation = Reservation.objects.create(
             event=event,
