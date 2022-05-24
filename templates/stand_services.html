@@ -8,52 +8,54 @@
         <div class="row">
             <h5>Stand {{ stand_reservation.stand.id }}: {{ stand_reservation.stand.size }}</h5>
         </div>
-        <div class="mb-3">
-            <div class="row">
-                <div class="col mx-1">
-                    <div class="row"><b><label for="category-{{ stand_reservation.id }}">Category</label></b></div>
-                    <div class="row">
-                        <select class="form-control" name="category" id="category-{{ stand_reservation.id }}">
-                            <option value="" selected>----------</option>
-                            {% for category in categories %}
-                                <option value="{{ category.id }}">{{ category.name }}</option>
-                            {% endfor %}
-                        </select>
+        <div>
+            <div class="mb-3" id="service-form-{{ stand_reservation.id }}">
+                <div class="row">
+                    <div class="col mx-1">
+                        <div class="row"><b><label for="category-{{ stand_reservation.id }}">Category</label></b></div>
+                        <div class="row">
+                            <select class="form-control" name="category" id="category-{{ stand_reservation.id }}">
+                                <option value="" selected>----------</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="col mx-1">
-                    <div class="row"><b><label for="subcategory-{{ stand_reservation.id }}">Subcategory</label></b>
+                    <div class="col mx-1">
+                        <div class="row"><b><label for="subcategory-{{ stand_reservation.id }}">Subcategory</label></b>
+                        </div>
+                        <div class="row">
+                            <select class="form-control" name="subcategory" id="subcategory-{{ stand_reservation.id }}">
+                                <option value="" selected>----------</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="row">
-                        <select class="form-control" name="subcategory" id="subcategory-{{ stand_reservation.id }}">
-                            <option value="" selected>----------</option>
-                        </select>
+                    <div class="col mx-1">
+                        <div class="row"><b><label for="service-{{ stand_reservation.id }}">Service</label></b></div>
+                        <div class="row">
+                            <select class="form-control" name="service" id="service-{{ stand_reservation.id }}">
+                                <option value="" selected>----------</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="col mx-1">
-                    <div class="row"><b><label for="service-{{ stand_reservation.id }}">Service</label></b></div>
-                    <div class="row">
-                        <select class="form-control" name="service" id="service-{{ stand_reservation.id }}">
-                            <option value="" selected>----------</option>
-                        </select>
+                    <div class="col mx-1">
+                        <div class="row"><b><label for="quantity-{{ stand_reservation.id }}">Quantity</label></b></div>
+                        <div class="row">
+                            <input type="number" class="form-control" name="quantity"
+                                   id="quantity-{{ stand_reservation.id }}" min="0" value="0">
+                        </div>
                     </div>
-                </div>
-                <div class="col mx-1">
-                    <div class="row"><b><label for="quantity-{{ stand_reservation.id }}">Quantity</label></b></div>
-                    <div class="row">
-                        <input type="number" class="form-control" name="quantity"
-                               id="quantity-{{ stand_reservation.id }}" min="0" value="0">
-                    </div>
-                </div>
-                <div class="col mx-1">
-                    <div class="row"><b><label for="comments-{{ stand_reservation.id }}">Comments</label></b></div>
-                    <div class="row">
+                    <div class="col mx-1">
+                        <div class="row"><b><label for="comments-{{ stand_reservation.id }}">Comments</label></b></div>
+                        <div class="row">
                     <textarea class="form-control" placeholder="Leave a comment here" name="comments"
                               id="comments-{{ stand_reservation.id }}"></textarea>
+                        </div>
                     </div>
-                </div>
-                <div class="col mx-1 d-flex align-items-center">
-                    <button class="btn btn-primary">Add</button>
+                    <div class="col mx-1 d-flex align-items-center">
+                        <button class="btn btn-primary" onclick="addService({{ stand_reservation.id }})">Add</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -86,6 +88,21 @@
             });
 
         {% endfor %}
+        let services = {};
+        let i = 0;
+
+        function addService(standReservationId) {
+            const service = document.getElementById('service-' + standReservationId).value;
+            const quantity = document.getElementById('quantity-' + standReservationId).value;
+            const comments = document.getElementById('comments-' + standReservationId).value;
+            if (service && quantity && comments) {
+                services[standReservationId] = [service, quantity, comments];
+                const original = document.getElementById('service-form-' + standReservationId)
+                const clone = original.cloneNode(true);
+                clone.id = 'service-form-' + standReservationId + '-' + ++i;
+                original.parentNode.appendChild(clone);
+            }
+        }
     </script>
 
 {% endblock %}

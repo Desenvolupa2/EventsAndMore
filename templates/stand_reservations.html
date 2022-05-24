@@ -3,11 +3,27 @@
 {% block content %}
     <h1>Stand reservations list</h1>
     <br>
-    {% regroup stand_reservations by reservation.event as reservations_by_event %}
-    {% for event_grouper in reservations_by_event %}
-        <h3>Event: {{ event_grouper.grouper.name }}</h3>
-        {% for stand_reservation in event_grouper.list %}
-            <p>Stand {{ stand_reservation.stand.pk }}</p>
+    {% for reservation, stand_reservations in stand_reservations.items %}
+        <div class="row">
+            <h3>Event: {{ reservation.event.name }}</h3>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h5>Status: {{ stand_reservations.0.reservation.status_name }}</h5>
+            </div>
+            <div class="col">
+                {% if stand_reservations.0.reservation.status == 1 %}
+                    <a class="btn btn-primary" href="{% url 'stand-services' %}?reservation={{ reservation.id }}">Finish the reservation</a>
+                {% endif %}
+            </div>
+        </div>
+        {% for stand_reservation in stand_reservations %}
+            <div class="row">
+                <div class="col">
+                    <p>Stand {{ stand_reservation.stand.pk }}</p>
+                </div>
+            </div>
         {% endfor %}
+
     {% endfor %}
 {% endblock %}

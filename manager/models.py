@@ -97,6 +97,10 @@ class Reservation(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    @property
+    def status_name(self):
+        return ReservationStatus(self.status).name
+
 
 class ReservationContract(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

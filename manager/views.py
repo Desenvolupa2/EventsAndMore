@@ -543,15 +543,17 @@ class StandRequestGrid(LoginRequiredMixin, View):
         return JsonResponse({"status": "success", "content": out}, status=HTTPStatus.OK)
 
 
-class StandReservations(LoginRequiredMixin, ListView):
-    model = StandReservation
+class StandReservations(LoginRequiredMixin, TemplateView):
     template_name = "stand_reservations.html"
-    context_object_name = "stand_reservations"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
+
         user_reservations = Reservation.objects.filter(
             reservationcontract__in=ReservationContract.objects.filter(client=self.request.user)
         )
-        context['stand_reservations'] = context['stand_reservations'].filter(reservation__in=user_reservations)
+        d = {}
+        for user_reservation in user_reservations:
+            d[user_reservation] = list(StandReservation.objects.filter(reservation=user_reservation))
+        context['stand_reservations'] = d
         return context
