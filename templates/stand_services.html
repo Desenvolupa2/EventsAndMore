@@ -1,52 +1,60 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-    <h3>Finish your reservation for: {{ reservation.event.name }}</h3>
+    <div class="row mb-3">
+        <h3>Finish your reservation for: <b>{{ reservation.event.name }}</b></h3>
+    </div>
     {% for stand_reservation in stand_reservations %}
-        <h5>Stand {{ stand_reservation.stand.id }}: {{ stand_reservation.stand.size }}</h5>
         <div class="row">
-            <div class="col">
-                <div class="row"><b><label for="category">Category</label></b></div>
-                <div class="row">
-                    <select class="form-control" name="category" id="category">
-                        <option value="none" selected>---</option>
-                        {% for category in categories %}
-                            <option value="{{ category.name }}">{{ category.name }}</option>
-                        {% endfor %}
-                    </select>
+            <h5>Stand {{ stand_reservation.stand.id }}: {{ stand_reservation.stand.size }}</h5>
+        </div>
+        <div class="mb-3">
+            <div class="row">
+                <div class="col mx-1">
+                    <div class="row"><b><label for="category-{{ stand_reservation.id }}">Category</label></b></div>
+                    <div class="row">
+                        <select class="form-control" name="category" id="category-{{ stand_reservation.id }}">
+                            <option value="" selected>----------</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="col">
-                <div class="row"><b><label for="subcategory">Subcategory</label></b></div>
-                <div class="row">
-                    <select class="form-control" name="subcategory" id="subcategory">
-                        <option value="none" selected>---</option>
-                    </select>
+                <div class="col mx-1">
+                    <div class="row"><b><label for="subcategory-{{ stand_reservation.id }}">Subcategory</label></b>
+                    </div>
+                    <div class="row">
+                        <select class="form-control" name="subcategory" id="subcategory-{{ stand_reservation.id }}">
+                            <option value="" selected>----------</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="col">
-                <div class="row"><b><label for="additional-service">Additional Service</label></b></div>
-                <div class="row">
-                    <select class="form-control" name="additional-service" id="additional-service">
-                        <option value="none" selected>---</option>
-                    </select>
+                <div class="col mx-1">
+                    <div class="row"><b><label for="service-{{ stand_reservation.id }}">Service</label></b></div>
+                    <div class="row">
+                        <select class="form-control" name="service" id="service-{{ stand_reservation.id }}">
+                            <option value="" selected>----------</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="col">
-                <div class="row"><b><label for="quantity">Quantity</label></b></div>
-                <div class="row">
-                    <input type="number" class="form-control" name="quantity" id="quantity" min="0" value="0">
+                <div class="col mx-1">
+                    <div class="row"><b><label for="quantity-{{ stand_reservation.id }}">Quantity</label></b></div>
+                    <div class="row">
+                        <input type="number" class="form-control" name="quantity"
+                               id="quantity-{{ stand_reservation.id }}" min="0" value="0">
+                    </div>
                 </div>
-            </div>
-            <div class="col">
-                <div class="row"><b><label for="comments">Comments</label></b></div>
-                <div class="row">
+                <div class="col mx-1">
+                    <div class="row"><b><label for="comments-{{ stand_reservation.id }}">Comments</label></b></div>
+                    <div class="row">
                     <textarea class="form-control" placeholder="Leave a comment here" name="comments"
-                              id="comments"></textarea>
+                              id="comments-{{ stand_reservation.id }}"></textarea>
+                    </div>
                 </div>
-            </div>
-            <div class="col">
-                <button class="btn btn-primary">Add</button>
+                <div class="col mx-1 d-flex align-items-center">
+                    <button class="btn btn-primary">Add</button>
+                </div>
             </div>
         </div>
 
@@ -55,5 +63,32 @@
 
     {#    Submit button, get the content from form and send it as POST#}
     <button class="btn btn-primary">Submit</button>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        {% for stand_reservation in stand_reservations %}
+            $("#category-{{ stand_reservation.id }}").change(function () {
+                var url = '/load-subcategories';
+                var categoryId = $(this).val();
+                $.ajax({
+                    url: url + '/' + categoryId,
+                    success: function (data) {
+                        $("#subcategory-{{ stand_reservation.id }}").html(data);
+                    }
+                });
+            });
+
+            $("#subcategory-{{ stand_reservation.id }}").change(function () {
+                var url = '/load-subcategories';
+                var categoryId = $(this).val();
+                $.ajax({
+                    url: url + '/' + categoryId,
+                    success: function (data) {
+                        $("#service-{{ stand_reservation.id }}").html(data);
+                    }
+                });
+            });
+
+        {% endfor %}
+    </script>
 
 {% endblock %}

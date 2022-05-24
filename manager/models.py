@@ -119,7 +119,7 @@ class Stand(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     @property
-    def size(self):
+    def size(self) -> str:
         positions = GridPosition.objects.filter(stand=self)
         if len(positions) == 1:
             return "Small"
@@ -161,7 +161,7 @@ class Catalog(models.Model):
 class AdditionalServiceCategory(models.Model):
     name = models.CharField(max_length=100)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
