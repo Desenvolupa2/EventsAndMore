@@ -1,10 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Submit" class="btn btn-primary">
-    </form>
+    {% if perms.manager.add_additionalservicesubcategory %}
+        <h3>Create a new subcategory!</h3>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Create subcategory" class="btn btn-primary">
+        </form>
+    {% endif %}
     <br>
     <h2 style='text-align:left'>
         Subcategories:
@@ -15,9 +18,11 @@
                 <div class="card-body">
                     <h5 class="d-inline-block card-title">{{ subcategory.name }}</h5>
                     <br>
-                    <a href="{% url 'delete-service-subcategory' subcategory.id %}"
-                       class="btn btn-outline-danger btn-sm float-right">Delete subcategory</a>
-                    <h6 class="d-inline-block card-title"> Belongs to the category: "{{ subcategory.belongs_to }}"</h6>
+                    {% if perms.manager.delete_additionalservicesubcategory %}
+                        <a href="{% url 'delete-service-subcategory' subcategory.id %}"
+                           class="btn btn-outline-danger btn-sm float-right">Delete subcategory</a>
+                    {% endif %}
+                    <h6 class="d-inline-block card-title"> Belongs to the category: "{{ subcategory.category }}"</h6>
 
                 </div>
             </div>

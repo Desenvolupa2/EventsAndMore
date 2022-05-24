@@ -1,15 +1,23 @@
 {% extends  'base.html' %}
 {% load static %}
 {% block headers %}
-<link rel="stylesheet" href="{% static 'css/event_layout.css' %}">
-<script type="module" src="{% static 'js/event_layout/script.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/event_layout.css' %}">
+    <script type="module" src="{% static 'js/event_layout/script.js' %}"></script>
 {% endblock %}
 {% block content %}
-    <div class="container">
-        <button type="button" class="btn btn-primary" id="button-submit">Add stand</button>
-        <button type="button" class="btn btn-danger" id="button-reset">Reset selection</button>
-        <table id="grid" class="disable-select" style="table-layout:fixed;"></table>
-    </div>
-
+    {% if perms.manager.can_define_layout %}
+        <h1>Design the event layout</h1>
+        <h4>Press the squares to create stands.</h4>
+        <h5>You can create small (1 square), medium (2 squares) and big (4 squares).</h5>
+        <br>
+        <div class="container">
+            <button type="button" class="btn btn-primary" id="button-submit">Add stand</button>
+            <button type="button" class="btn btn-danger" id="button-reset">Reset selection</button>
+            <table id="grid" class="disable-select" style="table-layout:fixed;"></table>
+        </div>
+        <br>
+        <h6>It saves automatically!</h6>
+    {% else %}
+        <h2>You must be logged in as staff member to create a new service</h2>
+    {% endif %}
 {% endblock %}
-
