@@ -18,18 +18,12 @@ The main functionalities of the web application are:
 
 Download all the GitHub project and libraries or clone the repository in order to run it in a virtual environment. 
 
-## Models
+In order to set the database and create a superadmin **admin** with pasword **admin** you can execute
+the command on Linux platforms:
 
-_Further explanation yet to be done._
-
-## Views
-
-_Further explanation yet to be done._
-
-
-## Additional features
-
-_Further explanation yet to be done._
+```
+make reset
+```
 
 ## Authors
 

@@ -1,10 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Submit" class="btn btn-primary">
-    </form>
+    {% if perms.manager.add_additionalservicecategory %}
+        <h3>Create a new category!</h3>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Create category" class="btn btn-primary">
+        </form>
+    {% endif %}
     <br>
     <h2 style='text-align:left'>
         Categories:
@@ -14,13 +17,14 @@
             <div class="card" style="width: 45rem;">
                 <div class="card-body">
                     <h5 class="d-inline-block card-title">{{ category.name }}</h5>
-                    <a href="{% url 'delete-service-category' category.id %}"
-                    class="btn btn-outline-danger btn-sm float-right">Delete category</a>
-
+                    {% if perms.manager.delete_additionalservicecategory %}
+                        <a href="{% url 'delete-service-category' category.id %}"
+                           class="btn btn-outline-danger btn-sm float-right">Delete category</a>
+                    {% endif %}
                 </div>
             </div>
         </h6>
     {% empty %}
-        <li>No objects yet.</li>
+        <li>There are no categories yet</li>
     {% endfor %}
 {% endblock %}

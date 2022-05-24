@@ -22,11 +22,28 @@ from manager.forms import (
     AdditionalServiceForm,
     AdditionalServiceSubcategoryForm,
     EventRequestForm,
-    NewUserForm, StandForm
+    NewUserForm,
+    StandForm,
+    CatalogForm,
 )
-from manager.models import (AdditionalService, AdditionalServiceCategory, AdditionalServiceSubcategory, Event,
-                            EventContract, EventInvoice, EventRequest, EventRequestStand, EventRequestStatus,
-                            GridPosition, Reservation, ReservationContract, ReservationStatus, Stand, StandReservation)
+from manager.models import (
+    AdditionalService,
+    AdditionalServiceCategory,
+    AdditionalServiceSubcategory,
+    Event,
+    EventRequest,
+    EventRequestStand,
+    EventRequestStatus,
+    GridPosition,
+    Stand,
+    Reservation,
+    ReservationStatus,
+    StandReservation,
+    ReservationContract,
+    EventContract,
+    EventInvoice,
+    Catalog,
+)
 
 
 class Home(TemplateView):
@@ -119,8 +136,8 @@ class EventRequestUpdate(LoginRequiredMixin, View):
         event_request = EventRequest.objects.get(id=pk)
 
         if not self.request.user.has_perm("change_event_request") and (
-            event_request.status is not EventRequestStatus.PENDING_ON_ORGANIZER
-            and event_request.entity is not self.request.user
+                event_request.status is not EventRequestStatus.PENDING_ON_ORGANIZER
+                and event_request.entity is not self.request.user
         ):
             return JsonResponse(
                 {"status": "error", "content": "You have no permissions. This request can't be updated"},
@@ -167,6 +184,39 @@ class EventRequestUpdate(LoginRequiredMixin, View):
         p.save()
         buffer.seek(0)
         return buffer
+
+
+# Create catalogs
+class CatalogCreateView(CreateView):
+    context = {}
+    template_name = 'catalog_form.html'
+    form_class = CatalogForm
+
+    def get_context_data(self, **kwargs):
+        context = super(CatalogCreateView, self).get_context_data(**kwargs)
+        context['catalogs'] = Catalog.objects.all()
+        return context
+
+    def get_success_url(self):
+        return self.request.path
+
+    def form_valid(self, form):
+        if self.request.user.has_perm('manager.add_catalog'):
+            form.save()
+            return super().form_valid(form)
+        else:
+            return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
+
+
+# Delete catalogs
+class DeleteCatalog(PermissionRequiredMixin, DeleteView):
+    model = Catalog
+    permission_required = "manager.delete_catalog"
+    template_name = 'catalog_delete.html'
+    success_url = reverse_lazy("catalog-control-panel")
+
+    def handle_no_permission(self):
+        return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
 
 
 # Add categories
@@ -249,14 +299,25 @@ class ServiceListView(LoginRequiredMixin, ListView):
 class ServiceCreateView(LoginRequiredMixin, CreateView):
     template_name = 'service_form.html'
     form_class = AdditionalServiceForm
-    success_url = reverse_lazy("service-control-panel")
+    success_url = reverse_lazy("service-list")
 
     def form_valid(self, form):
-        if self.request.user.has_perm('manager.add.additionalservice'):
+        if self.request.user.has_perm('manager.add_additionalservice'):
             form.save()
             return super().form_valid(form)
         else:
             return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
+
+
+# Delete services
+class DeleteService(PermissionRequiredMixin, DeleteView):
+    model = AdditionalService
+    permission_required = "manager.delete_service"
+    template_name = 'service_delete.html'
+    success_url = reverse_lazy("service-list")
+
+    def handle_no_permission(self):
+        return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
 
 
 def load_subcategories(request, category_id):
@@ -264,9 +325,14 @@ def load_subcategories(request, category_id):
     return render(request, 'subcategory_dropdown_list_options.html', {'subcategories': subcategories})
 
 
+def load_additionalservices(request, subcategory_id):
+    services = AdditionalService.objects.filter(subcategory_id=subcategory_id).order_by('name')
+    return render(request, 'service_dropdown_list_options.html', {'services': services})
+
+
 class EventLayout(PermissionRequiredMixin, TemplateView):
     template_name = "event_layout.html"
-    permission_required = "can_add_stand"
+    permission_required = "can_define_layout"
 
 
 class GridPositions(LoginRequiredMixin, View):
@@ -421,9 +487,9 @@ class ReserveStand(LoginRequiredMixin, FormView):
         return JsonResponse({"status": "success", "content": f"Reservation created successfully"})
 
     def _generate_pdf_contract(
-        self,
-        reservation: 'Reservation',
-        stand_reservations: List['StandReservation']
+            self,
+            reservation: 'Reservation',
+            stand_reservations: List['StandReservation']
     ) -> io.BytesIO:
         buffer = io.BytesIO()
         p = canvas.Canvas(buffer)

@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-    {{ event.name }}
-    <a href="{% url 'stand-request' pk=event.id%}">Reserve an stand</a>
+    <h1>Welcome to the <b>{{ event.name }}</b> event!</h1>
+    <br>
+    <a class="btn btn-primary" href="{% url 'stand-request' pk=event.id%}">Reserve an stand</a>
+    <br>
+    <br>
+    <button type="button" class="btn btn-outline-info" onclick="history.back()">Go Back</button>
 {% endblock %}

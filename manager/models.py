@@ -142,9 +142,13 @@ class EventRequestStand(models.Model):
 
 
 class Catalog(models.Model):
-    status = models.BooleanField()
+    name = models.CharField(default=f"Catàleg", max_length=100)
+    status = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
 
 
 class AdditionalServiceCategory(models.Model):
@@ -158,19 +162,25 @@ class AdditionalServiceSubcategory(models.Model):
     category = models.ForeignKey(AdditionalServiceCategory, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.name
+
 
 class AdditionalService(models.Model):
     catalog = models.ForeignKey(Catalog, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     subcategory = models.ForeignKey(AdditionalServiceSubcategory, on_delete=models.CASCADE)
-    price = models.DecimalField(decimal_places=2, max_digits=100)
+    price = models.DecimalField(decimal_places=2, max_digits=5)
     image = models.ImageField()
-    status = models.BooleanField()
+    status = models.BooleanField(default=False)
     taxes = models.DecimalField(
         decimal_places=2,
         max_digits=4,
         validators=[MinValueValidator(0), MaxValueValidator(1)]
     )
+
+    def __str__(self):
+        return self.name
 
 
 class AdditionalServiceReservation(models.Model):

@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
     {% csrf_token %}
-    {% if perms.manager.delete_additionalservicesubcategory %}
+    {% if perms.manager.delete_service %}
         <div>
             <form method="post">{% csrf_token %}
-                <h4>Are you sure you want to delete the subcategory: "{{ object.name }}" that belongs
-                    to "{{ object.category }}"?</h4>
+                <h4>Are you sure you want to delete the service: "{{ object.name }}"?</h4>
                 <button type="submit" class="btn btn-danger">Delete</button>
                 <a href="{{ view.get_success_url }}" class="btn btn-secondary">Cancel</a>
             </form>
