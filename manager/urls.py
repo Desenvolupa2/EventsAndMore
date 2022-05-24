@@ -10,6 +10,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('events/<int:pk>', EventDetail.as_view(), name='event-detail'),
     path('stand-request/<int:pk>', ReserveStand.as_view(), name='stand-request'),
+    path('stand-services/', ReserveAdditionalServices.as_view(), name='stand-services'),
     path('stand-request-grid/', StandRequestGrid.as_view(), name='stand-request-grid'),
     path('event-request/', EventRequestFormView.as_view(), name="event-request-form"),
     path('event-requests/', EventRequestListView.as_view(), name="event-request-list"),

@@ -89,7 +89,6 @@ class Context {
     submitStandRequest() {
         const wholeEvent = document.getElementById('whole-event').checked
         const selectedGrid = getSelectedById(this.cells);
-        console.log(selectedGrid)
         const data = {
             'wholeEvent': wholeEvent,
             'grid': selectedGrid
@@ -102,16 +101,19 @@ class Context {
             data['final_date'] = finalDate
         }
 
-        sendRequest('/stand-request/' + this.eventId, 'POST', data).then(() => {
+        sendRequest('/stand-request/' + this.eventId, 'POST', data).then((r) => {
             Swal.fire(
                 'Success!',
                 'Your stand has been submitted.',
                 'success'
             ).then(() => {
-                window.location.replace('/')
+                const reservationId = r.data['content']['reservation'];
+                console.log(r);
+                console.log(reservationId);
+                window.location.replace('/stand-services/?reservation=' + reservationId);
             })
         }).catch((r) => {
-            console.log("response", r.response);
+            console.log("response", r);
             Swal.fire({
                 icon: 'error',
                 title: 'Error submitting your request',

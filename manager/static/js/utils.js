@@ -127,7 +127,6 @@ export function getSelectedById(cells) {
     for (let i = 0; i < cells.length; i++) {
         for (let j = 0; j < cells[0].length; j++) {
             if (cells[i][j].classList.contains('selected')) {
-                console.log(cells[i][j].innerText)
                 if (selected[cells[i][j].innerText] === undefined) {
                     selected[cells[i][j].innerText] = [];
                 }

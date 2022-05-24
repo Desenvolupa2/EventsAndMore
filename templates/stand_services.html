@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <h3>Finish your reservation: {{ reservation.event.name }}</h3>
+    {% for stand_reservation in stand_reservations %}
+        <h5>Stand {{ stand_reservation.stand }}</h5>
+        {#        Form to select the additional services for each one. #}
+    {% endfor %}
+
+    {#    Submit button, get the content from form and send it as POST#}
+    <button>Submit</button>
+
+{% endblock %}

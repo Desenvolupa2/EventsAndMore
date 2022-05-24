@@ -418,7 +418,7 @@ class ReserveStand(LoginRequiredMixin, FormView):
             file=File(pdf_buffer, name=f"{contract_uuid}.pdf")
         )
 
-        return JsonResponse({"status": "success", "content": f"Reservation created successfully"})
+        return JsonResponse({"status": "success", "content": {"reservation": reservation.id}})
 
     def _generate_pdf_contract(
         self,
@@ -434,13 +434,15 @@ class ReserveStand(LoginRequiredMixin, FormView):
         return buffer
 
 
-class ReserveAdditionalServices(LoginRequiredMixin, View):
-    template_name = None
+class ReserveAdditionalServices(LoginRequiredMixin, TemplateView):
+    template_name = "stand_services.html"
 
-    def get(self, request, *args, **kwargs):
-        # return template with all the StandReservations (1 for each stand)
-        # and allow to select additional services for each of them.
-        pass
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        reservation_id = self.request.GET.get('reservation')
+        context['reservation'] = Reservation.objects.get(pk=reservation_id)
+        context['stand_reservations'] = StandReservation.objects.filter(reservation_id=reservation_id)
+        return context
 
     def post(self, request, *args, **kwargs):
         # handle the Additional Services selections
@@ -467,7 +469,8 @@ class StandRequestGrid(LoginRequiredMixin, View):
             positions = [[gp.x_position, gp.y_position] for gp in GridPosition.objects.filter(stand=stand)]
             is_available = StandReservation.objects.filter(
                 stand=stand,
-                reservation__in=Reservation.objects.filter(event_id=event_id)  # TODO: also filter by date
+                reservation__in=Reservation.objects.filter(event_id=event_id, status=ReservationStatus.CONFIRMED)
+                # TODO: also filter by date
             ).count() == 0
             out.append({"available": is_available, "positions": positions})
         return JsonResponse({"status": "success", "content": out}, status=HTTPStatus.OK)
