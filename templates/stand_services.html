@@ -1,13 +1,59 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-    <h3>Finish your reservation: {{ reservation.event.name }}</h3>
+    <h3>Finish your reservation for: {{ reservation.event.name }}</h3>
     {% for stand_reservation in stand_reservations %}
-        <h5>Stand {{ stand_reservation.stand }}</h5>
+        <h5>Stand {{ stand_reservation.stand.id }}: {{ stand_reservation.stand.size }}</h5>
+        <div class="row">
+            <div class="col">
+                <div class="row"><b><label for="category">Category</label></b></div>
+                <div class="row">
+                    <select class="form-control" name="category" id="category">
+                        <option value="none" selected>---</option>
+                        {% for category in categories %}
+                            <option value="{{ category.name }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row"><b><label for="subcategory">Subcategory</label></b></div>
+                <div class="row">
+                    <select class="form-control" name="subcategory" id="subcategory">
+                        <option value="none" selected>---</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row"><b><label for="additional-service">Additional Service</label></b></div>
+                <div class="row">
+                    <select class="form-control" name="additional-service" id="additional-service">
+                        <option value="none" selected>---</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row"><b><label for="quantity">Quantity</label></b></div>
+                <div class="row">
+                    <input type="number" class="form-control" name="quantity" id="quantity" min="0" value="0">
+                </div>
+            </div>
+            <div class="col">
+                <div class="row"><b><label for="comments">Comments</label></b></div>
+                <div class="row">
+                    <textarea class="form-control" placeholder="Leave a comment here" name="comments"
+                              id="comments"></textarea>
+                </div>
+            </div>
+            <div class="col">
+                <button class="btn btn-primary">Add</button>
+            </div>
+        </div>
+
         {#        Form to select the additional services for each one. #}
     {% endfor %}
 
     {#    Submit button, get the content from form and send it as POST#}
-    <button>Submit</button>
+    <button class="btn btn-primary">Submit</button>
 
 {% endblock %}

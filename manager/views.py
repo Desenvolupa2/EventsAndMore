@@ -442,6 +442,7 @@ class ReserveAdditionalServices(LoginRequiredMixin, TemplateView):
         reservation_id = self.request.GET.get('reservation')
         context['reservation'] = Reservation.objects.get(pk=reservation_id)
         context['stand_reservations'] = StandReservation.objects.filter(reservation_id=reservation_id)
+        context['categories'] = AdditionalServiceCategory.objects.all()
         return context
 
     def post(self, request, *args, **kwargs):
