@@ -22,11 +22,20 @@ from manager.forms import (
     AdditionalServiceForm,
     AdditionalServiceSubcategoryForm,
     EventRequestForm,
-    NewUserForm, StandForm
+    NewUserForm,
+    StandForm
 )
-from manager.models import (AdditionalService, AdditionalServiceCategory, AdditionalServiceSubcategory, Event,
-                            EventContract, EventInvoice, EventRequest, EventRequestStand, EventRequestStatus,
-                            GridPosition, Reservation, ReservationContract, ReservationStatus, Stand, StandReservation)
+from manager.models import (
+    AdditionalService,
+    AdditionalServiceCategory,
+    AdditionalServiceSubcategory,
+    Event,
+    EventRequest,
+    EventRequestStand,
+    EventRequestStatus,
+    GridPosition,
+    Stand, Reservation, ReservationStatus, StandReservation, ReservationContract, EventContract, EventInvoice
+)
 
 
 class Home(TemplateView):
