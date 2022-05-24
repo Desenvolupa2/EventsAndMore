@@ -332,7 +332,7 @@ def load_additionalservices(request, subcategory_id):
 
 class EventLayout(PermissionRequiredMixin, TemplateView):
     template_name = "event_layout.html"
-    permission_required = "can_add_stand"
+    permission_required = "can_define_layout"
 
 
 class GridPositions(LoginRequiredMixin, View):

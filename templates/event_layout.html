@@ -5,7 +5,7 @@
     <script type="module" src="{% static 'js/event_layout/script.js' %}"></script>
 {% endblock %}
 {% block content %}
-    {% if request.user.is_staff %}
+    {% if perms.manager.can_define_layout %}
         <h1>Design the event layout</h1>
         <h4>Press the squares to create stands.</h4>
         <h5>You can create small (1 square), medium (2 squares) and big (4 squares).</h5>
