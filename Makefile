@@ -1,4 +1,5 @@
 reset:
+	rm -rf media/*
 	rm -rf manager/migrations
 	rm -f db.sqlite3
 	python3 manage.py makemigrations manager

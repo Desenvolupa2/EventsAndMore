@@ -1,4 +1,3 @@
-
 export function clearSelection() {
     if (window.getSelection) {
         window.getSelection().removeAllRanges();
@@ -65,7 +64,7 @@ export async function updateStand(context, stand_id, positions) {
             context.cells[row][col].classList.toggle(position['available'] ? 'available' : 'unavailable');
             context.cells[row][col].innerText = stand_id;
             continue;
-        } else if(context.cells[row][col].classList.contains('selected')) {
+        } else if (context.cells[row][col].classList.contains('selected')) {
             // if was selected -> set available or unavailable
             context.cells[row][col].classList.toggle('selected');
             context.cells[row][col].classList.toggle(position['available'] ? 'available' : 'unavailable');
@@ -117,6 +116,22 @@ export function getSelected(cells) {
         for (let j = 0; j < cells[0].length; j++) {
             if (cells[i][j].classList.contains('selected')) {
                 selected.push([i, j])
+            }
+        }
+    }
+    return selected;
+}
+
+export function getSelectedById(cells) {
+    let selected = {};
+    for (let i = 0; i < cells.length; i++) {
+        for (let j = 0; j < cells[0].length; j++) {
+            if (cells[i][j].classList.contains('selected')) {
+                console.log(cells[i][j].innerText)
+                if (selected[cells[i][j].innerText] === undefined) {
+                    selected[cells[i][j].innerText] = [];
+                }
+                selected[cells[i][j].innerText].push([i, j]);
             }
         }
     }

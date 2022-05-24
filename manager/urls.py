@@ -1,30 +1,19 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 from manager import views
-from manager.views import (
-    GridPositions,
-    Home,
-    Register,
-    Login,
-    EventRequestFormView,
-    EventRequestListView,
-    EventRequestUpdate,
-    AdditionalServiceCategoryCreateView,
-    AdditionalServiceSubcategoryCreateView,
-    DeleteAdditionalServiceCategoryView,
-    DeleteAdditionalServiceSubcategoryView,
-    ServiceCreateView,
-    ServiceListView,
-    EventLayout, GridStands
-)
+from manager.views import *
 
 urlpatterns = [
     path('', Home.as_view(), name="home"),
     path('register/', Register.as_view(), name='register'),
     path('login/', Login.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('events/<int:pk>', EventDetail.as_view(), name='event-detail'),
+    path('stand-request/<int:pk>', ReserveStand.as_view(), name='stand-request'),
+    path('stand-request-grid/', StandRequestGrid.as_view(), name='stand-request-grid'),
     path('event-request/', EventRequestFormView.as_view(), name="event-request-form"),
     path('event-requests/', EventRequestListView.as_view(), name="event-request-list"),
+    path('stand-reservations/', StandReservations.as_view(), name="stand-reservation-list"),
     path('event-requests/<int:pk>/', EventRequestUpdate.as_view(), name="event-request-update"),
     path('service-category/', AdditionalServiceCategoryCreateView.as_view(), name="service-category"),
     path('service-subcategory/', AdditionalServiceSubcategoryCreateView.as_view(), name="service-subcategory"),
