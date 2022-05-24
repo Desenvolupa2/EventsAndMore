@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-    {% if request.user.is_staff %}
+    {% if perms.manager.add_additionalservicesubcategory %}
         <h3>Create a new subcategory!</h3>
         <form method="POST">
             {% csrf_token %}
@@ -18,7 +18,7 @@
                 <div class="card-body">
                     <h5 class="d-inline-block card-title">{{ subcategory.name }}</h5>
                     <br>
-                    {% if request.user.is_staff %}
+                    {% if perms.manager.delete_additionalservicesubcategory %}
                         <a href="{% url 'delete-service-subcategory' subcategory.id %}"
                            class="btn btn-outline-danger btn-sm float-right">Delete subcategory</a>
                     {% endif %}

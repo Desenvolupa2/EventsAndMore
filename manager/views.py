@@ -299,17 +299,17 @@ class ServiceListView(LoginRequiredMixin, ListView):
 class ServiceCreateView(LoginRequiredMixin, CreateView):
     template_name = 'service_form.html'
     form_class = AdditionalServiceForm
-    success_url = reverse_lazy("service-control-panel")
+    success_url = reverse_lazy("service-list")
 
     def form_valid(self, form):
-        if self.request.user.has_perm('manager.add.additionalservice'):
+        if self.request.user.has_perm('manager.add_additionalservice'):
             form.save()
             return super().form_valid(form)
         else:
             return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
 
 
-# Delete catalogs
+# Delete services
 class DeleteService(PermissionRequiredMixin, DeleteView):
     model = AdditionalService
     permission_required = "manager.delete_service"

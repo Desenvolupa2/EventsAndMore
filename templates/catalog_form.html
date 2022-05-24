@@ -1,23 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Crear catàleg" class="btn btn-primary">
-    </form>
+    {% if perms.manager.add_catalog %}
+        <h3>Create a new catalog!</h3>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Create catalog" class="btn btn-primary">
+        </form>
+    {% endif %}
     <br>
-    <h1>Catalog list</h1>
+    <h1 style="text-align: left">Catalog list</h1>
     {% for catalog in catalogs|dictsort:"name" %}
         <br>
         <div class="card" style="width: 45rem;">
             <div class="card-body">
                 <h5 class="d-inline-block card-title">{{ catalog.name }}</h5>
-                <a href="{% url 'delete-catalog' catalog.id %}"
-                   class="btn btn-outline-danger btn-sm float-right">Delete catalog</a>
+                {% if perms.manager.delete_catalog %}
+                    <a href="{% url 'delete-catalog' catalog.id %}"
+                       class="btn btn-outline-danger btn-sm float-right">Delete catalog</a>
+                {% endif %}
             </div>
         </div>
     {% empty %}
         <li>There are no catalogs yet</li>
     {% endfor %}
-
 {% endblock %}

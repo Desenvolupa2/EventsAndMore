@@ -1,30 +1,30 @@
 {% extends 'base.html' %}
 {% block content %}
-    {% if request.user.is_staff %}
-    <form method="POST" enctype="multipart/form-data" id="serviceForm" novalidate>
-        {% csrf_token %}
-        <h2>Introduce a new service:</h2>
-        <br>
-        {{ form.as_p }}
-        <input type="submit" value="Create a new service" class="btn btn-primary">
-    </form>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script>
-        $("#id_category").change(function () {
-            var url = '/load-subcategories';
-            var categoryId = $(this).val();
-            $.ajax({
-                url: url+'/'+categoryId,
-                success: function (data) {
-                    $("#id_subcategory").html(data);
-                }
+    {% if perms.manager.add_additionalservice %}
+        <form method="POST" enctype="multipart/form-data" id="serviceForm" novalidate>
+            {% csrf_token %}
+            <h2>Introduce a new service:</h2>
+            <br>
+            {{ form.as_p }}
+            <input type="submit" value="Create a new service" class="btn btn-primary">
+        </form>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script>
+            $("#id_category").change(function () {
+                var url = '/load-subcategories';
+                var categoryId = $(this).val();
+                $.ajax({
+                    url: url + '/' + categoryId,
+                    success: function (data) {
+                        $("#id_subcategory").html(data);
+                    }
+                });
             });
-        });
-    </script>
+        </script>
     {% else %}
-        <h2>You must be logged in as staff member to create a new service</h2>
+        <h2>You must be logged with a proper rol to create a new service</h2>
     {% endif %}
     <br>
     <br>
-    <button type="button" class="btn btn-outline-info" onclick="history.back()">Go Back</button>
+    <button type="button" class="btn btn-outline-info" onclick="history.back()">Cancel and go back</button>
 {% endblock %}

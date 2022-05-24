@@ -1,14 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
     {% csrf_token %}
-    <div>
-        <form method="post">{% csrf_token %}
-            <h4>Are you sure you want to delete the subcategory: "{{ object.name }}" that belongs
-                to "{{ object.category }}"?</h4>
-            <button type="submit" class="btn btn-danger">Delete</button>
-            <a href="{{ view.get_success_url }}" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
+    {% if perms.manager.delete_additionalservicesubcategory %}
+        <div>
+            <form method="post">{% csrf_token %}
+                <h4>Are you sure you want to delete the subcategory: "{{ object.name }}" that belongs
+                    to "{{ object.category }}"?</h4>
+                <button type="submit" class="btn btn-danger">Delete</button>
+                <a href="{{ view.get_success_url }}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    {% else %}
+        <h4>You do not have permission to delete this catalog.</h4>
+    {% endif %}
     <br>
     <br>
     <button type="button" class="btn btn-outline-info" onclick="history.back()">Go Back</button>
