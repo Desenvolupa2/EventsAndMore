@@ -5,18 +5,45 @@
     <script type="module" src="{% static 'js/event_grid/script.js' %}"></script>
 {% endblock %}
 {% block content %}
-    {% csrf_token %}
+
     <h1>Reserve an event</h1>
     <div>
-        {{ form.as_p }}
-        <div class="container">
-            <button type="button" class="btn btn-primary" id="button-all">All available</button>
-            <button type="button" class="btn btn-primary" id="button-left">Left Half</button>
-            <button type="button" class="btn btn-primary" id="button-right">Right Half</button>
-            <button type="button" class="btn btn-danger" id="button-reset">Reset selection</button>
-            <p><b>Space selected: </b> <span id="percentage">0.0</span>%</p>
-            <table id="grid" class="disable-select" style="table-layout:fixed;"></table>
+        <form>
+            {% csrf_token %}
+            <div class="row mb-2">
+                <div class="col">
+                    <label for="id_name">Event name:</label>
+                    {{ form.name }}
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col">
+                    <label for="id_initial_date">Initial date:</label>
+                    {{ form.initial_date }}
+                </div>
+                <div class="col">
+                    <label for="id_final_date">Final date:</label>
+                    {{ form.final_date }}
+                </div>
+            </div>
+        </form>
+
+        <div class="row mb-3">
+            <div class="col">
+                <button type="button" class="btn btn-primary" id="button-all">All available</button>
+                <button type="button" class="btn btn-primary" id="button-left">Left Half</button>
+                <button type="button" class="btn btn-primary" id="button-right">Right Half</button>
+                <button type="button" class="btn btn-danger" id="button-reset">Reset selection</button>
+
+            </div>
         </div>
+        <div class="row">
+            <div class="col">
+                <p><b>Space selected: </b> <span id="percentage">0.0</span>%</p>
+            </div>
+        </div>
+        <table id="grid" class="disable-select" style="table-layout:fixed;"></table>
+
         <br>
         <button class="btn btn-primary" id="button-submit">Submit</button>
     </div>

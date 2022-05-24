@@ -24,6 +24,7 @@ urlpatterns = [
          name="delete-service-subcategory"),
     path('service-control-panel/', ServiceCreateView.as_view(), name="service-control-panel"),
     path('load-subcategories/<int:category_id>/', load_subcategories, name='load_subcategories'),
+    path('load-services/<int:subcategory_id>/', load_additional_services, name='load_services'),
     path('event-layout/', EventLayout.as_view(), name='event-layout'),
     path('grid-positions/', GridPositions.as_view(), name='grid-positions'),
     path('grid-stands/', GridStands.as_view(), name='grid-stand'),

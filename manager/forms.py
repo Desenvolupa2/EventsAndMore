@@ -23,6 +23,12 @@ class DateInput(forms.DateInput):
 
 
 class EventRequestForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+
     class Meta:
         model = EventRequest
         fields = ['name', 'initial_date', 'final_date']

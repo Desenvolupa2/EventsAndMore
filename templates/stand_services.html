@@ -57,20 +57,17 @@
                 </div>
             </div>
         </div>
-
-        {#        Form to select the additional services for each one. #}
     {% endfor %}
-
-    {#    Submit button, get the content from form and send it as POST#}
     <button class="btn btn-primary">Submit</button>
+
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
         {% for stand_reservation in stand_reservations %}
             $("#category-{{ stand_reservation.id }}").change(function () {
-                var url = '/load-subcategories';
+                var url = '/load-subcategories/';
                 var categoryId = $(this).val();
                 $.ajax({
-                    url: url + '/' + categoryId,
+                    url: url + categoryId,
                     success: function (data) {
                         $("#subcategory-{{ stand_reservation.id }}").html(data);
                     }
@@ -78,10 +75,10 @@
             });
 
             $("#subcategory-{{ stand_reservation.id }}").change(function () {
-                var url = '/load-subcategories';
+                var url = '/load-services/';
                 var categoryId = $(this).val();
                 $.ajax({
-                    url: url + '/' + categoryId,
+                    url: url + categoryId,
                     success: function (data) {
                         $("#service-{{ stand_reservation.id }}").html(data);
                     }
