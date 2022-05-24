@@ -325,6 +325,11 @@ def load_subcategories(request, category_id):
     return render(request, 'subcategory_dropdown_list_options.html', {'subcategories': subcategories})
 
 
+def load_additionalservices(request, subcategory_id):
+    services = AdditionalService.objects.filter(subcategory_id=subcategory_id).order_by('name')
+    return render(request, 'service_dropdown_list_options.html', {'services': services})
+
+
 class EventLayout(PermissionRequiredMixin, TemplateView):
     template_name = "event_layout.html"
     permission_required = "can_add_stand"
