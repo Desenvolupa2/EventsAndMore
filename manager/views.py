@@ -4,7 +4,6 @@ import uuid
 from http import HTTPStatus
 from typing import List
 
-import PIL.ImageDraw
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.core.files import File
