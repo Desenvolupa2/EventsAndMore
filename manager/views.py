@@ -4,6 +4,7 @@ import uuid
 from http import HTTPStatus
 from typing import List
 
+import PIL.ImageDraw
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.core.files import File
@@ -15,6 +16,7 @@ from django.utils.dateparse import parse_date
 from django.views import View
 from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView
 from reportlab.pdfgen import canvas
+from django.conf import settings
 
 from manager.filters import EventRequestsFilter
 from manager.forms import (
@@ -179,7 +181,26 @@ class EventRequestUpdate(LoginRequiredMixin, View):
     def _generate_pdf_contract(self, event_request: 'EventRequest') -> io.BytesIO:
         buffer = io.BytesIO()
         p = canvas.Canvas(buffer)
-        p.drawString(100, 100, "Event contract.")  # TODO: Create contract (make up text for the contract)
+        p.drawString(50, 800, "EVENTS AND MORE")
+        p.drawString(200, 700, "EVENT RESERVATION CONTRACT")
+
+        p.drawString(100, 600, "Event reservation name: " + str(event_request.name))
+        p.drawString(100, 580, "Initial date: " + str(event_request.initial_date))
+        p.drawString(100, 560, "Final date: " + str(event_request.final_date))
+        p.drawString(100, 540, "Having the contract been signed, the reservation is confirmed.")
+
+        p.drawString(100, 500, "Reservation made by: " + str(self.request.user))
+        p.drawString(100, 480, "Entity contact email address: " + str(self.request.user.email))
+
+        p.drawString(100, 440, "The payment is to be made by bank transfer. If the payment is not done in 7 ")
+        p.drawString(100, 420, "days the reservation will be canceled.")
+
+        p.drawString(100, 380, "If need of cancellation, the client must contact the event organizer.")
+
+        p.drawString(100, 340, "The parties agree to follow the cityhall, catalan and spanish laws.")
+
+        p.drawImage(settings.MEDIA_ROOT/"logo-eventsandmore.png", 70, 100, 150, 150)
+        p.drawString(470, 50, "Page 1 of 1.")
         p.showPage()
         p.save()
         buffer.seek(0)
@@ -493,7 +514,26 @@ class ReserveStand(LoginRequiredMixin, FormView):
     ) -> io.BytesIO:
         buffer = io.BytesIO()
         p = canvas.Canvas(buffer)
-        p.drawString(100, 100, "Stand reservation.")  # TODO: Create contract (make up text for the contract)
+        p.drawString(50, 800, "EVENTS AND MORE")
+        p.drawString(200, 700, "STAND RESERVATION CONTRACT")
+
+        p.drawString(100, 600, "Stand reservation of the following event: " + str(reservation.event))
+        p.drawString(100, 580, "Initial date: " + str(reservation.initial_date))
+        p.drawString(100, 560, "Final date: " + str(reservation.final_date))
+        p.drawString(100, 540, "Having the contract been signed, the reservation is confirmed.")
+
+        p.drawString(100, 500, "Reservation made by: " + str(self.request.user))
+        p.drawString(100, 480, "Entity contact email address: " + str(self.request.user.email))
+
+        p.drawString(100, 440, "The payment is to be made by bank transfer. If the payment is not done in 7 ")
+        p.drawString(100, 420, "days the reservation will be canceled.")
+
+        p.drawString(100, 380, "If need of cancellation, the client must contact the event organizer.")
+
+        p.drawString(100, 340, "The parties agree to follow the cityhall, catalan and spanish laws.")
+
+        p.drawImage(settings.MEDIA_ROOT / "logo-eventsandmore.png", 70, 100, 150, 150)
+        p.drawString(470, 50, "Page 1 of 1.")
         p.showPage()
         p.save()
         buffer.seek(0)
