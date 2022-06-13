@@ -17,33 +17,11 @@ from django.views.generic import CreateView, DeleteView, DetailView, FormView, L
 from reportlab.pdfgen import canvas
 
 from manager.filters import EventRequestsFilter
-from manager.forms import (
-    AdditionalServiceCategoryForm,
-    AdditionalServiceForm,
-    AdditionalServiceSubcategoryForm,
-    EventRequestForm,
-    NewUserForm,
-    StandForm,
-    CatalogForm,
-)
-from manager.models import (
-    AdditionalService,
-    AdditionalServiceCategory,
-    AdditionalServiceSubcategory,
-    Event,
-    EventRequest,
-    EventRequestStand,
-    EventRequestStatus,
-    GridPosition,
-    Stand,
-    Reservation,
-    ReservationStatus,
-    StandReservation,
-    ReservationContract,
-    EventContract,
-    EventInvoice,
-    Catalog,
-)
+from manager.forms import (AdditionalServiceCategoryForm, AdditionalServiceForm, AdditionalServiceSubcategoryForm,
+                           CatalogForm, EventRequestForm, NewUserForm, StandForm)
+from manager.models import (AdditionalService, AdditionalServiceCategory, AdditionalServiceSubcategory, Catalog, Event,
+                            EventContract, EventInvoice, EventRequest, EventRequestStand, EventRequestStatus,
+                            GridPosition, Reservation, ReservationContract, ReservationStatus, Stand, StandReservation)
 
 
 class Home(TemplateView):
@@ -136,8 +114,8 @@ class EventRequestUpdate(LoginRequiredMixin, View):
         event_request = EventRequest.objects.get(id=pk)
 
         if not self.request.user.has_perm("change_event_request") and (
-                event_request.status is not EventRequestStatus.PENDING_ON_ORGANIZER
-                and event_request.entity is not self.request.user
+            event_request.status is not EventRequestStatus.PENDING_ON_ORGANIZER
+            and event_request.entity is not self.request.user
         ):
             return JsonResponse(
                 {"status": "error", "content": "You have no permissions. This request can't be updated"},
@@ -320,6 +298,11 @@ class DeleteService(PermissionRequiredMixin, DeleteView):
         return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
 
 
+def load_categories(request):
+    categories = AdditionalServiceCategory.objects.all().order_by('name')
+    return JsonResponse({"categories": [model_to_dict(category) for category in categories]})
+
+
 def load_subcategories(request, category_id):
     subcategories = AdditionalServiceSubcategory.objects.filter(category_id=category_id).order_by('name')
     return render(request, 'subcategory_dropdown_list_options.html', {'subcategories': subcategories})
@@ -487,9 +470,9 @@ class ReserveStand(LoginRequiredMixin, FormView):
         return JsonResponse({"status": "success", "content": {"reservation": reservation.id}})
 
     def _generate_pdf_contract(
-            self,
-            reservation: 'Reservation',
-            stand_reservations: List['StandReservation']
+        self,
+        reservation: 'Reservation',
+        stand_reservations: List['StandReservation']
     ) -> io.BytesIO:
         buffer = io.BytesIO()
         p = canvas.Canvas(buffer)

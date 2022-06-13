@@ -1,67 +1,34 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block headers %}
+    <link rel="stylesheet" href="{% static 'css/stand_reservation.css' %}">
+    <script type="module" src="{% static 'js/stand_reservation/script.js' %}"></script>
+{% endblock %}
 {% block content %}
     <div class="row mb-3">
         <h3>Finish your reservation for: <b>{{ reservation.event.name }}</b></h3>
     </div>
+    <div class="row">
+        <p>Add additional services for your stands</p>
+    </div>
     {% for stand_reservation in stand_reservations %}
-        <div class="row">
-            <h5>Stand {{ stand_reservation.stand.id }}: {{ stand_reservation.stand.size }}</h5>
-        </div>
-        <div>
-            <div class="mb-3" id="service-form-{{ stand_reservation.id }}">
+        <div class="py-3">
+            <div class="row">
+                <h5>Stand {{ stand_reservation.stand.id }}: {{ stand_reservation.stand.size }}</h5>
+            </div>
+            <div id="service-list-{{ stand_reservation.id }}">
                 <div class="row">
-                    <div class="col mx-1">
-                        <div class="row"><b><label for="category-{{ stand_reservation.id }}">Category</label></b></div>
-                        <div class="row">
-                            <select class="form-control" name="category" id="category-{{ stand_reservation.id }}">
-                                <option value="" selected>----------</option>
-                                {% for category in categories %}
-                                    <option value="{{ category.id }}">{{ category.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col mx-1">
-                        <div class="row"><b><label for="subcategory-{{ stand_reservation.id }}">Subcategory</label></b>
-                        </div>
-                        <div class="row">
-                            <select class="form-control" name="subcategory" id="subcategory-{{ stand_reservation.id }}">
-                                <option value="" selected>----------</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col mx-1">
-                        <div class="row"><b><label for="service-{{ stand_reservation.id }}">Service</label></b></div>
-                        <div class="row">
-                            <select class="form-control" name="service" id="service-{{ stand_reservation.id }}">
-                                <option value="" selected>----------</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col mx-1">
-                        <div class="row"><b><label for="quantity-{{ stand_reservation.id }}">Quantity</label></b></div>
-                        <div class="row">
-                            <input type="number" class="form-control" name="quantity"
-                                   id="quantity-{{ stand_reservation.id }}" min="0" value="0">
-                        </div>
-                    </div>
-                    <div class="col mx-1">
-                        <div class="row"><b><label for="comments-{{ stand_reservation.id }}">Comments</label></b></div>
-                        <div class="row">
-                    <textarea class="form-control" placeholder="Leave a comment here" name="comments"
-                              id="comments-{{ stand_reservation.id }}"></textarea>
-                        </div>
-                    </div>
-                    <div class="col mx-1 d-flex align-items-center">
-                        <button class="btn btn-primary" onclick="addService({{ stand_reservation.id }})">Add</button>
-                    </div>
+                    <button class="btn btn-outline-primary"
+                            onclick="addServiceLine(this, {{ stand_reservation.id }})"
+                            id="add-line-button-{{ stand_reservation.id }}">Add service
+                    </button>
                 </div>
             </div>
         </div>
     {% endfor %}
-    <button class="btn btn-primary">Submit</button>
-
+    <div class="row pt-3">
+        <button class="btn btn-primary" onclick="submitServices()">Submit</button>
+    </div>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
         {% for stand_reservation in stand_reservations %}
