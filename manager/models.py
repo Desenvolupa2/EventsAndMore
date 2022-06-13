@@ -201,7 +201,8 @@ class AdditionalService(models.Model):
 class AdditionalServiceReservation(models.Model):
     stand_reservation = models.ForeignKey(StandReservation, on_delete=models.CASCADE)
     additional_service = models.ForeignKey(AdditionalService, on_delete=models.CASCADE)
-    subcategory = models.ForeignKey(AdditionalServiceSubcategory, on_delete=models.CASCADE)
+    comments = models.TextField()
+    quantity = models.IntegerField(validators=[MinValueValidator(0)])
     initial_date = models.DateField()
     final_date = models.DateField()
     created = models.DateTimeField(auto_now_add=True)

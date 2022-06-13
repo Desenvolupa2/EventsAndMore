@@ -108,8 +108,6 @@ class Context {
                 'success'
             ).then(() => {
                 const reservationId = r.data['content']['reservation'];
-                console.log(r);
-                console.log(reservationId);
                 window.location.replace('/stand-services/?reservation=' + reservationId);
             })
         }).catch((r) => {

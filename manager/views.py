@@ -19,7 +19,8 @@ from reportlab.pdfgen import canvas
 from manager.filters import EventRequestsFilter
 from manager.forms import (AdditionalServiceCategoryForm, AdditionalServiceForm, AdditionalServiceSubcategoryForm,
                            CatalogForm, EventRequestForm, NewUserForm, StandForm)
-from manager.models import (AdditionalService, AdditionalServiceCategory, AdditionalServiceSubcategory, Catalog, Event,
+from manager.models import (AdditionalService, AdditionalServiceCategory, AdditionalServiceReservation,
+                            AdditionalServiceSubcategory, Catalog, Event,
                             EventContract, EventInvoice, EventRequest, EventRequestStand, EventRequestStatus,
                             GridPosition, Reservation, ReservationContract, ReservationStatus, Stand, StandReservation)
 
@@ -494,9 +495,32 @@ class ReserveAdditionalServices(LoginRequiredMixin, TemplateView):
         context['categories'] = AdditionalServiceCategory.objects.all()
         return context
 
-    def post(self, request, *args, **kwargs):
-        # handle the Additional Services selections
-        pass
+    def post(self, *args, **kwargs):
+        try:
+            body = json.loads(self.request.body)
+        except:
+            return JsonResponse({"status": "error", "content": "Unexpected format"}, status=HTTPStatus.BAD_REQUEST)
+
+        reservation_id = body.get("reservation")
+        stand_reservations_services = body.get("services")
+        if not reservation_id or not stand_reservations_services:
+            return JsonResponse({"status": "error", "content": "Unexpected values"}, status=HTTPStatus.BAD_REQUEST)
+
+        reservation = Reservation.objects.get(pk=reservation_id)
+
+        for stand_reservation in stand_reservations_services:
+            for service_id, quantity, comments in stand_reservations_services[stand_reservation]:
+                AdditionalServiceReservation.objects.create(
+                    stand_reservation_id=stand_reservation,
+                    additional_service_id=service_id,
+                    quantity=quantity,
+                    comments=comments,
+                    initial_date=reservation.initial_date,
+                    final_date=reservation.final_date,
+                )
+        reservation.status = ReservationStatus.CONFIRMED
+        reservation.save()
+        return JsonResponse({"status": "success", "content": "Additional services submitted"}, status=HTTPStatus.OK)
 
 
 class EventDetail(DetailView):

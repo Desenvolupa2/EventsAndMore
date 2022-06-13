@@ -131,7 +131,20 @@ function getProduct(standReservationId, serviceId) {
 }
 
 function submitServices() {
-    console.log(serviceList); // TODO: send request to endpoint
+    const param = window.location.search;
+    let data = {
+        "reservation": param.substring(param.lastIndexOf('=') + 1),
+        "services": serviceList
+    }
+    sendRequest('/stand-services/', 'POST', data).then(() => {
+        Swal.fire(
+            'Success!',
+            'Your additional services have been submitted.',
+            'success'
+        ).then(() => {
+            window.location.replace('/stand-reservations/')
+        })
+    })
 }
 
 window.submitServices = submitServices;
