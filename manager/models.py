@@ -1,4 +1,6 @@
 import uuid as uuid
+from typing import List
+
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -25,6 +27,7 @@ class EventRequestStatus(models.IntegerChoices):
 class EventRequest(models.Model):
     entity = models.ForeignKey(Profile, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+    description = models.TextField()
     initial_date = models.DateField()
     final_date = models.DateField()
     status = models.IntegerField(choices=EventRequestStatus.choices)
@@ -64,6 +67,17 @@ class Event(models.Model):
     image = models.ImageField()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    @property
+    def description_by_p(self) -> List[str]:
+        return [p for p in self.description.split("\n") if p]
+
+    def __str__(self) -> str:
+        return self.name
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(name={self.name}, initial_date={self.initial_date}, " \
+               f"final_date={self.final_date}, status={self.status})"
 
 
 class EventContract(models.Model):
@@ -201,7 +215,8 @@ class AdditionalService(models.Model):
 class AdditionalServiceReservation(models.Model):
     stand_reservation = models.ForeignKey(StandReservation, on_delete=models.CASCADE)
     additional_service = models.ForeignKey(AdditionalService, on_delete=models.CASCADE)
-    subcategory = models.ForeignKey(AdditionalServiceSubcategory, on_delete=models.CASCADE)
+    comments = models.TextField()
+    quantity = models.IntegerField(validators=[MinValueValidator(0)])
     initial_date = models.DateField()
     final_date = models.DateField()
     created = models.DateTimeField(auto_now_add=True)

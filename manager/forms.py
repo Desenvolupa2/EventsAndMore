@@ -2,14 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import Form, ModelForm
 
-from manager.models import (
-    AdditionalService,
-    AdditionalServiceCategory,
-    AdditionalServiceSubcategory,
-    EventRequest,
-    Profile,
-    Catalog,
-)
+from manager.models import (AdditionalService, AdditionalServiceCategory, AdditionalServiceSubcategory, Catalog,
+                            EventRequest, Profile)
 
 
 class NewUserForm(UserCreationForm):
@@ -31,7 +25,7 @@ class EventRequestForm(ModelForm):
 
     class Meta:
         model = EventRequest
-        fields = ['name', 'initial_date', 'final_date']
+        fields = ['name', 'description', 'initial_date', 'final_date']
         widgets = {
             'initial_date': DateInput(),
             'final_date': DateInput()

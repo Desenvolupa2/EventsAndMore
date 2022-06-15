@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-    <h1>Welcome to the <b>{{ event.name }}</b> event!</h1>
+    <h1 style="font-family: 'Lato Black',sans-serif">{{ event.name }}</h1>
+    <h4 style="font-family: 'Lato Black',sans-serif">Description</h4>
+    {% for description_paragraph in event.description_by_p %}
+        <p class="text-break mb-3 text-justify">{{ description_paragraph }}</p>
+    {% endfor %}
     <br>
-    <a class="btn btn-primary" href="{% url 'stand-request' pk=event.id%}">Reserve an stand</a>
+    <a class="btn btn-primary" href="{% url 'stand-request' pk=event.id %}">Reserve a stand</a>
     <br>
     <br>
     <button type="button" class="btn btn-outline-info" onclick="history.back()">Go Back</button>
