@@ -4,7 +4,6 @@
     --white: #efefef;
 }
 
-
 .disable-select {
     user-select: none; /* supported by Chrome and Opera */
     -webkit-user-select: none; /* Safari */
@@ -12,22 +11,7 @@
     -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
-td, td:before, td:after {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-input, input:before, input:after {
-    -webkit-user-select: initial;
-    -moz-user-select: initial;
-    -ms-user-select: initial;
-    user-select: initial;
-}
-
-
-.cell {
+td.cell {
     user-select: none;
 }
 
