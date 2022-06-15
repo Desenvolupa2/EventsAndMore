@@ -548,7 +548,7 @@ class ReserveAdditionalServices(LoginRequiredMixin, TemplateView):
 
         reservation_id = body.get("reservation")
         stand_reservations_services = body.get("services")
-        if not reservation_id or not stand_reservations_services:
+        if not reservation_id or stand_reservations_services is None:
             return JsonResponse({"status": "error", "content": "Unexpected values"}, status=HTTPStatus.BAD_REQUEST)
 
         reservation = Reservation.objects.get(pk=reservation_id)
