@@ -12,6 +12,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.template import context
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.dateparse import parse_date
 from django.views import View
 from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView
@@ -608,7 +609,9 @@ class NextEvents(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        queryset = EventRequest.objects.all()
-        queryset = queryset.order_by("status", "-initial_date")
-        context["events"] = EventRequestsFilter(self.request.GET, queryset=queryset)
+        events = Event.objects.all().filter(initial_date__gte=timezone.now()).order_by("initial_date")
+        images = ["images/green.jpg", "images/rose.jpg", "images/blue.jpg"]
+        context["next_events"] = [(image, event)for image, event in zip(images, events[:3])]
+        context["events"] = events[3:]
         return context
+
