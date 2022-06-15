@@ -10,6 +10,7 @@ from django.core.files import File
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from django.template import context
 from django.urls import reverse_lazy
 from django.utils.dateparse import parse_date
 from django.views import View
@@ -198,7 +199,7 @@ class EventRequestUpdate(LoginRequiredMixin, View):
 
         p.drawString(100, 340, "The parties agree to follow the cityhall, catalan and spanish laws.")
 
-        p.drawImage(settings.MEDIA_ROOT/"logo-eventsandmore.png", 70, 100, 150, 150)
+        p.drawImage(settings.MEDIA_ROOT / "logo-eventsandmore.png", 70, 100, 150, 150)
         p.drawString(470, 50, "Page 1 of 1.")
         p.showPage()
         p.save()
@@ -595,4 +596,19 @@ class StandReservations(LoginRequiredMixin, TemplateView):
         for user_reservation in user_reservations:
             d[user_reservation] = list(StandReservation.objects.filter(reservation=user_reservation))
         context['stand_reservations'] = d
+        return context
+
+
+# List all events
+class NextEvents(ListView):
+    model = Event
+    context_object_name = "next-events"
+    template_name = "next-events.html"
+    context = {}
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        queryset = EventRequest.objects.all()
+        queryset = queryset.order_by("status", "-initial_date")
+        context["events"] = EventRequestsFilter(self.request.GET, queryset=queryset)
         return context

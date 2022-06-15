@@ -8,6 +8,7 @@ urlpatterns = [
     path('register/', Register.as_view(), name='register'),
     path('login/', Login.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('next-events/', NextEvents.as_view(), name='next-events'),
     path('events/<int:pk>', EventDetail.as_view(), name='event-detail'),
     path('stand-request/<int:pk>', ReserveStand.as_view(), name='stand-request'),
     path('stand-services/', ReserveAdditionalServices.as_view(), name='stand-services'),
