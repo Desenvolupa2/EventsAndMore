@@ -128,12 +128,14 @@ class Context {
 
     submitEventRequest() {
         const eventName = document.getElementById('id_name').value;
+        const description = document.getElementById('id_description').value;
         const initialDate = document.getElementById('id_initial_date').value;
         const finalDate = document.getElementById('id_final_date').value;
         const selectedGrid = getSelected(this.cells);
 
         const data = {
             'eventName': eventName,
+            'description': description,
             'initialDate': initialDate,
             'finalDate': finalDate,
             'grid': selectedGrid

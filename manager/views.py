@@ -50,11 +50,15 @@ class EventRequestFormView(LoginRequiredMixin, FormView):
     def post(self, request, *args, **kwargs):
         body = json.loads(self.request.body)
         event_name = body.get('eventName')
+        description = body.get('description')
         initial_date = parse_date(body.get('initialDate'))
         final_date = parse_date(body.get('finalDate'))
         grid = body.get('grid')
         if not event_name:
             return JsonResponse({"status": "error", "content": "Invalid event name"}, status=HTTPStatus.BAD_REQUEST)
+
+        if not description:
+            return JsonResponse({"status": "error", "content": "Invalid description"}, status=HTTPStatus.BAD_REQUEST)
 
         if not initial_date or not final_date:
             return JsonResponse({"status": "error", "content": "Invalid dates"}, status=HTTPStatus.BAD_REQUEST)
@@ -64,6 +68,7 @@ class EventRequestFormView(LoginRequiredMixin, FormView):
 
         event_request = EventRequest(
             name=event_name,
+            description=description,
             initial_date=initial_date,
             final_date=final_date,
             entity=self.request.user,
@@ -138,6 +143,7 @@ class EventRequestUpdate(LoginRequiredMixin, View):
         if body.get("status") == EventRequestStatus.ACCEPTED:
             event = Event.objects.create(
                 name=event_request.name,
+                description=event_request.description,
                 initial_date=event_request.initial_date,
                 final_date=event_request.final_date,
             )
