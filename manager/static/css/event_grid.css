@@ -12,7 +12,7 @@
     -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
-*, *:before, *:after {
+td, td:before, td:after {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
