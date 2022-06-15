@@ -17,7 +17,7 @@
                 <h5 class="d-inline-block card-title">{{ catalog.name }}</h5>
                 {% if perms.manager.delete_catalog %}
                     <a href="{% url 'delete-catalog' catalog.id %}"
-                       class="btn btn-outline-danger btn-sm float-right">Delete catalog</a>
+                       class="btn btn-outline-danger btn-sm float-end">Delete catalog</a>
                 {% endif %}
             </div>
         </div>

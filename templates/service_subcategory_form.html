@@ -20,7 +20,7 @@
                     <br>
                     {% if perms.manager.delete_additionalservicesubcategory %}
                         <a href="{% url 'delete-service-subcategory' subcategory.id %}"
-                           class="btn btn-outline-danger btn-sm float-right">Delete subcategory</a>
+                           class="btn btn-outline-danger btn-sm float-end">Delete subcategory</a>
                     {% endif %}
                     <h6 class="d-inline-block card-title"> Belongs to the category: "{{ subcategory.category }}"</h6>
 

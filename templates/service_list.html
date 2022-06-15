@@ -13,7 +13,7 @@
                     <h5 class="d-inline-block card-title">{{ service.name }}</h5>
                     {% if perms.manager.delete_service %}
                         <a href="{% url 'delete-service' service.id %}"
-                           class="btn btn-outline-danger btn-sm float-right">Delete service</a>
+                           class="btn btn-outline-danger btn-sm float-end">Delete service</a>
                     {% endif %}
                 </div>
             </div>

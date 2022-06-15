@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 {% block headers %}
 {% endblock %}
 <head>
     <meta charset="UTF-8">
     <title>EventsAndMore</title>
     <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css"
+          integrity="sha512-Ez0cGzNzHR1tYAv56860NLspgUGuQw16GiOOp/I2LuTmpSK9xDXlgJz3XN4cnpXWDmkNBKXR/VDMTCnAaEooxA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+          integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <script src="{% static 'js/axios.min.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"
             integrity="sha512-Tn2m0TIpgVyTzzvmxLNuqbSJH3JP8jm+Cy3hvHrW7ndTDcJ1w5mBiksqDBb8GpE2ksktFvDB/ykZ0mDpsZj20w=="
@@ -23,20 +27,10 @@
             integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT"
             crossorigin="anonymous"></script>
 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-            crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-            crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-            crossorigin="anonymous"></script>
-
     <style>
         body {
+            font-weight: 400;
+            line-height: 1.7;
             font-family: Lato, sans-serif;
         }
     </style>
@@ -58,18 +52,18 @@
                         Services
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item bg-light" href="{% url 'service-list' %}">Service List</a></li>
+                        <li><a class="dropdown-item" href="{% url 'service-list' %}">Service List</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item bg-light" href="{% url 'service-category' %}">Service categories</a>
+                        <li><a class="dropdown-item" href="{% url 'service-category' %}">Service categories</a>
                         </li>
-                        <li><a class="dropdown-item bg-light" href="{% url 'service-subcategory' %}">Service
+                        <li><a class="dropdown-item" href="{% url 'service-subcategory' %}">Service
                             subcategories</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item bg-light" href="{% url 'catalog-control-panel' %}">Catalogs</a></li>
+                        <li><a class="dropdown-item" href="{% url 'catalog-control-panel' %}">Catalogs</a></li>
                     </ul>
                 </li>
                 {% if not request.user.is_staff %}
@@ -80,16 +74,16 @@
                             My account
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item bg-light" href="{% url 'event-request-form' %}">Reserve an
+                            <li><a class="dropdown-item" href="{% url 'event-request-form' %}">Reserve an
                                 event</a>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item bg-light" href="{% url 'event-request-list' %}">My events</a>
+                            <li><a class="dropdown-item" href="{% url 'event-request-list' %}">My events</a>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item bg-light" href="{% url 'stand-reservation-list' %}">Stand
+                            <li><a class="dropdown-item" href="{% url 'stand-reservation-list' %}">Stand
                                 Reservations</a></li>
                         </ul>
                     </li>
@@ -102,22 +96,22 @@
                             Admin
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item bg-light" href="{% url 'event-request-form' %}">Reserve an
+                            <li><a class="dropdown-item" href="{% url 'event-request-form' %}">Reserve an
                                 event</a>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item bg-light" href="{% url 'event-request-list' %}">Manage
+                            <li><a class="dropdown-item" href="{% url 'event-request-list' %}">Manage
                                 Reservations</a>
                             </li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item bg-light" href="{% url 'event-layout' %}">Event Layout</a></li>
+                            <li><a class="dropdown-item" href="{% url 'event-layout' %}">Event Layout</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item bg-light" href="{% url 'stand-reservation-list' %}">Stand
+                            <li><a class="dropdown-item" href="{% url 'stand-reservation-list' %}">Stand
                                 Reservations</a></li>
                         </ul>
                     </li>

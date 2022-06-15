@@ -2,11 +2,19 @@
 {% block content %}
     {% if perms.manager.add_additionalservicecategory %}
         <h3>Create a new category!</h3>
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Create category" class="btn btn-primary">
-        </form>
+        <div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row mb-2">
+                    <div class="col">
+                        <label for="id_name">Name:</label>
+                        {{ form.name }}
+                    </div>
+                </div>
+
+                <input type="submit" value="Create category" class="btn btn-primary">
+            </form>
+        </div>
     {% endif %}
     <br>
     <h2 style='text-align:left'>
@@ -19,7 +27,7 @@
                     <h5 class="d-inline-block card-title">{{ category.name }}</h5>
                     {% if perms.manager.delete_additionalservicecategory %}
                         <a href="{% url 'delete-service-category' category.id %}"
-                           class="btn btn-outline-danger btn-sm float-right">Delete category</a>
+                           class="btn btn-outline-danger btn-sm float-end">Delete category</a>
                     {% endif %}
                 </div>
             </div>

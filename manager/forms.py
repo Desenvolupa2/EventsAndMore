@@ -33,18 +33,36 @@ class EventRequestForm(ModelForm):
 
 
 class CatalogForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+
     class Meta:
         model = Catalog
         fields = ['name']
 
 
 class AdditionalServiceCategoryForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+
     class Meta:
         model = AdditionalServiceCategory
         fields = ['name']
 
 
 class AdditionalServiceSubcategoryForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+
     class Meta:
         model = AdditionalServiceSubcategory
         fields = '__all__'
@@ -74,5 +92,11 @@ class AdditionalServiceForm(ModelForm):
 
 
 class StandForm(Form):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control'
+
     initial_date = forms.DateField(widget=DateInput)
     final_date = forms.DateField(widget=DateInput)

@@ -18,16 +18,20 @@
             </div>
             <div id="service-list-{{ stand_reservation.id }}">
                 <div class="row">
-                    <button class="btn btn-outline-primary"
-                            onclick="addServiceLine(this, {{ stand_reservation.id }})"
-                            id="add-line-button-{{ stand_reservation.id }}">Add service
-                    </button>
+                    <div class="col">
+                        <button class="btn btn-outline-primary"
+                                onclick="addServiceLine(this, {{ stand_reservation.id }})"
+                                id="add-line-button-{{ stand_reservation.id }}">Add service
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     {% endfor %}
     <div class="row pt-3">
-        <button class="btn btn-primary" onclick="submitServices()">Submit</button>
+        <div class="col">
+            <button class="btn btn-primary" onclick="submitServices()">Submit</button>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script>
