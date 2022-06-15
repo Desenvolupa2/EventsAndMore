@@ -4,28 +4,14 @@
     --white: #efefef;
 }
 
-td, td:before, td:after {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-
-input, input:before, input:after {
-    -webkit-user-select: initial;
-    -moz-user-select: initial;
-    -ms-user-select: initial;
-    user-select: initial;
-}
-
 .disable-select {
     user-select: none; /* supported by Chrome and Opera */
-   -webkit-user-select: none; /* Safari */
-   -moz-user-select: none; /* Firefox */
-   -ms-user-select: none; /* Internet Explorer/Edge */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
 }
 
-.cell {
+td.cell {
     user-select: none;
 }
 
