@@ -1,6 +1,5 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path
-from manager import views
 from manager.views import *
 
 urlpatterns = [
@@ -23,6 +22,7 @@ urlpatterns = [
     path('service-subcategory/delete/<pk>', DeleteAdditionalServiceSubcategoryView.as_view(),
          name="delete-service-subcategory"),
     path('service-control-panel/', ServiceCreateView.as_view(), name="service-control-panel"),
+    path('load-categories/', load_categories, name='load_categories'),
     path('load-subcategories/<int:category_id>/', load_subcategories, name='load_subcategories'),
     path('load-services/<int:subcategory_id>/', load_additional_services, name='load_services'),
     path('event-layout/', EventLayout.as_view(), name='event-layout'),

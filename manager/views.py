@@ -18,33 +18,12 @@ from reportlab.pdfgen import canvas
 from django.conf import settings
 
 from manager.filters import EventRequestsFilter
-from manager.forms import (
-    AdditionalServiceCategoryForm,
-    AdditionalServiceForm,
-    AdditionalServiceSubcategoryForm,
-    EventRequestForm,
-    NewUserForm,
-    StandForm,
-    CatalogForm,
-)
-from manager.models import (
-    AdditionalService,
-    AdditionalServiceCategory,
-    AdditionalServiceSubcategory,
-    Event,
-    EventRequest,
-    EventRequestStand,
-    EventRequestStatus,
-    GridPosition,
-    Stand,
-    Reservation,
-    ReservationStatus,
-    StandReservation,
-    ReservationContract,
-    EventContract,
-    EventInvoice,
-    Catalog,
-)
+from manager.forms import (AdditionalServiceCategoryForm, AdditionalServiceForm, AdditionalServiceSubcategoryForm,
+                           CatalogForm, EventRequestForm, NewUserForm, StandForm)
+from manager.models import (AdditionalService, AdditionalServiceCategory, AdditionalServiceReservation,
+                            AdditionalServiceSubcategory, Catalog, Event,
+                            EventContract, EventInvoice, EventRequest, EventRequestStand, EventRequestStatus,
+                            GridPosition, Reservation, ReservationContract, ReservationStatus, Stand, StandReservation)
 
 
 class Home(TemplateView):
@@ -137,8 +116,8 @@ class EventRequestUpdate(LoginRequiredMixin, View):
         event_request = EventRequest.objects.get(id=pk)
 
         if not self.request.user.has_perm("change_event_request") and (
-                event_request.status is not EventRequestStatus.PENDING_ON_ORGANIZER
-                and event_request.entity is not self.request.user
+            event_request.status is not EventRequestStatus.PENDING_ON_ORGANIZER
+            and event_request.entity is not self.request.user
         ):
             return JsonResponse(
                 {"status": "error", "content": "You have no permissions. This request can't be updated"},
@@ -340,6 +319,11 @@ class DeleteService(PermissionRequiredMixin, DeleteView):
         return JsonResponse({"status": "error", "content": "You have no permissions"}, status=HTTPStatus.FORBIDDEN)
 
 
+def load_categories(request):
+    categories = AdditionalServiceCategory.objects.all().order_by('name')
+    return JsonResponse({"categories": [model_to_dict(category) for category in categories]})
+
+
 def load_subcategories(request, category_id):
     subcategories = AdditionalServiceSubcategory.objects.filter(category_id=category_id).order_by('name')
     return render(request, 'subcategory_dropdown_list_options.html', {'subcategories': subcategories})
@@ -507,9 +491,9 @@ class ReserveStand(LoginRequiredMixin, FormView):
         return JsonResponse({"status": "success", "content": {"reservation": reservation.id}})
 
     def _generate_pdf_contract(
-            self,
-            reservation: 'Reservation',
-            stand_reservations: List['StandReservation']
+        self,
+        reservation: 'Reservation',
+        stand_reservations: List['StandReservation']
     ) -> io.BytesIO:
         buffer = io.BytesIO()
         p = canvas.Canvas(buffer)
@@ -550,9 +534,32 @@ class ReserveAdditionalServices(LoginRequiredMixin, TemplateView):
         context['categories'] = AdditionalServiceCategory.objects.all()
         return context
 
-    def post(self, request, *args, **kwargs):
-        # handle the Additional Services selections
-        pass
+    def post(self, *args, **kwargs):
+        try:
+            body = json.loads(self.request.body)
+        except:
+            return JsonResponse({"status": "error", "content": "Unexpected format"}, status=HTTPStatus.BAD_REQUEST)
+
+        reservation_id = body.get("reservation")
+        stand_reservations_services = body.get("services")
+        if not reservation_id or not stand_reservations_services:
+            return JsonResponse({"status": "error", "content": "Unexpected values"}, status=HTTPStatus.BAD_REQUEST)
+
+        reservation = Reservation.objects.get(pk=reservation_id)
+
+        for stand_reservation in stand_reservations_services:
+            for service_id, quantity, comments in stand_reservations_services[stand_reservation]:
+                AdditionalServiceReservation.objects.create(
+                    stand_reservation_id=stand_reservation,
+                    additional_service_id=service_id,
+                    quantity=quantity,
+                    comments=comments,
+                    initial_date=reservation.initial_date,
+                    final_date=reservation.final_date,
+                )
+        reservation.status = ReservationStatus.CONFIRMED
+        reservation.save()
+        return JsonResponse({"status": "success", "content": "Additional services submitted"}, status=HTTPStatus.OK)
 
 
 class EventDetail(DetailView):
