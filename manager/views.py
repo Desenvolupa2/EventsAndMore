@@ -31,6 +31,14 @@ from manager.models import (AdditionalService, AdditionalServiceCategory, Additi
 class Home(TemplateView):
     template_name = "home.html"
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        events = Event.objects.all().filter(initial_date__gte=timezone.now()).order_by("initial_date")
+        images = ["images/green.jpg", "images/rose.jpg", "images/blue.jpg"]
+        context["next_events"] = [(image, event) for image, event in zip(images, events[:3])]
+        context["events"] = events
+        return context
+
 
 class Register(CreateView):
     form_class = NewUserForm
@@ -123,8 +131,8 @@ class EventRequestUpdate(LoginRequiredMixin, View):
         event_request = EventRequest.objects.get(id=pk)
 
         if not self.request.user.has_perm("change_event_request") and (
-            event_request.status is not EventRequestStatus.PENDING_ON_ORGANIZER
-            and event_request.entity is not self.request.user
+                event_request.status is not EventRequestStatus.PENDING_ON_ORGANIZER
+                and event_request.entity is not self.request.user
         ):
             return JsonResponse(
                 {"status": "error", "content": "You have no permissions. This request can't be updated"},
@@ -499,9 +507,9 @@ class ReserveStand(LoginRequiredMixin, FormView):
         return JsonResponse({"status": "success", "content": {"reservation": reservation.id}})
 
     def _generate_pdf_contract(
-        self,
-        reservation: 'Reservation',
-        stand_reservations: List['StandReservation']
+            self,
+            reservation: 'Reservation',
+            stand_reservations: List['StandReservation']
     ) -> io.BytesIO:
         buffer = io.BytesIO()
         p = canvas.Canvas(buffer)
@@ -613,18 +621,5 @@ class StandReservations(LoginRequiredMixin, TemplateView):
         return context
 
 
-# List all events
-class NextEvents(ListView):
-    model = Event
-    context_object_name = "next-events"
-    template_name = "next-events.html"
-    context = {}
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(object_list=object_list, **kwargs)
-        events = Event.objects.all().filter(initial_date__gte=timezone.now()).order_by("initial_date")
-        images = ["images/green.jpg", "images/rose.jpg", "images/blue.jpg"]
-        context["next_events"] = [(image, event)for image, event in zip(images, events[:3])]
-        context["events"] = events[3:]
-        return context
-
+class AboutUs(TemplateView):
+    template_name = "about_us.html"

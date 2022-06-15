@@ -7,7 +7,6 @@ urlpatterns = [
     path('register/', Register.as_view(), name='register'),
     path('login/', Login.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
-    path('next-events/', NextEvents.as_view(), name='next-events'),
     path('events/<int:pk>', EventDetail.as_view(), name='event-detail'),
     path('stand-request/<int:pk>', ReserveStand.as_view(), name='stand-request'),
     path('stand-services/', ReserveAdditionalServices.as_view(), name='stand-services'),
@@ -32,5 +31,6 @@ urlpatterns = [
     path('catalog-control-panel/', CatalogCreateView.as_view(), name="catalog-control-panel"),
     path('delete-catalog/delete/<pk>', DeleteCatalog.as_view(), name="delete-catalog"),
     path('delete-service/delete/<pk>', DeleteService.as_view(), name="delete-service"),
+    path('about-us/', AboutUs.as_view(), name="about-us"),
 
 ]
