@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-    <h1 class="text-center">Welcome to Events And More</h1>
-    <br>
-    <h2 class="text-center">Upcoming events</h2>
+
+
+    <h1>Next Events</h1>
+    <H3>Next month events:</H3>
     <br>
     <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
         <ol class="carousel-indicators">
             {% if next_events|length > 0 %}
+
                 <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
             {% endif %}
             {% for event in next_events|slice:"1:" %}
@@ -20,14 +22,7 @@
                     <img class="d-block w-100" src="{% static next_events.0.0 %}" alt="Second slide">
                     <div class="carousel-caption d-none d-md-block">
                         <h1>{{ next_events.0.1.name }}</h1>
-                        <p>{{ next_events.0.1.initial_date }} to {{ next_events.0.1.final_date }}</p>
-                        <br>
-                        <p>{{ next_events.0.1.description }}</p>
-                        <br>
-                        <a class="btn btn-light btn-lg"
-                           href="{% url 'event-detail' pk=next_events.0.1.id %}">Event details</a>
-                        <br><br>
-                        <br><br>
+                        <p>{{ next_events.0.1.initial_date }}</p>
                     </div>
                 </div>
             {% endif %}
@@ -36,14 +31,7 @@
                     <img class="d-block w-100" src="{% static event.0 %}" alt="Second slide">
                     <div class="carousel-caption d-none d-md-block">
                         <h1>{{ event.1.name }}</h1>
-                        <p>{{ event.1.initial_date }} to {{ event.1.final_date }}</p>
-                        <br>
-                        <p>{{ event.1.description }}</p>
-                        <br>
-                        <a class="btn btn-light btn-lg"
-                           href="{% url 'event-detail' pk=event.1.id %}">Event details</a>
-                        <br><br>
-                        <br><br>
+                        <p>{{ event.1.initial_date }}</p>
                     </div>
                 </div>
             {% endfor %}
@@ -59,23 +47,20 @@
             </a>
         {% endif %}
     </div>
-    <br><br>
-    <h2 class="text-center">List of all upcoming events</h2>
+
+    <h3> Future events after next month:</h3>
+
+    {#    TODO: ADD A LIST OF EVENTS MORE THAN NEXT MONTH#}
+
     {% for event in events %}
-        <h6 style="margin-top:3%;">
-            <div class="card mx-auto" style="width: 80rem;">
+        <h6 style="margin-top:2%;">
+            <div class="card" style="width: 45rem;">
                 <div class="card-body">
-                    <h3 class="d-inline-block card-title">{{ event.name }}</h3>
-                    <h4>{{ event.initial_date }} to {{ event.final_date }}</h4>
-                    <br>
-                    <h5>{{ event.description }}</h5>
-                    <br>
-                    <a class="btn btn-info"
-                       href="{% url 'event-detail' pk=event.id %}">Event details</a>
+                    <h5 class="d-inline-block card-title">{{ event.name }}</h5>
                 </div>
             </div>
         </h6>
     {% empty %}
-        <li>We are sorry, there aren't any upcoming events.</li>
+        <li>There are no next events yet</li>
     {% endfor %}
 {% endblock %}

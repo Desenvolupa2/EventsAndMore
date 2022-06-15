@@ -1,5 +1,7 @@
 # Media
 media/*.pdf
+media/*.jpeg
+media/*.jpg
 
 # Migrations
 **/migrations/
