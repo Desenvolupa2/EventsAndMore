@@ -204,7 +204,7 @@ class AdditionalService(models.Model):
     name = models.CharField(max_length=100)
     subcategory = models.ForeignKey(AdditionalServiceSubcategory, on_delete=models.CASCADE)
     price = models.DecimalField(decimal_places=2, max_digits=5)
-    image = models.ImageField()
+    image = models.ImageField(null=True)
     status = models.BooleanField(default=False)
     taxes = models.DecimalField(
         decimal_places=2,
