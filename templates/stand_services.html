@@ -9,7 +9,7 @@
         <h3>Finish your reservation for: <b>{{ reservation.event.name }}</b></h3>
     </div>
     <div class="row">
-        <p>Add additional services for your stands</p>
+        <p>Add additional services for your stands before finishing your stand reservation</p>
     </div>
     {% for stand_reservation in stand_reservations %}
         <div class="py-3">
@@ -71,5 +71,6 @@
             }
         }
     </script>
-
+    <br>
+    <button type="button" class="btn btn-outline-info" onclick="history.back()">Finish later and go back</button>
 {% endblock %}

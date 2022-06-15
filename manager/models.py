@@ -162,6 +162,10 @@ class StandReservation(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    @property
+    def additional_service_reservations(self):
+        return AdditionalServiceReservation.objects.filter(stand_reservation=self)
+
 
 class EventRequestStand(models.Model):
     stand = models.ForeignKey(Stand, on_delete=models.CASCADE)
