@@ -4,6 +4,10 @@
     --white: #efefef;
 }
 
+input[type] {
+	user-select: text;
+}
+
 table.disable-select {
     user-select: none; /* supported by Chrome and Opera */
     -webkit-user-select: none; /* Safari */
